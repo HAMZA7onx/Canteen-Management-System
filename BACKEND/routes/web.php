@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::get('/data', function () {
+    return response()->json(['status' => 'data']);
+})->middleware('auth');
+
+Route::get('/test', function () {
+    return response()->json(['status' => 'test']);
 });
