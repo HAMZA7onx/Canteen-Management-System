@@ -45,10 +45,12 @@ class UserController extends Controller
         return response()->json($response);
     }
 
-    function update(Request $request)
+    function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
+            'rfid' => 'required|unique:users,rfid,' . $id,
             'name' => 'string|max:255',
+            'email' => 'email|unique:users,email,' . $id,
             'password' => 'string|min:8',
             'phone_number' => 'nullable',
             'gender' => 'nullable|in:female,male',
@@ -58,27 +60,22 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::find($request->id);
+        $user = User::findOrFail($id);
 
-        if ($request->has('name')) {
-            $user->name = $request->name;
-        }
-
-        if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        if ($request->has('phone_number')) {
-            $user->phone_number = $request->phone_number;
-        }
-
-        if ($request->has('gender')) {
-            $user->gender = $request->gender;
-        }
+        $user->rfid = $request->has('rfid') ? $request->rfid : $user->rfid;
+        $user->name = $request->has('name') ? $request->name : $user->name;
+        $user->email = $request->has('email') ? $request->email : $user->email;
+        $user->password = $request->has('password') ? Hash::make($request->password) : $user->password;
+        $user->phone_number = $request->has('phone_number') ? $request->phone_number : $user->phone_number;
+        $user->gender = $request->has('gender') ? $request->gender : $user->gender;
 
         $user->save();
-        return response()->json(['status' => 'success']);
+
+        $status = "success";
+        $response = ['user' => $user, 'status' => $status];
+        return response()->json($response);
     }
+
 
     function destroy(Request $request)
     {
