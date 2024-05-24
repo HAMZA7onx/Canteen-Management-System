@@ -18,7 +18,7 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $role = Role::create(['name' => $request->name]);
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'api']);
         return response()->json($role);
     }
 
@@ -54,7 +54,7 @@ class RoleController extends Controller
 
     public function storePermission(Request $request)
     {
-        $permission = Permission::create(['name' => $request->name]);
+        $permission = Permission::create(['name' => $request->name, 'guard_name' => 'api']);
         return response()->json($permission);
     }
 
