@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRolePermissionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{id}', [UserController::class, 'getUserDetails']);
             Route::put('/{id}', [UserController::class, 'update']);
             Route::delete('/{id}', [UserController::class, 'destroy']);
-            Route::get('/getUserRolesNames/{id}', [UserController::class, 'getUserRolesNames']);
+
+            // User Role and Permission routes
+            Route::get('/{user}/roles', [UserRolePermissionController::class, 'getUserRoles']);
+            Route::post('/{user}/roles/{roleId}', [UserRolePermissionController::class, 'assignRole']);
+            Route::delete('/{user}/roles/{roleId}', [UserRolePermissionController::class, 'removeRole']);
+            Route::get('/{user}/permissions', [UserRolePermissionController::class, 'getUserPermissions']);
+            Route::post('/{user}/permissions/{permissionId}', [UserRolePermissionController::class, 'assignPermission']);
+            Route::delete('/{user}/permissions/{permissionId}', [UserRolePermissionController::class, 'removePermission']);
+
         });
 
         Route::prefix('roles')->group(function () {
@@ -28,6 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{role}', [RoleController::class, 'show']);
             Route::put('/{role}', [RoleController::class, 'update']);
             Route::delete('/{role}', [RoleController::class, 'destroy']);
+
+            // Get permissions assigned to a role
+            Route::get('/{role}/permissions', [RoleController::class, 'getRolePermissions']);
+
+            // Assign permissions to a role
+            Route::post('/{role}/permissions/{permissionId}', [RoleController::class, 'assignPermission']);
+            Route::delete('/{role}/permissions/{permissionId}', [RoleController::class, 'removePermission']);
         });
 
         Route::prefix('permissions')->group(function () {
