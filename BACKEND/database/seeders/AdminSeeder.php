@@ -15,6 +15,7 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create a new user
         $user = User::create([
             'rfid' => '1111111111111111lzz',
             'name' => 'hamza meski',
@@ -25,8 +26,10 @@ class AdminSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        $role = Role::create(['name' => 'super admin']);
+        // Create a new role with the 'api' guard
+        $role = Role::create(['name' => 'super admin', 'guard_name' => 'api']);
 
-        $user->assignRole('super admin');
+        // Assign the role to the user with the 'api' guard
+        $user->assignRole($role);
     }
 }
