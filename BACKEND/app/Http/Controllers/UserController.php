@@ -91,14 +91,4 @@ class UserController extends Controller
         $user = User::where('id', $id)->get()->first();
         return response()->json(['user' => $user], 200);
     }
-
-    public function getUserRolesNames($id)
-    {
-        $user = User::find($id);
-        if ($user) {
-            $roles = $user->roles()->select('roles.id as role_id', 'roles.name')->get();
-            return response()->json($roles);
-        }
-        return response()->json(['failed' => 'user id does not exist']);
-    }
 }
