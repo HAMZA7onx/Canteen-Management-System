@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
+use App\Models\Admin;
 
 class AdminSeeder extends Seeder
 {
@@ -16,13 +16,10 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         // Create a new user
-        $user = User::create([
-            'rfid' => '1111111111111111lzz',
+        $user = Admin::create([
             'name' => 'hamza meski',
             'email' => 'meskihamza5@gmail.com',
             'password' => Hash::make('meskihamza5@gmail.com'),
-            'phone_number' => '1234567890',
-            'gender' => 'male',
             'email_verified_at' => now(),
         ]);
 
