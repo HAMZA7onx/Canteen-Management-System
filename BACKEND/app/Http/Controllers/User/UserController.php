@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class UserController extends Controller
     function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'rfid' => 'required|unique:users',
+            'category_id' => 'required|exists:user_category,id',
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8',
@@ -32,12 +33,13 @@ class UserController extends Controller
         }
 
         $user = User::create([
-            'rfid' => $request->rfid,
+            'category_id' => $request->category_id,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'gender' => $request->gender,
+            'api_token' => str_replace('-', '', substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 20)),
         ]);
 
         $status = "success";
@@ -48,7 +50,7 @@ class UserController extends Controller
     function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'rfid' => 'required|unique:users,rfid,' . $id,
+            'category_id' => 'exists:user_category,id',
             'name' => 'string|max:255',
             'email' => 'email|unique:users,email,' . $id,
             'password' => 'string|min:8',
@@ -62,7 +64,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
 
-        $user->rfid = $request->has('rfid') ? $request->rfid : $user->rfid;
+        $user->category_id = $request->has('category_id') ? $request->category_id : $user->category_id;
         $user->name = $request->has('name') ? $request->name : $user->name;
         $user->email = $request->has('email') ? $request->email : $user->email;
         $user->password = $request->has('password') ? Hash::make($request->password) : $user->password;
@@ -75,7 +77,6 @@ class UserController extends Controller
         $response = ['user' => $user, 'status' => $status];
         return response()->json($response);
     }
-
 
     function destroy(Request $request)
     {

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,37 +11,34 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    function register(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'rfid' => 'required|string|unique:users',
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:admins',
             'password' => 'required|string|min:8',
-            'phone_number' => 'nullable|string',
-            'gender' => 'nullable|in:male,female',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = $request->only('rfid', 'name', 'email', 'password', 'phone_number', 'gender');
+        $data = $request->only('name', 'email', 'password');
         $data['password'] = Hash::make($data['password']);
 
-        $user = User::create($data);
+        $admin = Admin::create($data);
 
         $response = [
             'status' => 'success',
-            'message' => 'User is created successfully.',
+            'message' => 'Admin is created successfully.',
             'data' => [
-                'user' => $user,
+                'admin' => $admin,
             ],
         ];
         return response()->json($response);
     }
 
-    function login(Request $request)
+    public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
@@ -53,15 +51,16 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
+        $admin = Admin::where('email', $credentials['email'])->first();
+
+        if ($admin && Hash::check($credentials['password'], $admin->password)) {
+            $token = $admin->createToken('auth_token')->plainTextToken;
 
             $response = [
                 'status' => 'success',
-                'message' => 'User is logged in successfully.',
+                'message' => 'Admin is logged in successfully.',
                 'data' => [
-                    'user' => $user,
+                    'admin' => $admin,
                     'token' => $token,
                 ],
             ];
@@ -73,10 +72,11 @@ class AuthController extends Controller
             ], 401);
         }
     }
-    function logout(Request $request)
+
+    public function logout(Request $request)
     {
-        if (Auth::check()) {
-            Auth::logout();
+        if (Auth::guard('api')->check()) {
+            $request->user()->currentAccessToken()->delete();
             return response()->json(['message' => 'Logged out successfully']);
         } else {
             return response()->json(['error' => 'Not authenticated']);
