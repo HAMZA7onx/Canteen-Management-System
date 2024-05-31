@@ -10,26 +10,42 @@ class MealRecordController extends Controller
 {
     public function index()
     {
-        $mealRecords = MealRecord::all();
+        $mealRecords = MealRecord::with('badge', 'mealSchedule.mealMenu.mealCategory', 'mealSchedule.mealMenu.mealComponents')->get();
         return response()->json($mealRecords);
     }
 
     public function store(Request $request)
     {
-        $mealRecord = MealRecord::create($request->all());
+        $validatedData = $request->validate([
+            'badge_id' => 'required|exists:badges,id',
+            'meal_schedule_id' => 'required|exists:meal_schedules,id',
+            'price_paid' => 'required|numeric',
+            'selected_components' => 'nullable|array',
+            'taken_at' => 'required|date',
+        ]);
+
+        $mealRecord = MealRecord::create($validatedData);
         return response()->json($mealRecord, 201);
     }
 
     public function show($id)
     {
-        $mealRecord = MealRecord::findOrFail($id);
+        $mealRecord = MealRecord::with('badge', 'mealSchedule.mealMenu.mealCategory', 'mealSchedule.mealMenu.mealComponents')->findOrFail($id);
         return response()->json($mealRecord);
     }
 
     public function update(Request $request, $id)
     {
+        $validatedData = $request->validate([
+            'badge_id' => 'required|exists:badges,id',
+            'meal_schedule_id' => 'required|exists:meal_schedules,id',
+            'price_paid' => 'required|numeric',
+            'selected_components' => 'nullable|array',
+            'taken_at' => 'required|date',
+        ]);
+
         $mealRecord = MealRecord::findOrFail($id);
-        $mealRecord->update($request->all());
+        $mealRecord->update($validatedData);
         return response()->json($mealRecord);
     }
 
@@ -37,6 +53,6 @@ class MealRecordController extends Controller
     {
         $mealRecord = MealRecord::findOrFail($id);
         $mealRecord->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Meal record deleted successfully']);
     }
 }

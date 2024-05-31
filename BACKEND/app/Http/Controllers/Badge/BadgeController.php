@@ -16,7 +16,8 @@ class BadgeController extends Controller
 
     public function store(Request $request)
     {
-        $badge = Badge::create($request->all());
+        $validatedData = $request->validate($this->rules());
+        $badge = Badge::create($validatedData);
         return response()->json($badge, 201);
     }
 
@@ -29,7 +30,8 @@ class BadgeController extends Controller
     public function update(Request $request, $id)
     {
         $badge = Badge::findOrFail($id);
-        $badge->update($request->all());
+        $validatedData = $request->validate($this->rules());
+        $badge->update($validatedData);
         return response()->json($badge);
     }
 
@@ -38,5 +40,14 @@ class BadgeController extends Controller
         $badge = Badge::findOrFail($id);
         $badge->delete();
         return response()->json(null, 204);
+    }
+
+    public function rules()
+    {
+        return [
+            'user_id' => 'required|exists:users,id',
+            'rfid' => 'required|string|max:255|unique:badges',
+            'status' => 'required|string|in:active,inactive',
+        ];
     }
 }
