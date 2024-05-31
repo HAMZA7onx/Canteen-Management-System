@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_category', function (Blueprint $table) {
+        Schema::create('meal_components', function (Blueprint $table) {
             $table->id();
-            $table->string('category')->unique();
-            $table->decimal('meal_discount', 5, 2)->unsigned()->default(100.00);
+            $table->foreignId('meal_menu_id')->constrained('meal_menus', 'id');
+            $table->string('component_name');
+            $table->text('description')->nullable();
+            $table->decimal('base_price', 8, 2)->unsigned();
+            $table->boolean('is_required')->default(true);
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_category');
+        Schema::dropIfExists('meal_components');
     }
 };

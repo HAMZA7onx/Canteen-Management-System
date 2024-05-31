@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meal_names', function (Blueprint $table) {
+        Schema::create('meal_schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->foreignId('meal_menu_id')->constrained('meal_menus', 'id');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->integer('persons_taken')->unsigned()->default(0);
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('meal_names');
+        Schema::dropIfExists('meal_schedules');
     }
 };
