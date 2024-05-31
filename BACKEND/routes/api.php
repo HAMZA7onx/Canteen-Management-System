@@ -3,16 +3,16 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminRolesController;
 use App\Http\Controllers\User\UserCategoryController;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\User\UserRolePermissionController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
-use App\Http\Controllers\Meal\MealNameController;
-use App\Http\Controllers\Meal\MealModeController;
-use App\Http\Controllers\Meal\MealItemController;
-use App\Http\Controllers\Meal\MealController;
+use App\Http\Controllers\Meal\MealCategoryController;
+use App\Http\Controllers\Meal\MealMenuController;
+use App\Http\Controllers\Meal\MealComponentController;
+use App\Http\Controllers\Meal\MealScheduleController;
 use App\Http\Controllers\Meal\MealRecordController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -21,20 +21,30 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api'
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:super admin')->group(function () {
+        // Managing Collaborators
         Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
             Route::post('/', [UserController::class, 'store']);
             Route::get('/{id}', [UserController::class, 'getUserDetails']);
             Route::put('/{id}', [UserController::class, 'update']);
             Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
+
+        // Managing Admins
+        Route::prefix('admins')->group(function () {
+            Route::get('/', [AdminController::class, 'index']);
+            Route::post('/', [AdminController::class, 'store']);
+            Route::get('/{id}', [AdminController::class, 'show']);
+            Route::put('/{id}', [AdminController::class, 'update']);
+            Route::delete('/{id}', [AdminController::class, 'destroy']);
 
             // User Roles routes
-            Route::get('/{user}/roles', [UserRolePermissionController::class, 'getUserRoles']);
-            Route::post('/{user}/roles/{roleId}', [UserRolePermissionController::class, 'assignRole']);
-            Route::delete('/{user}/roles/{roleId}', [UserRolePermissionController::class, 'removeRole']);
-            Route::get('/{user}/permissions', [UserRolePermissionController::class, 'getUserPermissions']);
-            Route::post('/{user}/permissions/{permissionId}', [UserRolePermissionController::class, 'assignPermission']);
-            Route::delete('/{user}/permissions/{permissionId}', [UserRolePermissionController::class, 'removePermission']);
+            Route::get('/{admin}/roles', [AdminRolesController::class, 'getAdminRoles']);
+            Route::post('/{admin}/roles/{roleId}', [AdminRolesController::class, 'assignRole']);
+            Route::delete('/{admin}/roles/{roleId}', [AdminRolesController::class, 'removeRole']);
+            Route::get('/{admin}/permissions', [AdminRolesController::class, 'getAdminPermissions']);
+            Route::post('/{admin}/permissions/{permissionId}', [AdminRolesController::class, 'assignPermission']);
+            Route::delete('/{admin}/permissions/{permissionId}', [AdminRolesController::class, 'removePermission']);
         });
 
         Route::prefix('roles')->group(function () {
@@ -61,14 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('admins')->group(function () {
-        Route::get('/', [AdminController::class, 'index']);
-        Route::post('/', [AdminController::class, 'store']);
-        Route::get('/{id}', [AdminController::class, 'show']);
-        Route::put('/{id}', [AdminController::class, 'update']);
-        Route::delete('/{id}', [AdminController::class, 'destroy']);
-    });
-
     Route::prefix('user-categories')->group(function () {
         Route::get('/', [UserCategoryController::class, 'index']);
         Route::post('/', [UserCategoryController::class, 'store']);
@@ -85,36 +87,36 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [BadgeController::class, 'destroy']);
     });
 
-    Route::prefix('meal-names')->group(function () {
-        Route::get('/', [MealNameController::class, 'index']);
-        Route::post('/', [MealNameController::class, 'store']);
-        Route::get('/{id}', [MealNameController::class, 'show']);
-        Route::put('/{id}', [MealNameController::class, 'update']);
-        Route::delete('/{id}', [MealNameController::class, 'destroy']);
+    Route::prefix('meal-categories')->group(function () {
+        Route::get('/', [MealCategoryController::class, 'index']);
+        Route::post('/', [MealCategoryController::class, 'store']);
+        Route::get('/{id}', [MealCategoryController::class, 'show']);
+        Route::put('/{id}', [MealCategoryController::class, 'update']);
+        Route::delete('/{id}', [MealCategoryController::class, 'destroy']);
     });
 
-    Route::prefix('meal-modes')->group(function () {
-        Route::get('/', [MealModeController::class, 'index']);
-        Route::post('/', [MealModeController::class, 'store']);
-        Route::get('/{id}', [MealModeController::class, 'show']);
-        Route::put('/{id}', [MealModeController::class, 'update']);
-        Route::delete('/{id}', [MealModeController::class, 'destroy']);
+    Route::prefix('meal-menus')->group(function () {
+        Route::get('/', [MealMenuController::class, 'index']);
+        Route::post('/', [MealMenuController::class, 'store']);
+        Route::get('/{id}', [MealMenuController::class, 'show']);
+        Route::put('/{id}', [MealMenuController::class, 'update']);
+        Route::delete('/{id}', [MealMenuController::class, 'destroy']);
     });
 
-    Route::prefix('meal-items')->group(function () {
-        Route::get('/', [MealItemController::class, 'index']);
-        Route::post('/', [MealItemController::class, 'store']);
-        Route::get('/{id}', [MealItemController::class, 'show']);
-        Route::put('/{id}', [MealItemController::class, 'update']);
-        Route::delete('/{id}', [MealItemController::class, 'destroy']);
+    Route::prefix('meal-components')->group(function () {
+        Route::get('/', [MealComponentController::class, 'index']);
+        Route::post('/', [MealComponentController::class, 'store']);
+        Route::get('/{id}', [MealComponentController::class, 'show']);
+        Route::put('/{id}', [MealComponentController::class, 'update']);
+        Route::delete('/{id}', [MealComponentController::class, 'destroy']);
     });
 
-    Route::prefix('meals')->group(function () {
-        Route::get('/', [MealController::class, 'index']);
-        Route::post('/', [MealController::class, 'store']);
-        Route::get('/{id}', [MealController::class, 'show']);
-        Route::put('/{id}', [MealController::class, 'update']);
-        Route::delete('/{id}', [MealController::class, 'destroy']);
+    Route::prefix('meal-schedules')->group(function () {
+        Route::get('/', [MealScheduleController::class, 'index']);
+        Route::post('/', [MealScheduleController::class, 'store']);
+        Route::get('/{id}', [MealScheduleController::class, 'show']);
+        Route::put('/{id}', [MealScheduleController::class, 'update']);
+        Route::delete('/{id}', [MealScheduleController::class, 'destroy']);
     });
 
     Route::prefix('meal-records')->group(function () {
