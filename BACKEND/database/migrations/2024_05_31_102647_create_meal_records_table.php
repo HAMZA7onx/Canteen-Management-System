@@ -6,17 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('meal_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('badge_id')->constrained('badges', 'id');
-            $table->foreignId('meal_id')->constrained('meals', 'id');
+            $table->foreignId('meal_schedule_id')->constrained('meal_schedules', 'id');
             $table->decimal('price_paid', 8, 2)->unsigned();
+            $table->json('selected_components')->nullable();
             $table->timestamp('taken_at');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('meal_records');
