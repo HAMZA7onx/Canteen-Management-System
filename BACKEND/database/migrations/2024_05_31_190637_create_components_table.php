@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meal_components', function (Blueprint $table) {
+        Schema::create('components', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('meal_menu_id')->constrained('meal_menus', 'id');
             $table->string('component_name');
             $table->text('description')->nullable();
             $table->decimal('base_price', 8, 2)->unsigned();
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('meal_components');
+        Schema::dropIfExists('components');
     }
 };

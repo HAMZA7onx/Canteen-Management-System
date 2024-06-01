@@ -7,7 +7,7 @@ use App\Models\Admin;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class AdminRolesController extends Controller
+class AdminRolePermissionController extends Controller
 {
     /**
      * Assign a role to an admin.

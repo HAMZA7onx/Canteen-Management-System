@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\AdminRolesController;
+use App\Http\Controllers\Admin\AdminRolePermissionController;
 use App\Http\Controllers\User\UserCategoryController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Role\RoleController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\Meal\MealMenuController;
 use App\Http\Controllers\Meal\MealComponentController;
 use App\Http\Controllers\Meal\MealScheduleController;
 use App\Http\Controllers\Meal\MealRecordController;
+use App\Http\Controllers\Meal\MenuComponentController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
@@ -38,13 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{id}', [AdminController::class, 'update']);
             Route::delete('/{id}', [AdminController::class, 'destroy']);
 
-            // User Roles routes
-            Route::get('/{admin}/roles', [AdminRolesController::class, 'getAdminRoles']);
-            Route::post('/{admin}/roles/{roleId}', [AdminRolesController::class, 'assignRole']);
-            Route::delete('/{admin}/roles/{roleId}', [AdminRolesController::class, 'removeRole']);
-            Route::get('/{admin}/permissions', [AdminRolesController::class, 'getAdminPermissions']);
-            Route::post('/{admin}/permissions/{permissionId}', [AdminRolesController::class, 'assignPermission']);
-            Route::delete('/{admin}/permissions/{permissionId}', [AdminRolesController::class, 'removePermission']);
+            // Admin Roles routes
+            Route::get('/{admin}/roles', [AdminRolePermissionController::class, 'getAdminRoles']);
+            Route::post('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'assignRole']);
+            Route::delete('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'removeRole']);
+            Route::get('/{admin}/permissions', [AdminRolePermissionController::class, 'getAdminPermissions']);
+            Route::post('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'assignPermission']);
+            Route::delete('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'removePermission']);
         });
 
         Route::prefix('roles')->group(function () {
@@ -125,5 +126,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [MealRecordController::class, 'show']);
         Route::put('/{id}', [MealRecordController::class, 'update']);
         Route::delete('/{id}', [MealRecordController::class, 'destroy']);
+    });
+
+
+    Route::prefix('menu-components')->group(function () {
+        Route::get('/', [MenuComponentController::class, 'index']);
+        Route::post('/', [MenuComponentController::class, 'store']);
+        Route::put('/{mealMenuId}', [MenuComponentController::class, 'update']);
+        Route::delete('/{mealMenuId}/{componentId}', [MenuComponentController::class, 'destroy']);
     });
 });

@@ -10,7 +10,7 @@ class MealMenuController extends Controller
 {
     public function index()
     {
-        $mealMenus = MealMenu::with('mealCategory')->get();
+        $mealMenus = MealMenu::all();
         return response()->json($mealMenus);
     }
 
@@ -18,7 +18,7 @@ class MealMenuController extends Controller
     {
         $validatedData = $request->validate([
             'meal_category_id' => 'required|exists:meal_categories,id',
-            'menu_name' => 'required|max:255',
+            'menu_name' => 'required|string',
             'price' => 'required|numeric',
         ]);
 
@@ -28,7 +28,7 @@ class MealMenuController extends Controller
 
     public function show($id)
     {
-        $mealMenu = MealMenu::with('mealCategory', 'mealComponents')->findOrFail($id);
+        $mealMenu = MealMenu::findOrFail($id);
         return response()->json($mealMenu);
     }
 
@@ -36,7 +36,7 @@ class MealMenuController extends Controller
     {
         $validatedData = $request->validate([
             'meal_category_id' => 'required|exists:meal_categories,id',
-            'menu_name' => 'required|max:255',
+            'menu_name' => 'required|string',
             'price' => 'required|numeric',
         ]);
 

@@ -10,7 +10,7 @@ class MealRecordController extends Controller
 {
     public function index()
     {
-        $mealRecords = MealRecord::with('badge', 'mealSchedule.mealMenu.mealCategory', 'mealSchedule.mealMenu.mealComponents')->get();
+        $mealRecords = MealRecord::all();
         return response()->json($mealRecords);
     }
 
@@ -20,7 +20,7 @@ class MealRecordController extends Controller
             'badge_id' => 'required|exists:badges,id',
             'meal_schedule_id' => 'required|exists:meal_schedules,id',
             'price_paid' => 'required|numeric',
-            'selected_components' => 'nullable|array',
+            'selected_components' => 'nullable|json',
             'taken_at' => 'required|date',
         ]);
 
@@ -30,7 +30,7 @@ class MealRecordController extends Controller
 
     public function show($id)
     {
-        $mealRecord = MealRecord::with('badge', 'mealSchedule.mealMenu.mealCategory', 'mealSchedule.mealMenu.mealComponents')->findOrFail($id);
+        $mealRecord = MealRecord::findOrFail($id);
         return response()->json($mealRecord);
     }
 
@@ -40,7 +40,7 @@ class MealRecordController extends Controller
             'badge_id' => 'required|exists:badges,id',
             'meal_schedule_id' => 'required|exists:meal_schedules,id',
             'price_paid' => 'required|numeric',
-            'selected_components' => 'nullable|array',
+            'selected_components' => 'nullable|json',
             'taken_at' => 'required|date',
         ]);
 
