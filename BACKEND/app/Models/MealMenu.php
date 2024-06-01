@@ -14,9 +14,9 @@ class MealMenu extends Model
         return $this->belongsTo(MealCategory::class);
     }
 
-    public function mealComponents()
+    public function components()
     {
-        return $this->hasMany(MealComponent::class);
+        return $this->belongsToMany(Component::class, 'menu_component');
     }
 
     public function mealSchedules()

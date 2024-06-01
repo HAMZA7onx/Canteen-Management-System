@@ -10,7 +10,7 @@ class MealScheduleController extends Controller
 {
     public function index()
     {
-        $mealSchedules = MealSchedule::with('mealMenu.mealCategory')->get();
+        $mealSchedules = MealSchedule::all();
         return response()->json($mealSchedules);
     }
 
@@ -20,7 +20,6 @@ class MealScheduleController extends Controller
             'meal_menu_id' => 'required|exists:meal_menus,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-            'persons_taken' => 'nullable|integer',
         ]);
 
         $mealSchedule = MealSchedule::create($validatedData);
@@ -29,7 +28,7 @@ class MealScheduleController extends Controller
 
     public function show($id)
     {
-        $mealSchedule = MealSchedule::with('mealMenu.mealCategory', 'mealMenu.mealComponents')->findOrFail($id);
+        $mealSchedule = MealSchedule::findOrFail($id);
         return response()->json($mealSchedule);
     }
 
@@ -39,7 +38,6 @@ class MealScheduleController extends Controller
             'meal_menu_id' => 'required|exists:meal_menus,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-            'persons_taken' => 'nullable|integer',
         ]);
 
         $mealSchedule = MealSchedule::findOrFail($id);
