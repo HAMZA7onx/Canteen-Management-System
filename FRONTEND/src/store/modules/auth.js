@@ -3,6 +3,7 @@ import AuthService from '@/services/auth.service';
 const state = {
   user: null,
   isLoggedIn: false,
+  token: null,
 };
 
 const getters = {
