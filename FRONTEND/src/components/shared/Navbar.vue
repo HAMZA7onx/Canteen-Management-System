@@ -6,7 +6,7 @@
           <router-link to="/" class="text-white font-bold">Your Logo</router-link>
         </div>
         <div class="flex items-center">
-          <router-link to="/login" class="text-white hover:text-gray-300 mx-4">Login</router-link>
+          <router-link to="/login" class="text-white hover:text-gray-300 mx-4">Profile</router-link>
           <!-- Add more navigation links as needed -->
         </div>
       </div>
