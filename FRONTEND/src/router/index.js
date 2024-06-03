@@ -4,7 +4,7 @@ import store from '@/store';
 // Import your components and views
 import Login from '@/views/Auth/Login.vue';
 import AuthenticatedLayout from '@/components/shared/AuthenticatedLayout.vue';
-// Import other components and views
+import AdminList from '@/components/Admin/AdminList.vue';
 
 const routes = [
   {
@@ -20,6 +20,11 @@ const routes = [
       // Add your authenticated routes here
       // Example: { path: '/admin', component: AdminView, meta: { requiresAuth: true } },
     ],
+  },
+  {
+    path: '/admins',
+    component: AdminList,
+    meta: { requiresAuth: true },
   },
 ];
 

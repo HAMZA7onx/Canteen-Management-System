@@ -18,11 +18,11 @@ import Sidebar from './Sidebar.vue';
 import Footer from './Footer.vue';
 
 export default {
-name: 'AuthenticatedLayout',
-components: {
-    Navbar,
-    Sidebar,
-    Footer,
-},
+    name: 'AuthenticatedLayout',
+    components: {
+        Navbar,
+        Sidebar,
+        Footer,
+    },
 };
 </script>

@@ -3,7 +3,7 @@
     <div class="w-full max-w-md">
       <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form @submit.prevent="login">
+        <form @submit.prevent="handleLogin">
           <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="email">
               Email
@@ -43,8 +43,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 export default {
   name: 'Login',
   data() {
@@ -56,15 +54,17 @@ export default {
     };
   },
   methods: {
-    ...mapActions('auth', ['login']),
-    async login() {
-      try {
-        await this.login(this.credentials);
-        // Redirect to the desired page after successful login
-      } catch (error) {
-        console.error(error);
-        // Handle login error
-      }
+    handleLogin() {
+      this.$store
+        .dispatch('auth/login', this.credentials)
+        .then(() => {
+          // Redirect to the desired page after successful login
+          this.$router.push('/dashboard');
+        })
+        .catch((error) => {
+          console.error(error);
+          // Handle login error
+        });
     },
   },
 };
