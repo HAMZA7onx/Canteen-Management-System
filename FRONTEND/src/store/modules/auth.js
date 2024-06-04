@@ -9,6 +9,7 @@ const state = {
 const getters = {
   isLoggedIn: (state) => state.isLoggedIn,
   user: (state) => state.user,
+  token: (state) => state.token,
 };
 
 const actions = {

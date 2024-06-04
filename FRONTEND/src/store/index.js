@@ -1,4 +1,6 @@
 import { createStore } from 'vuex';
+import VuexPersistence from 'vuex-persist';
+
 import auth from './modules/auth';
 import admin from './modules/admin';
 import user from './modules/user';
@@ -7,6 +9,11 @@ import permission from './modules/permission';
 import userCategory from './modules/userCategory';
 import badge from './modules/badge';
 import meal from './modules/meal';
+
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+  modules: ['auth'] // Specify the modules you want to persist
+});
 
 const store = createStore({
   modules: {
@@ -19,6 +26,7 @@ const store = createStore({
     badge,
     meal,
   },
+  plugins: [vuexLocal.plugin]
 });
 
 export default store;

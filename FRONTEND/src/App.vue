@@ -19,5 +19,13 @@ export default {
   computed: {
     ...mapGetters('auth', ['isLoggedIn']),
   },
+  // mounted() {
+  //   console.log('isLoggedIn:', this.isLoggedIn);
+  //   console.log('token:', this.token);
+  // },
+  // updated() {
+  //   console.log('isLoggedIn:', this.isLoggedIn);
+  //   console.log('token:', this.token);
+  // }
 };
 </script>

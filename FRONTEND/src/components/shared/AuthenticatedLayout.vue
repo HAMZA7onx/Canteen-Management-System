@@ -8,21 +8,29 @@
         <router-view />
     </main>
     </div>
-    <Footer />
 </div>
 </template>
 
 <script>
+import store from '@/store';
+
+
+
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
-import Footer from './Footer.vue';
 
 export default {
     name: 'AuthenticatedLayout',
     components: {
         Navbar,
         Sidebar,
-        Footer,
     },
+
+    mounted() {
+
+
+        const token = store.getters['auth/token'];
+        console.log('Token:', token);
+    }
 };
 </script>
