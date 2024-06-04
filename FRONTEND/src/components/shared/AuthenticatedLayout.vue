@@ -13,6 +13,11 @@
 </template>
 
 <script>
+// import store from '@/store';
+// const token = store.getters['auth/token'];
+// console.log('Token:', token);
+
+
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
 import Footer from './Footer.vue';

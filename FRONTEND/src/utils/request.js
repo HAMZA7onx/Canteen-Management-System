@@ -6,8 +6,7 @@ const request = axios.create({
   baseURL: '/api'
 })
 
-// Add a request interceptor.interceptors.requ
-requestest.use(config => {
+request.interceptors.request.use(config => {
   // Get the token from the Vuex store
   const token = store.getters['auth/token']
 
@@ -20,3 +19,4 @@ requestest.use(config => {
 })
 
 export default request
+
