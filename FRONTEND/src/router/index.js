@@ -1,30 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '@/store';
-
-// Import your components and views
-import Login from '@/views/Auth/Login.vue';
-import AuthenticatedLayout from '@/components/shared/AuthenticatedLayout.vue';
+import Login from '../views/Auth/Login.vue';
 import AdminList from '@/components/Admin/AdminList.vue';
 
 const routes = [
   {
     path: '/login',
+    name: 'login',
     component: Login,
-    meta: { requiresAuth: false },
+    meta : { requiresAuth: false },
   },
   {
     path: '/',
-    component: AuthenticatedLayout,
+    component: AdminList,
     meta: { requiresAuth: true },
-    children: [
-      // Add your authenticated routes here
-      // Example: { path: '/admin', component: AdminView, meta: { requiresAuth: true } },
-    ],
   },
   {
     path: '/admins',
     component: AdminList,
     meta: { requiresAuth: true },
+    children: [
+      
+    ]
   },
 ];
 
@@ -36,15 +33,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters['auth/isLoggedIn'];
 
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    // If the route requires authentication and the user is not logged in, redirect to the login page
+  if (!to.meta.requiresAuth && !isLoggedIn) {
     next({ path: '/login' });
-  } else if (!to.meta.requiresAuth && isLoggedIn) {
-    // If the route doesn't require authentication and the user is logged in, redirect to the home page
-    next({ path: '/' });
-  } else {
-    // Otherwise, proceed to the requested route
-    next();
+  }else if(to.meta.requiresAuth && isLoggedIn) {
+    next({path: '/admins'});
+
   }
 });
 
