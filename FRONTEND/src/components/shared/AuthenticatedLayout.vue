@@ -1,21 +1,17 @@
 <!-- components/shared/AuthenticatedLayout.vue -->
 <template>
-<div>
-    <Navbar />
-    <div class="flex">
-    <Sidebar />
-    <main class="ml-64 p-4">
-        <router-view />
-    </main>
+    <div>
+        <Navbar />
+        <div class="flex">
+        <Sidebar />
+        <main class="ml-64 p-4">
+            <router-view />
+        </main>
+        </div>
     </div>
-</div>
 </template>
 
 <script>
-import store from '@/store';
-
-
-
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
 
@@ -25,12 +21,5 @@ export default {
         Navbar,
         Sidebar,
     },
-
-    mounted() {
-
-
-        const token = store.getters['auth/token'];
-        console.log('Token:', token);
-    }
 };
 </script>
