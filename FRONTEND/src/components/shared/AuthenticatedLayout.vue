@@ -14,6 +14,7 @@
 <script>
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
+import store from '@/store';
 
 export default {
     name: 'AuthenticatedLayout',
@@ -21,5 +22,15 @@ export default {
         Navbar,
         Sidebar,
     },
+    mounted() {
+        // Access the response value from the auth module
+        const response = store.state.auth;
+        console.log(response);
+    },
+    // updated() {
+    //     // Access the response value from the auth module
+    //     const response = store.state.auth;
+    //     console.log(response);
+    // },
 };
 </script>
