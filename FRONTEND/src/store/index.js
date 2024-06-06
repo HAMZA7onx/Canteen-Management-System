@@ -12,7 +12,7 @@ import meal from './modules/meal';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
-  modules: ['auth'] // Specify the modules you want to persist
+  modules: ['auth', 'role', 'permission'] // Specify the modules you want to persist
 });
 
 const store = createStore({
