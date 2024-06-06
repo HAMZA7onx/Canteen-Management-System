@@ -21,55 +21,53 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware('role:super admin')->group(function () {
-        // Managing Collaborators
-        Route::prefix('users')->group(function () {
-            Route::get('/', [UserController::class, 'index']);
-            Route::post('/', [UserController::class, 'store']);
-            Route::get('/{id}', [UserController::class, 'getUserDetails']);
-            Route::put('/{id}', [UserController::class, 'update']);
-            Route::delete('/{id}', [UserController::class, 'destroy']);
-        });
+    // Managing Collaborators
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('/{id}', [UserController::class, 'getUserDetails']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+    });
 
-        // Managing Admins
-        Route::prefix('admins')->group(function () {
-            Route::get('/', [AdminController::class, 'index']);
-            Route::post('/', [AdminController::class, 'store']);
-            Route::get('/{id}', [AdminController::class, 'show']);
-            Route::put('/{id}', [AdminController::class, 'update']);
-            Route::delete('/{id}', [AdminController::class, 'destroy']);
+    // Managing Admins
+    Route::prefix('admins')->group(function () {
+        Route::get('/', [AdminController::class, 'index']);
+        Route::post('/', [AdminController::class, 'store']);
+        Route::get('/{id}', [AdminController::class, 'show']);
+        Route::put('/{id}', [AdminController::class, 'update']);
+        Route::delete('/{id}', [AdminController::class, 'destroy']);
 
-            // Admin Roles routes
-            Route::get('/{admin}/roles', [AdminRolePermissionController::class, 'getAdminRoles']);
-            Route::post('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'assignRole']);
-            Route::delete('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'removeRole']);
-            Route::get('/{admin}/permissions', [AdminRolePermissionController::class, 'getAdminPermissions']);
-            Route::post('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'assignPermission']);
-            Route::delete('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'removePermission']);
-        });
+        // Admin Roles routes
+        Route::get('/{admin}/roles', [AdminRolePermissionController::class, 'getAdminRoles']);
+        Route::post('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'assignRole']);
+        Route::delete('/{admin}/roles/{roleId}', [AdminRolePermissionController::class, 'removeRole']);
+        Route::get('/{admin}/permissions', [AdminRolePermissionController::class, 'getAdminPermissions']);
+        Route::post('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'assignPermission']);
+        Route::delete('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'removePermission']);
+    });
 
-        Route::prefix('roles')->group(function () {
-            Route::get('/', [RoleController::class, 'index']);
-            Route::post('/', [RoleController::class, 'store']);
-            Route::get('/{role}', [RoleController::class, 'show']);
-            Route::put('/{role}', [RoleController::class, 'update']);
-            Route::delete('/{role}', [RoleController::class, 'destroy']);
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::get('/{role}', [RoleController::class, 'show']);
+        Route::put('/{role}', [RoleController::class, 'update']);
+        Route::delete('/{role}', [RoleController::class, 'destroy']);
 
-            // Get permissions assigned to a role
-            Route::get('/{role}/permissions', [RoleController::class, 'getRolePermissions']);
+        // Get permissions assigned to a role
+        Route::get('/{role}/permissions', [RoleController::class, 'getRolePermissions']);
 
-            // Assign permissions to a role
-            Route::post('/{role}/permissions/{permissionId}', [RoleController::class, 'assignPermission']);
-            Route::delete('/{role}/permissions/{permissionId}', [RoleController::class, 'removePermission']);
-        });
+        // Assign permissions to a role
+        Route::post('/{role}/permissions/{permissionId}', [RoleController::class, 'assignPermission']);
+        Route::delete('/{role}/permissions/{permissionId}', [RoleController::class, 'removePermission']);
+    });
 
-        Route::prefix('permissions')->group(function () {
-            Route::get('/', [PermissionController::class, 'index']);
-            Route::post('/', [PermissionController::class, 'store']);
-            Route::get('/{permission}', [PermissionController::class, 'show']);
-            Route::put('/{permission}', [PermissionController::class, 'update']);
-            Route::delete('/{permission}', [PermissionController::class, 'destroy']);
-        });
+    Route::prefix('permissions')->group(function () {
+        Route::get('/', [PermissionController::class, 'index']);
+        Route::post('/', [PermissionController::class, 'store']);
+        Route::get('/{permission}', [PermissionController::class, 'show']);
+        Route::put('/{permission}', [PermissionController::class, 'update']);
+        Route::delete('/{permission}', [PermissionController::class, 'destroy']);
     });
 
     Route::prefix('user-categories')->group(function () {
@@ -128,7 +126,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [MealRecordController::class, 'destroy']);
     });
 
-
     Route::prefix('menu-components')->group(function () {
         Route::get('/', [MenuComponentController::class, 'index']);
         Route::post('/', [MenuComponentController::class, 'store']);
@@ -136,3 +133,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{mealMenuId}/{componentId}', [MenuComponentController::class, 'destroy']);
     });
 });
+
+
