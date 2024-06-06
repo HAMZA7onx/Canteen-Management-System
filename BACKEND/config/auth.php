@@ -2,8 +2,7 @@
 
 return [
     'defaults' => [
-        'guard' => 'api',
-        'passwords' => 'users',
+        'guard' => 'sanctum', // Use the 'sanctum' guard
     ],
 
     'guards' => [
@@ -15,6 +14,11 @@ return [
         'api' => [
             'driver' => 'sanctum',
             'provider' => 'admins', // Ensure this is 'admins'
+        ],
+
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
         ],
     ],
 

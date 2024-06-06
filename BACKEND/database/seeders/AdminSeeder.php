@@ -24,7 +24,7 @@ class AdminSeeder extends Seeder
         ]);
 
         // Create a new role with the 'api' guard
-        $role = Role::create(['name' => 'super admin', 'guard_name' => 'api']);
+        $role = Role::create(['name' => 'super admin', 'guard_name' => 'sanctum']);
 
         // Assign the role to the user with the 'api' guard
         $user->assignRole($role);

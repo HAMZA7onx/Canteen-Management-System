@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class AuthController extends Controller
 {
@@ -55,6 +57,10 @@ class AuthController extends Controller
 
         if ($admin && Hash::check($credentials['password'], $admin->password)) {
             $token = $admin->createToken('auth_token')->plainTextToken;
+            $adminRoles = $admin->getRoleNames();
+            $adminPermissions = $admin->getAllPermissions();
+            $availableRoles = Role::all();
+            $availablePermissions = Permission::all();
 
             $response = [
                 'status' => 'success',
@@ -62,6 +68,10 @@ class AuthController extends Controller
                 'data' => [
                     'admin' => $admin,
                     'token' => $token,
+                    'roles' => $adminRoles,
+                    'permissions' => $adminPermissions,
+                    'availableRoles' => $availableRoles,
+                    'availablePermissions' => $availablePermissions
                 ],
             ];
             return response()->json($response);

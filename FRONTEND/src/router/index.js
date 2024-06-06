@@ -13,7 +13,7 @@ import MealScheduleList from '@/components/Meal/Schedule/MealScheduleList.vue';
 import MealRecordList from '@/components/Meal/Record/MealRecordList.vue';
 import MenuComponentList from '@/components/Meal/MenuComponent/MenuComponentList.vue';
 
-
+ 
 const routes = [
   { path: '/', component: AdminList },
   { path: '/users', component: UserList },
@@ -37,9 +37,10 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters['auth/isLoggedIn'];
-
-  if (!to.meta.requiresAuth && !isLoggedIn) {
-    next({ path: '/login' });
+  if (to.meta.requiresAuth && !isLoggedIn) {
+      next({ path: '/login' });
+  } else {
+      next();
   }
 });
 

@@ -69,8 +69,7 @@ class AdminRolePermissionController extends Controller
      */
     public function getAdminPermissions(Admin $admin)
     {
-        $permissions = $admin->permissions;
-
+        $permissions = $admin->getAllPermissions();
         return response()->json($permissions);
     }
 }
