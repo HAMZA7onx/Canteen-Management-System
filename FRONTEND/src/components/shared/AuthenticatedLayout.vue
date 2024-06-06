@@ -1,12 +1,12 @@
 <!-- components/shared/AuthenticatedLayout.vue -->
 <template>
-    <div>
+    <div class="h-screen">
         <Navbar />
-        <div class="flex">
-        <Sidebar />
-        <main class="ml-64 p-4">
-            <router-view />
-        </main>
+        <div class="flex h-full">
+            <Sidebar />
+            <main class="ml-64 p-4 bg-red-500 h-full w-full ">
+                <router-view />
+            </main>
         </div>
     </div>
 </template>
@@ -23,14 +23,8 @@ export default {
         Sidebar,
     },
     mounted() {
-        // Access the response value from the auth module
         const response = store.state.auth;
         console.log(response);
     },
-    // updated() {
-    //     // Access the response value from the auth module
-    //     const response = store.state.auth;
-    //     console.log(response);
-    // },
 };
 </script>
