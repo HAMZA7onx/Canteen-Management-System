@@ -21,9 +21,8 @@ export default {
   data() {
     return {
       menuItems: [
-        { label: 'Dashboard', icon: 'dashboard', route: '/' },
+        { label: 'Admins', icon: 'admins', route: '/' },
         { label: 'Users', icon: 'users', route: '/users' },
-        { label: 'Admins', icon: 'admins', route: '/admins' },
         { label: 'Roles', icon: 'roles', route: '/roles' },
         { label: 'Permissions', icon: 'permissions', route: '/permissions' },
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },

@@ -3,11 +3,13 @@
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
-          <router-link to="/" class="text-white font-bold">Your Logo</router-link>
+          <router-link to="/" class="text-white font-bold">DASHBOARD</router-link>
         </div>
         <div class="flex items-center">
-          <router-link to="/logout" class="text-white hover:text-gray-300 mx-4">logout</router-link>
-          <!-- Add more navigation links as needed -->
+          <div class="font-semibold text-white cursor-pointer">
+            PROFILE
+          </div>
+          <!-- <router-link to="/logout" class="text-white hover:text-gray-300 mx-4">logout</router-link> -->
         </div>
       </div>
     </div>
