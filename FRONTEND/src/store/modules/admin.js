@@ -20,6 +20,7 @@ const actions = {
   fetchAdmins({ commit }) {
     return AdminService.getAdmins()
       .then((response) => {
+        console.log('fetchAdmins----------------------------:', response.data);
         commit('SET_ADMINS', response.data);
       })
       .catch((error) => {
@@ -27,19 +28,11 @@ const actions = {
         throw error;
       });
   },
-  fetchAdmin({ commit }, adminId) {
-    return AdminService.getAdmin(adminId)
-      .then((response) => {
-        commit('SET_ADMIN', response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching admin:', error);
-        throw error;
-      });
-  },
+
   createAdmin({ commit }, admin) {
     return AdminService.createAdmin(admin)
       .then((response) => {
+        console.log('createAdmin----------------------------:', response.data);
         commit('ADD_ADMIN', response.data);
       })
       .catch((error) => {
@@ -47,6 +40,7 @@ const actions = {
         throw error;
       });
   },
+
   updateAdmin({ commit }, admin) {
     return AdminService.updateAdmin(admin.id, admin)
       .then((response) => {
@@ -57,6 +51,7 @@ const actions = {
         throw error;
       });
   },
+
   deleteAdmin({ commit }, adminId) {
     return AdminService.deleteAdmin(adminId)
       .then(() => {
@@ -67,6 +62,7 @@ const actions = {
         throw error;
       });
   },
+
   fetchAdminRoles({ commit }, adminId) {
     return AdminService.getAdminRoles(adminId)
       .then((response) => {
@@ -77,6 +73,7 @@ const actions = {
         throw error;
       });
   },
+
   fetchAdminPermissions({ commit }, adminId) {
     return AdminService.getAdminPermissions(adminId)
       .then((response) => {
@@ -87,9 +84,11 @@ const actions = {
         throw error;
       });
   },
+
   fetchAvailableRoles({ commit }) {
     return AdminService.getAvailableRoles()
       .then((response) => {
+        
         commit('SET_AVAILABLE_ROLES', response.data);
       })
       .catch((error) => {
@@ -97,9 +96,11 @@ const actions = {
         throw error;
       });
   },
+
   fetchAvailablePermissions({ commit }) {
     return AdminService.getAvailablePermissions()
       .then((response) => {
+        console.log('fetchAvailablePermissions----------------------------:', response.data);
         commit('SET_AVAILABLE_PERMISSIONS', response.data);
       })
       .catch((error) => {
@@ -107,16 +108,18 @@ const actions = {
         throw error;
       });
   },
+
   assignRole({ commit }, { adminId, roleId }) {
     return AdminService.assignRole(adminId, roleId)
-      .then((response) => {
-        commit('ADD_ASSIGNED_ROLE', response.data);
+      .then(() => {
+        commit('ADD_ASSIGNED_ROLE', roleId);
       })
       .catch((error) => {
         console.error('Error assigning role:', error);
         throw error;
       });
   },
+
   removeRole({ commit }, { adminId, roleId }) {
     return AdminService.removeRole(adminId, roleId)
       .then(() => {
@@ -127,16 +130,18 @@ const actions = {
         throw error;
       });
   },
+
   assignPermission({ commit }, { adminId, permissionId }) {
     return AdminService.assignPermission(adminId, permissionId)
-      .then((response) => {
-        commit('ADD_ASSIGNED_PERMISSION', response.data);
+      .then(() => {
+        commit('ADD_ASSIGNED_PERMISSION', permissionId);
       })
       .catch((error) => {
         console.error('Error assigning permission:', error);
         throw error;
       });
   },
+
   removePermission({ commit }, { adminId, permissionId }) {
     return AdminService.removePermission(adminId, permissionId)
       .then(() => {
@@ -152,9 +157,6 @@ const actions = {
 const mutations = {
   SET_ADMINS(state, admins) {
     state.admins = admins;
-  },
-  SET_ADMIN(state, admin) {
-    state.admins = state.admins.map((a) => (a.id === admin.id ? admin : a));
   },
   ADD_ADMIN(state, admin) {
     state.admins.push(admin);
@@ -177,14 +179,14 @@ const mutations = {
   SET_AVAILABLE_PERMISSIONS(state, permissions) {
     state.availablePermissions = permissions;
   },
-  ADD_ASSIGNED_ROLE(state, role) {
-    state.assignedRoles.push(role);
+  ADD_ASSIGNED_ROLE(state, roleId) {
+    state.assignedRoles.push({ id: roleId });
   },
   REMOVE_ASSIGNED_ROLE(state, roleId) {
     state.assignedRoles = state.assignedRoles.filter((role) => role.id !== roleId);
   },
-  ADD_ASSIGNED_PERMISSION(state, permission) {
-    state.assignedPermissions.push(permission);
+  ADD_ASSIGNED_PERMISSION(state, permissionId) {
+    state.assignedPermissions.push({ id: permissionId });
   },
   REMOVE_ASSIGNED_PERMISSION(state, permissionId) {
     state.assignedPermissions = state.assignedPermissions.filter((permission) => permission.id !== permissionId);
