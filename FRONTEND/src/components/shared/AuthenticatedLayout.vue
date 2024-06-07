@@ -4,7 +4,7 @@
         <Navbar />
         <div class="flex h-full">
             <Sidebar />
-            <main class="ml-64 p-4 bg-red-500 h-full w-full ">
+            <main class="ml-64 p-4 h-full w-full ">
                 <router-view />
             </main>
         </div>
