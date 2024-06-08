@@ -65,34 +65,37 @@
     </div>
 
     <!-- Create Admin Modal -->
-    <Modal
-      v-if="showCreateAdminModal"
-      :show="showCreateAdminModal"
-      @close="closeCreateAdminModal"
-      title="Create Admin"
-    >
-      <AdminForm :admin="{}" @update:admin="createAdmin" />
-    </Modal>
+    <Overlay v-if="showCreateAdminModal">
+      <Modal
+        :show="showCreateAdminModal"
+        @close="closeCreateAdminModal"
+        title="Create Admin"
+      >
+        <AdminForm :admin="{}" @update:admin="createAdmin" />
+      </Modal>
+    </Overlay>
 
     <!-- Edit Admin Modal -->
-    <Modal
-      v-if="showEditAdminModal"
-      :show="showEditAdminModal"
-      @close="closeEditAdminModal"
-      title="Edit Admin"
-    >
-      <AdminForm :admin="selectedAdmin" @update:admin="updateAdmin" />
-    </Modal>
+    <Overlay v-if="showEditAdminModal">
+      <Modal
+        :show="showEditAdminModal"
+        @close="closeEditAdminModal"
+        title="Edit Admin"
+      >
+        <AdminForm :admin="selectedAdmin" @update:admin="updateAdmin" />
+      </Modal>
+    </Overlay>
 
     <!-- Manage Roles/Permissions Modal -->
-    <Modal
-      v-if="showManageRolesPermissionsModal"
-      :show="showManageRolesPermissionsModal"
-      @close="closeManageRolesPermissionsModal"
-      title="Manage Roles/Permissions"
-    >
-      <AdminRolesPermissions :admin="selectedAdmin" />
-    </Modal>
+    <Overlay v-if="showManageRolesPermissionsModal">
+      <Modal
+        :show="showManageRolesPermissionsModal"
+        @close="closeManageRolesPermissionsModal"
+        title="Manage Roles/Permissions"
+      >
+        <AdminRolesPermissions :admin="selectedAdmin" />
+      </Modal>
+    </Overlay>
 
     <!-- Delete Confirmation Modal -->
     <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
@@ -161,11 +164,13 @@
     </div>
   </div>
 </template>
+
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import AdminForm from '@/components/Admin/AdminForm.vue';
 import AdminRolesPermissions from '@/components/Admin/AdminRolesPermissions.vue';
 import Modal from '@/components/shared/Modal.vue';
+import Overlay from '@/components/shared/Overlay.vue'; // Import the Overlay component
 
 export default {
   name: 'AdminList',
@@ -173,6 +178,7 @@ export default {
     AdminForm,
     AdminRolesPermissions,
     Modal,
+    Overlay, // Register the Overlay component
   },
   data() {
     return {
@@ -245,5 +251,3 @@ export default {
   },
 };
 </script>
-
-
