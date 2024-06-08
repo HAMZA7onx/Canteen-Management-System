@@ -1,38 +1,42 @@
-import axios from 'axios';
+import request from '@/utils/request';
 
-const API_URL = 'http://your-api-url.com/api'; // Replace with your actual API URL
+const API_URL = 'http://127.0.0.1:8000/api';
 
 class RoleService {
   getRoles() {
-    return axios.get(`${API_URL}/roles`);
+    return request.get(`${API_URL}/roles`);
   }
 
-  getRole(roleId) {
-    return axios.get(`${API_URL}/roles/${roleId}`);
+  getRole(id) {
+    return request.get(`${API_URL}/roles/${id}`);
   }
 
-  createRole(roleData) {
-    return axios.post(`${API_URL}/roles`, roleData);
+  createRole(role) {
+    return request.post(`${API_URL}/roles`, role);
   }
 
-  updateRole(roleId, roleData) {
-    return axios.put(`${API_URL}/roles/${roleId}`, roleData);
+  updateRole(id, role) {
+    return request.put(`${API_URL}/roles/${id}`, role);
   }
 
-  deleteRole(roleId) {
-    return axios.delete(`${API_URL}/roles/${roleId}`);
+  deleteRole(id) {
+    return request.delete(`${API_URL}/roles/${id}`);
   }
 
   getRolePermissions(roleId) {
-    return axios.get(`${API_URL}/roles/${roleId}/permissions`);
+    return request.get(`${API_URL}/roles/${roleId}/permissions`);
   }
 
-  assignPermissionToRole(roleId, permissionId) {
-    return axios.post(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);
+  getAvailablePermissions() {
+    return request.get(`${API_URL}/permissions`);
   }
 
-  removePermissionFromRole(roleId, permissionId) {
-    return axios.delete(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);
+  assignPermission(roleId, permissionId) {
+    return request.post(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);
+  }
+
+  removePermission(roleId, permissionId) {
+    return request.delete(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);
   }
 }
 

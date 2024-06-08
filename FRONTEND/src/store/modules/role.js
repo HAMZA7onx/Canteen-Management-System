@@ -2,117 +2,131 @@ import RoleService from '@/services/role.service';
 
 const state = {
   roles: [],
-  role: null,
-  rolePermissions: [],
+  assignedPermissions: [],
+  availablePermissions: [],
 };
 
 const getters = {
   roles: (state) => state.roles,
-  role: (state) => state.role,
-  rolePermissions: (state) => state.rolePermissions,
+  assignedPermissions: (state) => state.assignedPermissions,
+  availablePermissions: (state) => state.availablePermissions,
 };
 
 const actions = {
-  async fetchRoles({ commit }) {
-    try {
-      const response = await RoleService.getRoles();
-      commit('setRoles', response.data);
-    } catch (error) {
-      console.error('Error fetching roles:', error);
-    }
+  fetchRoles({ commit }) {
+    return RoleService.getRoles()
+      .then((response) => {
+        commit('SET_ROLES', response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching roles:', error);
+        throw error;
+      });
   },
 
-  async fetchRole({ commit }, roleId) {
-    try {
-      const response = await RoleService.getRole(roleId);
-      commit('setRole', response.data);
-    } catch (error) {
-      console.error('Error fetching role:', error);
-    }
+  createRole({ commit }, role) {
+    return RoleService.createRole(role)
+      .then((response) => {
+        commit('ADD_ROLE', response.data);
+      })
+      .catch((error) => {
+        console.error('Error creating role:', error);
+        throw error;
+      });
   },
 
-  async createRole({ commit }, roleData) {
-    try {
-      const response = await RoleService.createRole(roleData);
-      commit('addRole', response.data);
-    } catch (error) {
-      console.error('Error creating role:', error);
-    }
+  updateRole({ commit }, role) {
+    return RoleService.updateRole(role.id, role)
+      .then((response) => {
+        commit('UPDATE_ROLE', response.data);
+      })
+      .catch((error) => {
+        console.error('Error updating role:', error);
+        throw error;
+      });
   },
 
-  async updateRole({ commit }, { roleId, roleData }) {
-    try {
-      const response = await RoleService.updateRole(roleId, roleData);
-      commit('updateRole', response.data);
-    } catch (error) {
-      console.error('Error updating role:', error);
-    }
+  deleteRole({ commit }, roleId) {
+    return RoleService.deleteRole(roleId)
+      .then(() => {
+        commit('DELETE_ROLE', roleId);
+      })
+      .catch((error) => {
+        console.error('Error deleting role:', error);
+        throw error;
+      });
   },
 
-  async deleteRole({ commit }, roleId) {
-    try {
-      await RoleService.deleteRole(roleId);
-      commit('removeRole', roleId);
-    } catch (error) {
-      console.error('Error deleting role:', error);
-    }
+  fetchRolePermissions({ commit }, roleId) {
+    return RoleService.getRolePermissions(roleId)
+      .then((response) => {
+        commit('SET_ASSIGNED_PERMISSIONS', response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error('Error fetching role permissions:', error);
+        throw error;
+      });
   },
 
-  async fetchRolePermissions({ commit }, roleId) {
-    try {
-      const response = await RoleService.getRolePermissions(roleId);
-      commit('setRolePermissions', response.data);
-    } catch (error) {
-      console.error('Error fetching role permissions:', error);
-    }
+  fetchAvailablePermissions({ commit }) {
+    return RoleService.getAvailablePermissions()
+      .then((response) => {
+        commit('SET_AVAILABLE_PERMISSIONS', response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching available permissions:', error);
+        throw error;
+      });
   },
 
-  async assignPermissionToRole({ commit }, { roleId, permissionId }) {
-    try {
-      await RoleService.assignPermissionToRole(roleId, permissionId);
-      commit('addPermissionToRole', permissionId);
-    } catch (error) {
-      console.error('Error assigning permission to role:', error);
-    }
+  assignPermission({ commit }, { roleId, permissionId }) {
+    return RoleService.assignPermission(roleId, permissionId)
+      .then(() => {
+        commit('ADD_ASSIGNED_PERMISSION', permissionId);
+      })
+      .catch((error) => {
+        console.error('Error assigning permission:', error);
+        throw error;
+      });
   },
 
-  async removePermissionFromRole({ commit }, { roleId, permissionId }) {
-    try {
-      await RoleService.removePermissionFromRole(roleId, permissionId);
-      commit('removePermissionFromRole', permissionId);
-    } catch (error) {
-      console.error('Error removing permission from role:', error);
-    }
+  removePermission({ commit }, { roleId, permissionId }) {
+    return RoleService.removePermission(roleId, permissionId)
+      .then(() => {
+        commit('REMOVE_ASSIGNED_PERMISSION', permissionId);
+      })
+      .catch((error) => {
+        console.error('Error removing permission:', error);
+        throw error;
+      });
   },
 };
 
 const mutations = {
-  setRoles(state, roles) {
+  SET_ROLES(state, roles) {
     state.roles = roles;
   },
-  setRole(state, role) {
-    state.role = role;
-  },
-  addRole(state, role) {
+  ADD_ROLE(state, role) {
     state.roles.push(role);
   },
-  updateRole(state, updatedRole) {
-    const index = state.roles.findIndex((role) => role.id === updatedRole.id);
-    if (index !== -1) {
-      state.roles.splice(index, 1, updatedRole);
-    }
+  UPDATE_ROLE(state, updatedRole) {
+    state.roles = state.roles.map((role) => (role.id === updatedRole.id ? updatedRole : role));
   },
-  removeRole(state, roleId) {
+  DELETE_ROLE(state, roleId) {
     state.roles = state.roles.filter((role) => role.id !== roleId);
   },
-  setRolePermissions(state, permissions) {
-    state.rolePermissions = permissions;
+  SET_ASSIGNED_PERMISSIONS(state, permissions) {
+    state.assignedPermissions = permissions;
   },
-  addPermissionToRole(state, permissionId) {
-    state.rolePermissions.push(permissionId);
+  SET_AVAILABLE_PERMISSIONS(state, permissions) {
+    state.availablePermissions = permissions;
   },
-  removePermissionFromRole(state, permissionId) {
-    state.rolePermissions = state.rolePermissions.filter((id) => id !== permissionId);
+  ADD_ASSIGNED_PERMISSION(state, permissionId) {
+    state.assignedPermissions.push({ id: permissionId });
+  },
+  REMOVE_ASSIGNED_PERMISSION(state, permissionId) {
+    state.assignedPermissions = state.assignedPermissions.filter((permission) => permission.id !== permissionId);
   },
 };
 
