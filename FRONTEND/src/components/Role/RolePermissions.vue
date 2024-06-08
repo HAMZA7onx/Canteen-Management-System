@@ -62,6 +62,7 @@ export default {
   mounted() {
     this.fetchRolePermissions();
     this.fetchAvailablePermissions();
+    console.log('testing');
   },
   methods: {
     ...mapActions('role', ['fetchRolePermissions', 'assignPermission', 'removePermission', 'fetchAvailablePermissions']),
