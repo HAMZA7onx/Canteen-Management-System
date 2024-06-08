@@ -70,9 +70,9 @@ export default {
     this.fetchAdminRolesPermissions();
     this.fetchAvailableRoles();
   },
-  mounted() {
-    console.log('Assigned Roles:', this.fetchedAssignedRoles);
-  },
+  // mounted() {
+  //   console.log('Assigned Roles:', this.fetchedAssignedRoles);
+  // },
   methods: {
     ...mapActions('admin', ['fetchAdminRoles', 'fetchAvailableRoles', 'assignRole', 'removeRole']),
     fetchAdminRolesPermissions() {
