@@ -1,4 +1,4 @@
-<template>
+  <template>
     <footer class="bg-gray-800 py-4">
       <div class="container mx-auto text-center text-white">
         &copy; {{ currentYear }} Your Company Name

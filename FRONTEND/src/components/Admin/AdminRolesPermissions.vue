@@ -7,7 +7,7 @@
         <div class="mb-4">
           <ul class="space-y-2">
             <li
-              v-for="role in assignedRoles"
+              v-for="role in fetchedAssignedRoles"
               :key="role.id"
               class="flex justify-between items-center bg-gray-100 rounded-md px-4 py-2"
             >
@@ -57,7 +57,10 @@
           </ul>
         </div>
         <div class="flex items-center">
-          <select v-model="selectedPermission" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2">
+          <select
+            v-model="selectedPermission"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
+          >
             <option value="">Select a permission</option>
             <option v-for="permission in availablePermissions.permissions" :key="permission.id" :value="permission.id">{{ permission.name }}</option>
           </select>
@@ -88,6 +91,8 @@ export default {
     return {
       selectedRole: '',
       selectedPermission: '',
+      fetchedAssignedRoles: [],
+      fetchedAssignedPermissions: [],
     };
   },
   computed: {
@@ -98,8 +103,8 @@ export default {
     this.fetchAvailableRolesPermissions();
   },
   mounted() {
-    console.log('Available h Permissions:', this.availablePermissions);
-    console.log('Assigned Roles:', this.assignedRoles);
+    // console.log('Available Permissions:', this.availablePermissions);
+    console.log('Assigned Roles:', this.fetchedAssignedRoles);
   },
   methods: {
     ...mapActions('admin', [
@@ -113,8 +118,21 @@ export default {
       'removePermission',
     ]),
     fetchAdminRolesPermissions() {
-      this.fetchAdminRoles(this.admin.id);
-      this.fetchAdminPermissions(this.admin.id);
+      this.fetchAdminRoles(this.admin.id)
+        .then((response) => {
+          this.fetchedAssignedRoles = response;
+        })
+        .catch((error) => {
+          console.error('Error fetching admin roles:', error);
+        });
+
+      this.fetchAdminPermissions(this.admin.id)
+        .then((response) => {
+          this.fetchedAssignedPermissions = response.data;
+        })
+        .catch((error) => {
+          console.error('Error fetching admin permissions:', error);
+        });
     },
     fetchAvailableRolesPermissions() {
       this.fetchAvailableRoles();
@@ -125,6 +143,7 @@ export default {
         this.$store.dispatch('admin/assignRole', { adminId: this.admin.id, roleId: this.selectedRole })
           .then(() => {
             this.selectedRole = '';
+            this.fetchAdminRolesPermissions(); // Fetch updated assigned roles and permissions
           })
           .catch((error) => {
             console.error('Error assigning role:', error);
@@ -132,14 +151,17 @@ export default {
       }
     },
     removeRole(role) {
-      this.removeRole({ adminId: this.admin.id, roleId: role.id })
+      this.$store.dispatch('admin/removeRole', { adminId: this.admin.id, roleId: role.id })
+        .then(() => {
+          this.fetchAdminRolesPermissions(); // Fetch updated assigned roles and permissions
+        })
         .catch((error) => {
           console.error('Error removing role:', error);
         });
     },
     assignPermission() {
       if (this.selectedPermission) {
-        this.assignPermission({ adminId: this.admin.id, permissionId: this.selectedPermission })
+        this.$store.dispatch('admin/assignPermission', { adminId: this.admin.id, permissionId: this.selectedPermission })
           .then(() => {
             this.selectedPermission = '';
           })
@@ -149,7 +171,7 @@ export default {
       }
     },
     removePermission(permission) {
-      this.removePermission({ adminId: this.admin.id, permissionId: permission.id })
+      this.$store.dispatch('admin/removePermission', { adminId: this.admin.id, permissionId: permission.id })
         .catch((error) => {
           console.error('Error removing permission:', error);
         });

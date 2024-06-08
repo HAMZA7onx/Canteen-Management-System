@@ -67,6 +67,8 @@ const actions = {
     return AdminService.getAdminRoles(adminId)
       .then((response) => {
         commit('SET_ASSIGNED_ROLES', response.data);
+        console.log('fetchAdminRoles----------------------------:', response.data);
+        return response.data; // Return the fetched data
       })
       .catch((error) => {
         console.error('Error fetching admin roles:', error);
@@ -78,6 +80,7 @@ const actions = {
     return AdminService.getAdminPermissions(adminId)
       .then((response) => {
         commit('SET_ASSIGNED_PERMISSIONS', response.data);
+        return response.data; // Return the fetched data
       })
       .catch((error) => {
         console.error('Error fetching admin permissions:', error);
@@ -100,7 +103,6 @@ const actions = {
   fetchAvailablePermissions({ commit }) {
     return AdminService.getAvailablePermissions()
       .then((response) => {
-        console.log('fetchAvailablePermissions----------------------------:', response.data);
         commit('SET_AVAILABLE_PERMISSIONS', response.data);
       })
       .catch((error) => {
