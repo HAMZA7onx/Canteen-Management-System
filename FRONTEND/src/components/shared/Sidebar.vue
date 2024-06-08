@@ -4,7 +4,20 @@
       <h2 class="text-xl font-bold mb-4">Menu</h2>
       <nav>
         <ul>
-          <li v-for="item in menuItems" :key="item.label" class="mb-2">
+          <li v-for="item in menuItems" :key="item.label" class="mb-2 flex items-center">
+            <svg
+              class="mr-2 text-gray-400 h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
             <router-link :to="item.route" class="hover:text-gray-300">
               <i :class="item.icon"></i> {{ item.label }}
             </router-link>
