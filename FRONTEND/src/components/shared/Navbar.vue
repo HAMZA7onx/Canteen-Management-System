@@ -1,16 +1,14 @@
 <template>
-  <nav class="bg-gray-800 fixed left-0 right-0 top-0">
-    <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center">
-          <router-link to="/" class="text-white font-bold">DASHBOARD</router-link>
-        </div>
-        <div class="flex items-center">
-          <div class="font-semibold text-white cursor-pointer">
-            PROFILE
-          </div>
-          <!-- <router-link to="/logout" class="text-white hover:text-gray-300 mx-4">logout</router-link> -->
-        </div>
+  <nav class="bg-white shadow-md fixed left-0 right-0 top-0 z-10">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <router-link to="/" class="text-gray-800 font-bold text-xl">DASHBOARD</router-link>
+      <div class="flex items-center">
+        <div class="font-semibold text-gray-800 cursor-pointer mr-4">PROFILE</div>
+        <router-link
+          to="/logout"
+          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
+          >Logout</router-link
+        >
       </div>
     </div>
   </nav>

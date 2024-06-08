@@ -1,10 +1,13 @@
 <template>
-  <aside class="bg-gray-800 text-white h-screen w-64 fixed">
+  <aside class="bg-gray-800 text-white h-screen w-64 fixed pt-16">
     <div class="p-4">
-      <h2 class="text-xl font-bold mb-4">Menu</h2>
       <nav>
         <ul>
-          <li v-for="item in menuItems" :key="item.label" class="mb-2 flex items-center">
+          <li
+            v-for="item in menuItems"
+            :key="item.label"
+            class="mb-2 flex items-center hover:bg-gray-700 rounded-md transition-colors duration-200"
+          >
             <svg
               class="mr-2 text-gray-400 h-5 w-5"
               fill="none"
@@ -18,7 +21,7 @@
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            <router-link :to="item.route" class="hover:text-gray-300">
+            <router-link :to="item.route" class="flex-grow hover:text-white">
               <i :class="item.icon"></i> {{ item.label }}
             </router-link>
           </li>

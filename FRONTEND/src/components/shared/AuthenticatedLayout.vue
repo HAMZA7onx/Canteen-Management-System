@@ -1,10 +1,9 @@
-<!-- components/shared/AuthenticatedLayout.vue -->
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
-      <div class="flex flex-grow ">
+      <div class="flex flex-grow">
         <Sidebar />
-        <main class="ml-64 p-4 h-full w-full overflow-auto mt-10">
+        <main class="ml-64 mt-14 p-6 flex-grow overflow-auto">
           <router-view />
         </main>
       </div>
@@ -30,3 +29,4 @@
     },
   };
   </script>
+  
