@@ -56,7 +56,7 @@
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 @click="openManageRolesPermissionsModal(admin)"
               >
-                Manage Roles/Permissions
+                Manage Roles
               </button>
             </td>
           </tr>
