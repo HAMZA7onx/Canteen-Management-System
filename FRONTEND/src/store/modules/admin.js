@@ -20,6 +20,7 @@ const actions = {
   fetchAdmins({ commit }) {
     return AdminService.getAdmins()
       .then((response) => {
+        console.log('fetchAdmins', response.data);
         commit('SET_ADMINS', response.data);
       })
       .catch((error) => {
