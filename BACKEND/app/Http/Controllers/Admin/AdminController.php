@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 
 class AdminController extends Controller
 {
@@ -16,7 +19,27 @@ class AdminController extends Controller
 
     public function store(Request $request)
     {
-        $admin = Admin::create($request->all());
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Hash the password
+        $hashedPassword = Hash::make($request->password);
+
+        // Create the admin
+        $admin = Admin::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $hashedPassword,
+        ]);
+
         return response()->json($admin, 201);
     }
 
@@ -29,7 +52,28 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $admin = Admin::findOrFail($id);
-        $admin->update($request->all());
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins,email,' . $admin->id,
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Hash the password if it's provided
+        $hashedPassword = $request->filled('password') ? Hash::make($request->password) : $admin->password;
+
+        // Update the admin
+        $admin->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $hashedPassword,
+        ]);
+
         return response()->json($admin);
     }
 

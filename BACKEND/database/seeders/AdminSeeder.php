@@ -23,10 +23,10 @@ class AdminSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Create a new role with the 'api' guard
-        $role = Role::create(['name' => 'super admin', 'guard_name' => 'sanctum']);
-
-        // Assign the role to the user with the 'api' guard
-        $user->assignRole($role);
+//        // Create a new role with the 'api' guard
+//        $role = Role::create(['name' => 'super admin', 'guard_name' => 'sanctum']);
+//
+//        // Assign the role to the user with the 'api' guard
+//        $user->assignRole($role);
     }
 }

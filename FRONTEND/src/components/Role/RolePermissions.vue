@@ -40,7 +40,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import RoleService from '@/services/role.service';
 
 export default {
   name: 'RolePermissions',
