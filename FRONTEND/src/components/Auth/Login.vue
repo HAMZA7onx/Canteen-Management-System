@@ -57,10 +57,6 @@ export default {
     handleLogin() {
       this.$store
         .dispatch('auth/login', this.credentials)
-        .then(() => {
-          // Redirect to the desired page after successful login
-          this.$router.push('/dashboard');
-        })
         .catch((error) => {
           console.error(error);
           // Handle login error
