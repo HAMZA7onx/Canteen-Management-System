@@ -4,18 +4,33 @@
       <router-link to="/" class="text-gray-800 font-bold text-xl">DASHBOARD</router-link>
       <div class="flex items-center">
         <div class="font-semibold text-gray-800 cursor-pointer mr-4">PROFILE</div>
-        <router-link
-          to="/logout"
+        <button
+          @click="handleLogout"
           class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
-          >Logout</router-link
         >
+          Logout
+        </button>
       </div>
     </div>
   </nav>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'Navbar',
+  methods: {
+    ...mapActions('auth', ['logout']),
+    async handleLogout() {
+      try {
+        await this.logout();
+      
+      } catch (error) {
+        console.error('Error during logout:', error);
+        // Handle the error as needed
+      }
+    },
+  },
 };
 </script>
