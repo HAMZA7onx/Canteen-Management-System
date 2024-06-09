@@ -18,9 +18,10 @@ use App\Http\Controllers\Meal\MenuComponentController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+
     // Managing Collaborators
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
