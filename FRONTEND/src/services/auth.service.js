@@ -9,7 +9,6 @@ class AuthService {
   }
 
   logout() {
-    // return axios.post(`${API_URL}/logout`);
     return request.post(`${API_URL}/logout`);
   }
 }

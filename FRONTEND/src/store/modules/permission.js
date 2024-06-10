@@ -2,78 +2,70 @@ import PermissionService from '@/services/permission.service';
 
 const state = {
   permissions: [],
-  permission: null,
 };
 
 const getters = {
   permissions: (state) => state.permissions,
-  permission: (state) => state.permission,
 };
 
 const actions = {
-  async fetchPermissions({ commit }) {
-    try {
-      const response = await PermissionService.getPermissions();
-      commit('setPermissions', response.data);
-    } catch (error) {
-      console.error('Error fetching permissions:', error);
-    }
+  fetchPermissions({ commit }) {
+    return PermissionService.getPermissions()
+      .then((response) => {
+        commit('SET_PERMISSIONS', response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching permissions:', error);
+        throw error;
+      });
   },
 
-  async fetchPermission({ commit }, permissionId) {
-    try {
-      const response = await PermissionService.getPermission(permissionId);
-      commit('setPermission', response.data);
-    } catch (error) {
-      console.error('Error fetching permission:', error);
-    }
+  createPermission({ commit }, permission) {
+    return PermissionService.createPermission(permission)
+      .then((response) => {
+        commit('ADD_PERMISSION', response.data);
+      })
+      .catch((error) => {
+        console.error('Error creating permission:', error);
+        throw error;
+      });
   },
 
-  async createPermission({ commit }, permissionData) {
-    try {
-      const response = await PermissionService.createPermission(permissionData);
-      commit('addPermission', response.data);
-    } catch (error) {
-      console.error('Error creating permission:', error);
-    }
+  updatePermission({ commit }, permission) {
+    return PermissionService.updatePermission(permission.id, permission)
+      .then((response) => {
+        commit('UPDATE_PERMISSION', response.data);
+      })
+      .catch((error) => {
+        console.error('Error updating permission:', error);
+        throw error;
+      });
   },
 
-  async updatePermission({ commit }, { permissionId, permissionData }) {
-    try {
-      const response = await PermissionService.updatePermission(permissionId, permissionData);
-      commit('updatePermission', response.data);
-    } catch (error) {
-      console.error('Error updating permission:', error);
-    }
-  },
-
-  async deletePermission({ commit }, permissionId) {
-    try {
-      await PermissionService.deletePermission(permissionId);
-      commit('removePermission', permissionId);
-    } catch (error) {
-      console.error('Error deleting permission:', error);
-    }
+  deletePermission({ commit }, permissionId) {
+    return PermissionService.deletePermission(permissionId)
+      .then(() => {
+        commit('DELETE_PERMISSION', permissionId);
+      })
+      .catch((error) => {
+        console.error('Error deleting permission:', error);
+        throw error;
+      });
   },
 };
 
 const mutations = {
-  setPermissions(state, permissions) {
+  SET_PERMISSIONS(state, permissions) {
     state.permissions = permissions;
   },
-  setPermission(state, permission) {
-    state.permission = permission;
-  },
-  addPermission(state, permission) {
+  ADD_PERMISSION(state, permission) {
     state.permissions.push(permission);
   },
-  updatePermission(state, updatedPermission) {
-    const index = state.permissions.findIndex((permission) => permission.id === updatedPermission.id);
-    if (index !== -1) {
-      state.permissions.splice(index, 1, updatedPermission);
-    }
+  UPDATE_PERMISSION(state, updatedPermission) {
+    state.permissions = state.permissions.map((permission) => (permission.id === updatedPermission.id ? updatedPermission : permission));
   },
-  removePermission(state, permissionId) {
+  DELETE_PERMISSION(state, permissionId) {
+    console.log(state, permissionId);
     state.permissions = state.permissions.filter((permission) => permission.id !== permissionId);
   },
 };
