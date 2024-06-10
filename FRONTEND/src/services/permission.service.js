@@ -1,26 +1,26 @@
-import axios from 'axios';
+import request from '@/utils/request';
 
-const API_URL = 'http://your-api-url.com/api'; // Replace with your actual API URL
+const API_URL = 'http://127.0.0.1:8000/api';
 
 class PermissionService {
   getPermissions() {
-    return axios.get(`${API_URL}/permissions`);
+    return request.get(`${API_URL}/permissions`);
   }
 
-  getPermission(permissionId) {
-    return axios.get(`${API_URL}/permissions/${permissionId}`);
+  getPermission(id) {
+    return request.get(`${API_URL}/permissions/${id}`);
   }
 
-  createPermission(permissionData) {
-    return axios.post(`${API_URL}/permissions`, permissionData);
+  createPermission(permission) {
+    return request.post(`${API_URL}/permissions`, permission);
   }
 
-  updatePermission(permissionId, permissionData) {
-    return axios.put(`${API_URL}/permissions/${permissionId}`, permissionData);
+  updatePermission(id, permission) {
+    return request.put(`${API_URL}/permissions/${id}`, permission);
   }
 
-  deletePermission(permissionId) {
-    return axios.delete(`${API_URL}/permissions/${permissionId}`);
+  deletePermission(id) {
+    return request.delete(`${API_URL}/permissions/${id}`);
   }
 }
 
