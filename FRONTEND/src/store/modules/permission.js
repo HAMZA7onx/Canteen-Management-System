@@ -23,6 +23,7 @@ const actions = {
   createPermission({ commit }, permission) {
     return PermissionService.createPermission(permission)
       .then((response) => {
+        console.log('ADD_PERMISSION: ', response.data);
         commit('ADD_PERMISSION', response.data);
       })
       .catch((error) => {

@@ -1,5 +1,7 @@
 import AdminService from '@/services/admin.service';
 
+console.log('admin module');
+
 const state = {
   admins: [],
   assignedRoles: [],
