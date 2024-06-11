@@ -1,5 +1,7 @@
 import RoleService from '@/services/role.service';
 
+console.log('role module');
+
 const state = {
   roles: [],
   assignedPermissions: [],

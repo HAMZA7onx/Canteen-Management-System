@@ -23,7 +23,13 @@
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Actions
+              edit
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              delete
             </th>
           </tr>
         </thead>
@@ -37,6 +43,8 @@
               >
                 Edit
               </button>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="deletePermission(permission)"
