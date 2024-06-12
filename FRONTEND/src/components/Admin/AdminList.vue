@@ -39,7 +39,7 @@
           <tr v-for="admin in admins" :key="admin.id">
             <td class="px-6 py-4 whitespace-nowrap">{{ admin.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ admin.email }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
               <button
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditAdminModal(admin)"

@@ -46,12 +46,9 @@ export default {
         { label: 'Permissions', icon: 'permissions', route: '/permissions' },
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Badges', icon: 'badges', route: '/badges' },
-        { label: 'Meal Categories', icon: 'meal-categories', route: '/meal-categories' },
         { label: 'Meal Menus', icon: 'meal-menus', route: '/meal-menus' },
-        { label: 'Meal Components', icon: 'meal-components', route: '/meal-components' },
         { label: 'Meal Schedules', icon: 'meal-schedules', route: '/meal-schedules' },
         { label: 'Meal Records', icon: 'meal-records', route: '/meal-records' },
-        { label: 'Menu Components', icon: 'menu-components', route: '/menu-components' },
       ],
     };
   },
