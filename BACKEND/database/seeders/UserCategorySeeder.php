@@ -27,8 +27,7 @@ class UserCategorySeeder extends Seeder
 
         foreach ($categories as $category) {
             UserCategory::create([
-                'category' => $category,
-                'meal_discount' => $faker->randomElement([80.00, 90.00, 95.00, 100.00]),
+                'name' => $category,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

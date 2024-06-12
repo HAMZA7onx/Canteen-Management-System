@@ -19,8 +19,6 @@ class MealRecordController extends Controller
         $validatedData = $request->validate([
             'badge_id' => 'required|exists:badges,id',
             'meal_schedule_id' => 'required|exists:meal_schedules,id',
-            'price_paid' => 'required|numeric',
-            'selected_components' => 'nullable|json',
             'taken_at' => 'required|date',
         ]);
 
@@ -39,8 +37,6 @@ class MealRecordController extends Controller
         $validatedData = $request->validate([
             'badge_id' => 'required|exists:badges,id',
             'meal_schedule_id' => 'required|exists:meal_schedules,id',
-            'price_paid' => 'required|numeric',
-            'selected_components' => 'nullable|json',
             'taken_at' => 'required|date',
         ]);
 

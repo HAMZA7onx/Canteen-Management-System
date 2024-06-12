@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('meal_menus', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('meal_category_id')->constrained('meal_categories', 'id');
             $table->string('menu_name');
+            $table->text('description');
             $table->decimal('price', 8, 2)->unsigned();
             $table->timestamps();
         });

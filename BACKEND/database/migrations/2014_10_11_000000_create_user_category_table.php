@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_category', function (Blueprint $table) {
             $table->id();
-            $table->string('category')->unique();
-            $table->decimal('meal_discount', 5, 2)->unsigned()->default(100.00);
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }

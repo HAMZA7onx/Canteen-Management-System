@@ -18,6 +18,7 @@ class MealScheduleController extends Controller
     {
         $validatedData = $request->validate([
             'meal_menu_id' => 'required|exists:meal_menus,id',
+            'date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
@@ -36,6 +37,7 @@ class MealScheduleController extends Controller
     {
         $validatedData = $request->validate([
             'meal_menu_id' => 'required|exists:meal_menus,id',
+            'date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);

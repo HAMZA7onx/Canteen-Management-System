@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MealRecord extends Model
 {
     protected $table = 'meal_records';
-    protected $fillable = ['badge_id', 'meal_schedule_id', 'price_paid', 'selected_components', 'taken_at'];
+    protected $fillable = ['badge_id', 'meal_schedule_id', 'taken_at'];
 
     protected $casts = [
         'selected_components' => 'array',

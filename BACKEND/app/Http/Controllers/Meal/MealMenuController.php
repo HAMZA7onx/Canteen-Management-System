@@ -17,8 +17,8 @@ class MealMenuController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'meal_category_id' => 'required|exists:meal_categories,id',
             'menu_name' => 'required|string',
+            'description' => 'required',
             'price' => 'required|numeric',
         ]);
 
@@ -35,8 +35,8 @@ class MealMenuController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'meal_category_id' => 'required|exists:meal_categories,id',
             'menu_name' => 'required|string',
+            'description' => 'required',
             'price' => 'required|numeric',
         ]);
 

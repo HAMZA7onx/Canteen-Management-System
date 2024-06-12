@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MealSchedule extends Model
 {
     protected $table = 'meal_schedules';
-    protected $fillable = ['meal_menu_id', 'start_time', 'end_time', 'persons_taken'];
+    protected $fillable = ['meal_menu_id', 'date', 'start_time', 'end_time', 'persons_taken'];
 
     public function mealMenu()
     {
@@ -17,5 +17,10 @@ class MealSchedule extends Model
     public function mealRecords()
     {
         return $this->hasMany(MealRecord::class);
+    }
+
+    public function categoryDiscounts()
+    {
+        return $this->hasMany(CategoryDiscount::class);
     }
 }
