@@ -165,6 +165,7 @@
     </div>
   </template>
   
+  
   <script>
   import { mapGetters, mapActions } from 'vuex';
   import UserForm from '@/components/User/UserForm.vue';
@@ -197,7 +198,7 @@
       console.log('Users:', this.users);
     },
     methods: {
-      ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser']),
+      ...mapActions('user', ['fetchUsers', 'createUser', 'deleteUser']),
       openCreateUserModal() {
         this.showCreateUserModal = true;
       },
