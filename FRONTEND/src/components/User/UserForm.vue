@@ -86,16 +86,19 @@
       ...mapGetters('userCategory', ['userCategories']),
     },
     created() {
-        console.log('from userForm.vue: ',this.user.name);
-      this.isEditMode = !!this.user.id;
-      this.reactiveUser = { ...this.user };
-      this.fetchUserCategories();
+        console.log('1.from userForm.vue: ',this.user);
+        this.isEditMode = !!this.user.id;
+        this.reactiveUser = { ...this.user };
+
+        this.fetchUserCategories();
     },
     methods: {
       ...mapActions('user', ['createUser', 'updateUser']),
       ...mapActions('userCategory', ['fetchUserCategories']),
       submitForm() {
         if (this.isEditMode) {
+            console.log('2.from userForm.vue: ',this.reactiveUser);
+
           this.updateUser(this.reactiveUser)
             .then(() => {
               this.$emit('update-user', null);

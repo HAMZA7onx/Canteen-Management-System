@@ -30,6 +30,8 @@ const actions = {
       });
   },
   updateUser({ commit }, user) {
+    console.log('3.User from user module:', user);
+
     return UserService.updateUser(user.id, user)
     .then((response) => {
       commit('UPDATE_USER', response.data.user);
