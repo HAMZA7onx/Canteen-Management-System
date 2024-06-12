@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('badge_id')->constrained('badges', 'id');
             $table->foreignId('meal_schedule_id')->constrained('meal_schedules', 'id');
-            $table->decimal('price_paid', 8, 2)->unsigned();
-            $table->json('selected_components')->nullable();
             $table->timestamp('taken_at');
         });
     }

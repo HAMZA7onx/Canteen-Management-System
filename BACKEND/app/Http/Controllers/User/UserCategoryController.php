@@ -16,20 +16,24 @@ class UserCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $userCategory = UserCategory::create($request->all());
+        $userCategory = UserCategory::create([
+            'name' => $request->input('name'),
+        ]);
         return response()->json($userCategory, 201);
-    }
-
-    public function show($id)
-    {
-        $userCategory = UserCategory::findOrFail($id);
-        return response()->json($userCategory);
     }
 
     public function update(Request $request, $id)
     {
         $userCategory = UserCategory::findOrFail($id);
-        $userCategory->update($request->all());
+        $userCategory->update([
+            'name' => $request->input('name'),
+        ]);
+        return response()->json($userCategory);
+    }
+
+    public function show($id)
+    {
+        $userCategory = UserCategory::findOrFail($id);
         return response()->json($userCategory);
     }
 
