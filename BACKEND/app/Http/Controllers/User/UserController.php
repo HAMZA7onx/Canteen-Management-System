@@ -10,11 +10,10 @@ class UserController extends Controller
 {
     function index()
     {
-        $users = User::with('category')->get();
+        $users = User::with('category')->latest()->get();
         return response()->json($users);
     }
-
-    function store(Request $request)
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:user_category,id',
@@ -37,10 +36,40 @@ class UserController extends Controller
             'api_token' => str_replace('-', '', substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 20)),
         ]);
 
+        $user->load('category'); // Load the category relationship
+
         $status = "success";
         $response = ['user' => $user, 'status' => $status];
         return response()->json($response);
     }
+
+//    function store(Request $request)
+//    {
+//        $validator = Validator::make($request->all(), [
+//            'category_id' => 'required|exists:user_category,id',
+//            'name' => 'required|max:255',
+//            'email' => 'required|email|unique:users',
+//            'phone_number' => 'nullable',
+//            'gender' => 'nullable|in:female,male',
+//        ]);
+//
+//        if ($validator->fails()) {
+//            return response()->json(['errors' => $validator->errors()], 422);
+//        }
+//
+//        $user = User::create([
+//            'category_id' => $request->category_id,
+//            'name' => $request->name,
+//            'email' => $request->email,
+//            'phone_number' => $request->phone_number,
+//            'gender' => $request->gender,
+//            'api_token' => str_replace('-', '', substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 20)),
+//        ]);
+//
+//        $status = "success";
+//        $response = ['user' => $user, 'status' => $status];
+//        return response()->json($response);
+//    }
 
     function update(Request $request, $id)
     {
