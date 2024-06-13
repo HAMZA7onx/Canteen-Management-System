@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('user_category', 'id');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
             $table->string('phone_number')->nullable();
             $table->enum('gender', ['female', 'male'])->nullable();
             $table->string('api_token', 80)->unique()->nullable();

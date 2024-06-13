@@ -19,6 +19,7 @@ const actions = {
         throw error;
       });
   },
+
   createUser({ commit }, user) {
     return UserService.createUser(user)
       .then((response) => {
@@ -29,18 +30,19 @@ const actions = {
         throw error;
       });
   },
-  updateUser({ commit }, user) {
-    console.log('3.User from user module:', user);
 
+  updateUser({ commit }, user) {
+    console.log('user id: ', user);
     return UserService.updateUser(user.id, user)
-    .then((response) => {
-      commit('UPDATE_USER', response.data.user);
-    })
-    .catch((error) => {
-      console.error('Error updating user:', error);
-      throw error;
-    });
+      .then((response) => {
+        commit('UPDATE_USER', response.data.user);
+      })
+      .catch((error) => {
+        console.error('Error updating user:', error);
+        throw error;
+      });
   },
+
   deleteUser({ commit }, userId) {
     return UserService.deleteUser(userId)
       .then(() => {
@@ -51,30 +53,27 @@ const actions = {
         throw error;
       });
   },
-  };
-  
-  const mutations = {
-    SET_USERS(state, users) {
-      state.users = users;
-    },
-    ADD_USER(state, user) {
-      state.users.push(user);
-    },
-    UPDATE_USER(state, updatedUser) {
-      state.users = state.users.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
-      );
-    },
-    DELETE_USER(state, userId) {
-      state.users = state.users.filter((user) => user.id !== userId);
-    },
-  };
-  
-  export default {
-    namespaced: true,
-    state,
-    getters,
-    actions,
-    mutations,
-  };
-  
+};
+
+const mutations = {
+  SET_USERS(state, users) {
+    state.users = users;
+  },
+  ADD_USER(state, user) {
+    state.users.push(user);
+  },
+  UPDATE_USER(state, updatedUser) {
+    state.users = state.users.map((user) => (user.id === updatedUser.id ? updatedUser : user));
+  },
+  DELETE_USER(state, userId) {
+    state.users = state.users.filter((user) => user.id !== userId);
+  },
+};
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
+};
