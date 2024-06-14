@@ -31,8 +31,9 @@ const actions = {
       });
   },
 
-  updateUser({ commit }, user) {
-    console.log('user id: ', user);
+  updateUser({ commit, state }, user) { // Access the state via the second argument
+    console.log('user: ', user); // Correctly log the user object
+    console.log('state users: ', state.users); // Correctly log the users state
     return UserService.updateUser(user.id, user)
       .then((response) => {
         commit('UPDATE_USER', response.data.user);

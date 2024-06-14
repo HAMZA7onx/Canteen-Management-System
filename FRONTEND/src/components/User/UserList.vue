@@ -196,6 +196,12 @@ export default {
   created() {
     this.fetchUsers();
   },
+  mounted() {
+    console.log('mounted: ', this.users);
+  },
+  updated() {
+    console.log('updated: ', this.users);
+  },
   methods: {
     ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser']),
     openCreateUserModal() {
