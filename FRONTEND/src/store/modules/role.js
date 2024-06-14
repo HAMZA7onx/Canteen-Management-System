@@ -73,7 +73,6 @@ const actions = {
   fetchAvailablePermissions({ commit }) {
     return RoleService.getAvailablePermissions()
       .then((response) => {
-        console.log('fetchAvailablePermissions', response.data);
         commit('SET_AVAILABLE_PERMISSIONS', response.data);
       })
       .catch((error) => {

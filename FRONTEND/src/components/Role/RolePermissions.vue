@@ -23,7 +23,7 @@
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
         >
           <option value="">Select a permission</option>
-          <option v-for="permission in availablePermissions.permissions" :key="permission.id" :value="permission.id">
+          <option v-for="permission in availablePermissions" :key="permission.id" :value="permission.id">
             {{ permission.name }}
           </option>
         </select>

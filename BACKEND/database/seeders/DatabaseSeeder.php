@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminsTableSeeder::class,
+            PermissionSeeder::class,
             // Add other seeder calls here
         ]);
     }

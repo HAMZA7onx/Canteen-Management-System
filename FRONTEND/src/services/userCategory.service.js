@@ -1,26 +1,22 @@
 import request from '@/utils/request';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = 'http://127.0.0.1:8000/api/user-categories';
 
 class UserCategoryService {
   getUserCategories() {
-    return request.get(`${API_URL}/user-categories`);
+    return request.get(`${API_URL}`);
   }
 
-  getUserCategory(id) {
-    return request.get(`${API_URL}/user-categories/${id}`);
+  createUserCategory(category) {
+    return request.post(`${API_URL}`, category);
   }
 
-  createUserCategory(userCategory) {
-    return request.post(`${API_URL}/user-categories`, userCategory);
-  }
-
-  updateUserCategory(id, userCategory) {
-    return request.put(`${API_URL}/user-categories/${id}`, userCategory);
+  updateUserCategory(id, category) {
+    return request.put(`${API_URL}/${id}`, category);
   }
 
   deleteUserCategory(id) {
-    return request.delete(`${API_URL}/user-categories/${id}`);
+    return request.delete(`${API_URL}/${id}`);
   }
 }
 
