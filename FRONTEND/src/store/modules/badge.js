@@ -12,7 +12,7 @@ const getters = {
 
 const actions = {
   fetchBadges({ commit }) {
-    return BadgeService.getBadges()
+    return BadgeService.getBadges('?with=user')
       .then(response => {
         console.log('Badges:', response.data)
         commit('SET_BADGES', response.data)
@@ -35,8 +35,13 @@ const actions = {
   },
   createBadge({ commit }, badge) {
     return BadgeService.createBadge(badge)
+      .then(() => {
+        // Instead of committing the ADD_BADGE mutation,
+        // fetch the updated badges from the server
+        return BadgeService.getBadges('?with=user')
+      })
       .then(response => {
-        commit('ADD_BADGE', response.data)
+        commit('SET_BADGES', response.data)
       })
       .catch(error => {
         console.error('Error creating badge:', error)
@@ -45,15 +50,19 @@ const actions = {
   },
   updateBadge({ commit }, badge) {
     return BadgeService.updateBadge(badge.id, badge)
+      .then(() => {
+        // Instead of committing the UPDATE_BADGE mutation,
+        // fetch the updated badges from the server
+        return BadgeService.getBadges('?with=user')
+      })
       .then(response => {
-        commit('UPDATE_BADGE', response.data)
+        commit('SET_BADGES', response.data)
       })
       .catch(error => {
-        console.error('Error updating badge:', error.response.data) // Log the error response data
+        console.error('Error updating badge:', error.response.data)
         throw error
       })
   },
-  
   deleteBadge({ commit }, id) {
     return BadgeService.deleteBadge(id)
       .then(() => {
@@ -69,12 +78,6 @@ const actions = {
 const mutations = {
   SET_BADGES(state, badges) {
     state.badges = badges
-  },
-  ADD_BADGE(state, badge) {
-    state.badges.push(badge)
-  },
-  UPDATE_BADGE(state, updatedBadge) {
-    state.badges = state.badges.map(badge => (badge.id === updatedBadge.id ? updatedBadge : badge))
   },
   DELETE_BADGE(state, id) {
     state.badges = state.badges.filter(badge => badge.id !== id)

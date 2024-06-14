@@ -3,8 +3,8 @@ import request from '@/utils/request'
 const API_URL = 'http://127.0.0.1:8000/api'
 
 class BadgeService {
-  getBadges() {
-    return request.get(`${API_URL}/badges`)
+  getBadges(query = '') {
+    return request.get(`${API_URL}/badges${query}`)
   }
 
   getBadge(id) {
