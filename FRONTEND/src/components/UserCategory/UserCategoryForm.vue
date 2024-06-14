@@ -1,49 +1,54 @@
 <template>
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <form @submit.prevent="submitForm" class="space-y-4">
-      <div>
-        <label for="category" class="block text-gray-700 font-bold mb-2"
-          >User Category Name</label
-        >
-        <input
-          type="text"
-          id="category"
-          v-model="userCategory.category"
-          required
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-      <div>
-        <label for="meal_discount" class="block text-gray-700 font-bold mb-2"
-          >Meal Discount (%)</label
-        >
-        <input
-          type="number"
-          id="meal_discount"
-          v-model.number="userCategory.meal_discount"
-          required
-          min="0"
-          max="100"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-      <button
-        type="submit"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+  <div class="fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div
+        class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full"
       >
-        {{ isEditMode ? 'Update' : 'Create' }}
-      </button>
-    </form>
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{ isEditMode ? 'Edit' : 'Create' }} User Category
+          </h3>
+          <form @submit.prevent="submitForm" class="mt-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">
+                Name
+              </label>
+              <div class="mt-1">
+                <input
+                  type="text"
+                  id="name"
+                  v-model="category.name"
+                  required
+                  class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+            </div>
+            <div class="mt-4">
+              <button
+                type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                {{ isEditMode ? 'Update' : 'Create' }}
+              </button>
+              <button
+                type="button"
+                class="ml-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                @click="$emit('close')"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 export default {
-  name: 'UserCategoryForm',
   props: {
-    userCategory: {
+    category: {
       type: Object,
       required: true,
     },
@@ -54,28 +59,11 @@ export default {
     };
   },
   created() {
-    this.isEditMode = !!this.userCategory.id;
+    this.isEditMode = !!this.category.id;
   },
   methods: {
-    ...mapActions('userCategory', ['createUserCategory', 'updateUserCategory']),
     submitForm() {
-      if (this.isEditMode) {
-        this.updateUserCategory(this.userCategory)
-          .then(() => {
-            this.$emit('update:userCategory', null);
-          })
-          .catch((error) => {
-            console.error('Error updating user category:', error);
-          });
-      } else {
-        this.createUserCategory(this.userCategory)
-          .then(() => {
-            this.$emit('update:userCategory', null);
-          })
-          .catch((error) => {
-            console.error('Error creating user category:', error);
-          });
-      }
+      this.$emit('submit', this.category);
     },
   },
 };

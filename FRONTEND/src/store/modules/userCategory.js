@@ -19,8 +19,8 @@ const actions = {
         throw error;
       });
   },
-  createUserCategory({ commit }, userCategory) {
-    return UserCategoryService.createUserCategory(userCategory)
+  createUserCategory({ commit }, category) {
+    return UserCategoryService.createUserCategory(category)
       .then((response) => {
         commit('ADD_USER_CATEGORY', response.data);
       })
@@ -29,8 +29,8 @@ const actions = {
         throw error;
       });
   },
-  updateUserCategory({ commit }, userCategory) {
-    return UserCategoryService.updateUserCategory(userCategory.id, userCategory)
+  updateUserCategory({ commit }, category) {
+    return UserCategoryService.updateUserCategory(category.id, category)
       .then((response) => {
         commit('UPDATE_USER_CATEGORY', response.data);
       })
@@ -39,10 +39,10 @@ const actions = {
         throw error;
       });
   },
-  deleteUserCategory({ commit }, userCategoryId) {
-    return UserCategoryService.deleteUserCategory(userCategoryId)
+  deleteUserCategory({ commit }, id) {
+    return UserCategoryService.deleteUserCategory(id)
       .then(() => {
-        commit('DELETE_USER_CATEGORY', userCategoryId);
+        commit('DELETE_USER_CATEGORY', id);
       })
       .catch((error) => {
         console.error('Error deleting user category:', error);
@@ -55,17 +55,17 @@ const mutations = {
   SET_USER_CATEGORIES(state, userCategories) {
     state.userCategories = userCategories;
   },
-  ADD_USER_CATEGORY(state, userCategory) {
-    state.userCategories.push(userCategory);
+  ADD_USER_CATEGORY(state, category) {
+    state.userCategories.push(category);
   },
-  UPDATE_USER_CATEGORY(state, updatedUserCategory) {
-    state.userCategories = state.userCategories.map((userCategory) =>
-      userCategory.id === updatedUserCategory.id ? updatedUserCategory : userCategory
+  UPDATE_USER_CATEGORY(state, updatedCategory) {
+    state.userCategories = state.userCategories.map((category) =>
+      category.id === updatedCategory.id ? updatedCategory : category
     );
   },
-  DELETE_USER_CATEGORY(state, userCategoryId) {
+  DELETE_USER_CATEGORY(state, id) {
     state.userCategories = state.userCategories.filter(
-      (userCategory) => userCategory.id !== userCategoryId
+      (category) => category.id !== id
     );
   },
 };
