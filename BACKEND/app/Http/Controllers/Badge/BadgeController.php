@@ -10,7 +10,7 @@ class BadgeController extends Controller
 {
     public function index()
     {
-        $badges = Badge::all();
+        $badges = Badge::with('user')->get();
         return response()->json($badges);
     }
 
@@ -23,7 +23,7 @@ class BadgeController extends Controller
 
     public function show($id)
     {
-        $badge = Badge::findOrFail($id);
+        $badge = Badge::with('user')->findOrFail($id);
         return response()->json($badge);
     }
 
@@ -32,6 +32,7 @@ class BadgeController extends Controller
         $badge = Badge::findOrFail($id);
         $validatedData = $request->validate($this->rules());
         $badge->update($validatedData);
+        $badge->load('user'); // Eager load the associated user data
         return response()->json($badge);
     }
 
