@@ -14,6 +14,7 @@ const actions = {
   fetchBadges({ commit }) {
     return BadgeService.getBadges()
       .then(response => {
+        console.log('Badges:', response.data)
         commit('SET_BADGES', response.data)
       })
       .catch(error => {
@@ -22,8 +23,15 @@ const actions = {
       })
   },
   fetchUsers({ commit }) {
-    // Implement fetching users from the backend
-    // and commit the SET_USERS mutation
+    return BadgeService.getUsers()
+      .then(response => {
+        console.log('Users:', response.data)
+        commit('SET_USERS', response.data)
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error)
+        throw error
+      })
   },
   createBadge({ commit }, badge) {
     return BadgeService.createBadge(badge)
@@ -41,10 +49,11 @@ const actions = {
         commit('UPDATE_BADGE', response.data)
       })
       .catch(error => {
-        console.error('Error updating badge:', error)
+        console.error('Error updating badge:', error.response.data) // Log the error response data
         throw error
       })
   },
+  
   deleteBadge({ commit }, id) {
     return BadgeService.deleteBadge(id)
       .then(() => {

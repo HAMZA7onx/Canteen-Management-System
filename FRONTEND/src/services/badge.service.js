@@ -11,6 +11,10 @@ class BadgeService {
     return request.get(`${API_URL}/badges/${id}`)
   }
 
+  getUsers() {
+    return request.get(`${API_URL}/users`)
+  }
+
   createBadge(badge) {
     return request.post(`${API_URL}/badges`, badge)
   }

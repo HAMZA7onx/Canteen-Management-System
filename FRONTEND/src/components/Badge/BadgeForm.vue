@@ -105,7 +105,6 @@
     </div>
   </template>
   
-  
   <script>
   import { mapActions, mapState } from 'vuex'
   
@@ -132,6 +131,8 @@
       ...mapActions('badge', ['createBadge', 'updateBadge', 'fetchUsers']),
       submitForm() {
         if (this.isEditMode) {
+        //   console.log('Submitted form data:', this.badge) // Log the form data when updating
+  
           this.updateBadge(this.badge)
             .then(() => {
               this.$emit('update')
