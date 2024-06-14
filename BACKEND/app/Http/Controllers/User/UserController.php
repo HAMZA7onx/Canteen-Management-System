@@ -92,6 +92,7 @@ class UserController extends Controller
         $user->phone_number = $request->has('phone_number') ? $request->phone_number : $user->phone_number;
         $user->gender = $request->has('gender') ? $request->gender : $user->gender;
         $user->save();
+        $user->load('category'); $user->load('category');
 
         $status = "success";
         $response = ['user' => $user, 'status' => $status];

@@ -174,7 +174,7 @@ export default {
       if (this.isEditMode) {
         this.updateUser(formData)
           .then(() => {
-            this.$emit('update:user', null);
+            // this.$emit('update:user', null);
           })
           .catch((error) => {
             console.error('Error updating user:', error);
