@@ -43,18 +43,12 @@
             <td class="px-6 py-4 whitespace-nowrap">{{ badge.user.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ badge.rfid }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ badge.status }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <button
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditBadgeModal(badge)"
               >
-                Edit
-              </button>
-              <button
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-                @click="deleteBadge(badge)"
-              >
-                Delete
+                Edit status
               </button>
             </td>
           </tr>
