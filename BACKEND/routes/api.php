@@ -13,6 +13,7 @@ use App\Http\Controllers\Badge\BadgeController;
 use App\Http\Controllers\Meal\MealMenuController;
 use App\Http\Controllers\Meal\MealScheduleController;
 use App\Http\Controllers\Meal\MealRecordController;
+use App\Http\Controllers\Meal\MealNameController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
@@ -83,6 +84,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [BadgeController::class, 'show']);
         Route::put('/{id}', [BadgeController::class, 'update']);
         Route::delete('/{id}', [BadgeController::class, 'destroy']);
+    });
+
+    Route::prefix('meal-names')->group(function () {
+        Route::get('/', [MealNameController::class, 'index']);
+        Route::post('/', [MealNameController::class, 'store']);
+        Route::get('/{id}', [MealNameController::class, 'show']);
+        Route::put('/{id}', [MealNameController::class, 'update']);
+        Route::delete('/{id}', [MealNameController::class, 'destroy']);
     });
 
     Route::prefix('meal-menus')->group(function () {

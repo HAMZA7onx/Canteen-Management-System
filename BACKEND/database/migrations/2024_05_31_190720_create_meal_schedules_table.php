@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('meal_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('meal_menu_id')->constrained('meal_menus', 'id');
+            $table->foreignId('meal_name_id')->constrained('meal_names', 'id');
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time');

@@ -41,8 +41,8 @@ export default {
       activeItem: null,
       menuItems: [
         { label: 'Admins', icon: 'admins', route: '/' },
-        { label: 'Users', icon: 'users', route: '/users' },
         { label: 'Roles', icon: 'roles', route: '/roles' },
+        { label: 'Users', icon: 'users', route: '/users' },
         // { label: 'Permissions', icon: 'permissions', route: '/permissions' },
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Badges', icon: 'badges', route: '/badges' },
