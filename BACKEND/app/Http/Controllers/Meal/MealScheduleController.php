@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Meal;
 
 use App\Http\Controllers\Controller;
@@ -10,7 +9,7 @@ class MealScheduleController extends Controller
 {
     public function index()
     {
-        $mealSchedules = MealSchedule::all();
+        $mealSchedules = MealSchedule::with('mealMenu', 'mealName')->get();
         return response()->json($mealSchedules);
     }
 
@@ -20,17 +19,19 @@ class MealScheduleController extends Controller
             'meal_menu_id' => 'required|exists:meal_menus,id',
             'meal_name_id' => 'required|exists:meal_names,id',
             'date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
         ]);
 
         $mealSchedule = MealSchedule::create($validatedData);
+        $mealSchedule->load('mealMenu', 'mealName');
+
         return response()->json($mealSchedule, 201);
     }
 
     public function show($id)
     {
-        $mealSchedule = MealSchedule::findOrFail($id);
+        $mealSchedule = MealSchedule::with('mealMenu', 'mealName')->findOrFail($id);
         return response()->json($mealSchedule);
     }
 
@@ -40,12 +41,14 @@ class MealScheduleController extends Controller
             'meal_menu_id' => 'required|exists:meal_menus,id',
             'meal_name_id' => 'required|exists:meal_names,id',
             'date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
         ]);
 
-        $mealSchedule = MealSchedule::findOrFail($id);
+        $mealSchedule = MealSchedule::with('mealMenu', 'mealName')->findOrFail($id);
         $mealSchedule->update($validatedData);
+        $mealSchedule->load('mealMenu', 'mealName');
+
         return response()->json($mealSchedule);
     }
 
