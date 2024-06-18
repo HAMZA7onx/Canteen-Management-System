@@ -1,29 +1,27 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
-const getAll = () => {
-  return request.get('/meal-names')
+const API_URL = 'http://127.0.0.1:8000/api';
+
+class MealNameService {
+  getMealNames() {
+    return request.get(`${API_URL}/meal-names`);
+  }
+
+  getMealName(id) {
+    return request.get(`${API_URL}/meal-names/${id}`);
+  }
+
+  createMealName(mealName) {
+    return request.post(`${API_URL}/meal-names`, mealName);
+  }
+
+  updateMealName(id, mealName) {
+    return request.put(`${API_URL}/meal-names/${id}`, mealName);
+  }
+
+  deleteMealName(id) {
+    return request.delete(`${API_URL}/meal-names/${id}`);
+  }
 }
 
-const get = (id) => {
-  return request.get(`/meal-names/${id}`)
-}
-
-const create = (data) => {
-  return request.post('/meal-names', data)
-}
-
-const update = (id, data) => {
-  return request.put(`/meal-names/${id}`, data)
-}
-
-const remove = (id) => {
-  return request.delete(`/meal-names/${id}`)
-}
-
-export default {
-  getAll,
-  get,
-  create,
-  update,
-  delete: remove
-}
+export default new MealNameService();

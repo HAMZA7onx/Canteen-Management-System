@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Meal;
-
 use App\Http\Controllers\Controller;
 use App\Models\MealMenu;
 use Illuminate\Http\Request;
