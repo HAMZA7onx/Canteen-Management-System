@@ -47,6 +47,7 @@ export default {
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Badges', icon: 'badges', route: '/badges' },
         { label: 'Meal Menus', icon: 'meal-menus', route: '/meal-menus' },
+        { label: 'Meal Names', icon: 'meal-names', route: '/meal-names' },
         { label: 'Meal Schedules', icon: 'meal-schedules', route: '/meal-schedules' },
         { label: 'Meal Records', icon: 'meal-records', route: '/meal-records' },
       ],

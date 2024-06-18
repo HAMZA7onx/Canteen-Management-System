@@ -10,10 +10,10 @@ use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
-use App\Http\Controllers\Meal\MealMenuController;
-use App\Http\Controllers\Meal\MealScheduleController;
 use App\Http\Controllers\Meal\MealRecordController;
-use App\Http\Controllers\Meal\MealNameController;
+use App\Http\Controllers\Meal\MealScheduleController;
+use App\Http\Controllers\Meal\MealMenuController;
+use App\Http\Controllers\Meal\MealNamesController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
@@ -87,11 +87,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('meal-names')->group(function () {
-        Route::get('/', [MealNameController::class, 'index']);
-        Route::post('/', [MealNameController::class, 'store']);
-        Route::get('/{id}', [MealNameController::class, 'show']);
-        Route::put('/{id}', [MealNameController::class, 'update']);
-        Route::delete('/{id}', [MealNameController::class, 'destroy']);
+        Route::get('/', [App\Http\Controllers\Meal\MealNameController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Meal\MealNameController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'destroy']);
     });
 
     Route::prefix('meal-menus')->group(function () {
