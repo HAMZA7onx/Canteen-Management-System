@@ -185,6 +185,9 @@ export default {
 
   if (this.isEditMode) {
     this.updateMealSchedule(formData)
+      .then(() => {
+        this.$emit('close');
+      })
       .catch((error) => {
         if (error.message) {
           this.displayValidationErrors(JSON.parse(error.message));
@@ -194,6 +197,9 @@ export default {
       });
   } else {
     this.createMealSchedule(formData)
+      .then(() => {
+        this.$emit('close');
+      })
       .catch((error) => {
         if (error.message) {
           this.displayValidationErrors(JSON.parse(error.message));
