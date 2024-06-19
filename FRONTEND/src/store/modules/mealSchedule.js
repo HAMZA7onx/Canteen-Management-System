@@ -27,18 +27,31 @@ const actions = {
       })
       .catch((error) => {
         console.error('Error creating meal schedule:', error);
+        // Handle validation errors
+        if (error.response && error.response.status === 422) {
+          // Display validation errors to the user
+          const validationErrors = error.response.data.errors;
+          // You can implement a method to display the errors to the user
+          displayValidationErrors(validationErrors);
+        }
         throw error;
       });
   },
 
   updateMealSchedule({ commit }, mealSchedule) {
-    console.log('updateMealSchedule: ', mealSchedule);
     return MealScheduleService.updateMealSchedule(mealSchedule.id, mealSchedule)
       .then((response) => {
         commit('UPDATE_MEAL_SCHEDULE', response.data);
       })
       .catch((error) => {
         console.error('Error updating meal schedule:', error);
+        // Handle validation errors
+        if (error.response && error.response.status === 422) {
+          // Display validation errors to the user
+          const validationErrors = error.response.data.errors;
+          // You can implement a method to display the errors to the user
+          displayValidationErrors(validationErrors);
+        }
         throw error;
       });
   },
@@ -79,4 +92,3 @@ export default {
   actions,
   mutations,
 };
- 

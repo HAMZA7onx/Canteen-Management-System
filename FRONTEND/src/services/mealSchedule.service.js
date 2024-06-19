@@ -25,4 +25,3 @@ class MealScheduleService {
 }
 
 export default new MealScheduleService();
- 

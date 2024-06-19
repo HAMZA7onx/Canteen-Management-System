@@ -11,6 +11,7 @@ class MealMenu extends Model
 
     public function mealSchedules()
     {
-        return $this->hasMany(MealSchedule::class);
+        return $this->belongsToMany(MealSchedule::class, 'meal_schedule_menu')
+            ->withTimestamps();
     }
 }
