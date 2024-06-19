@@ -7,16 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class MealSchedule extends Model
 {
     protected $table = 'meal_schedules';
-    protected $fillable = ['meal_menu_id', 'meal_name_id', 'date', 'start_time', 'end_time', 'persons_taken'];
-
-    public function mealMenu()
-    {
-        return $this->belongsTo(MealMenu::class);
-    }
+    protected $fillable = ['meal_name_id', 'date', 'start_time', 'end_time', 'persons_taken'];
 
     public function mealName()
     {
         return $this->belongsTo(MealName::class);
+    }
+
+    public function mealMenus()
+    {
+        return $this->belongsToMany(MealMenu::class, 'meal_schedule_menu')
+            ->withTimestamps();
     }
 
     public function mealRecords()

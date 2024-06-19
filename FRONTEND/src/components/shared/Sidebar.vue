@@ -1,17 +1,21 @@
 <template>
-  <aside class="bg-gray-800 text-white h-screen w-64 fixed mt-16">
-    <div class="p-4">
+  <aside class="sidebar">
+    <div class="sidebar-content">
       <nav>
         <ul>
           <li
             v-for="item in menuItems"
             :key="item.label"
-            class="mb-2 flex items-center rounded-md transition-colors duration-200"
-            :class="{ 'bg-gray-700 text-white': activeItem === item }"
-            @click="activeItem = item"
+            :class="['sidebar-item', { 'active': activeItem === item }]"
+            @click="setActiveItem(item)"
+            @keydown.enter="setActiveItem(item)"
+            tabindex="0"
+            role="menuitem"
+            aria-current="page"
           >
             <svg
-              class="mr-2 text-gray-400 h-5 w-5"
+              class="icon"
+              aria-hidden="true"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -23,7 +27,7 @@
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            <router-link :to="item.route" class="flex-grow">
+            <router-link :to="item.route" class="link">
               <i :class="item.icon"></i> {{ item.label }}
             </router-link>
           </li>
@@ -43,7 +47,6 @@ export default {
         { label: 'Admins', icon: 'admins', route: '/' },
         { label: 'Roles', icon: 'roles', route: '/roles' },
         { label: 'Users', icon: 'users', route: '/users' },
-        // { label: 'Permissions', icon: 'permissions', route: '/permissions' },
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Badges', icon: 'badges', route: '/badges' },
         { label: 'Meal Menus', icon: 'meal-menus', route: '/meal-menus' },
@@ -53,5 +56,60 @@ export default {
       ],
     };
   },
+  methods: {
+    setActiveItem(item) {
+      this.activeItem = item;
+    }
+  }
 };
 </script>
+
+<style scoped>
+.sidebar {
+  background-color: #2d3748; /* bg-gray-800 */
+  color: #fff;
+  height: 100vh;
+  width: 16rem; /* w-64 */
+  position: fixed;
+  margin-top: 4rem; /* mt-16 */
+}
+
+.sidebar-content {
+  padding: 1rem; /* p-4 */
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  border-radius: 0.375rem; /* rounded-md */
+  transition: background-color 0.2s;
+  margin-bottom: 0.5rem; /* mb-2 */
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.sidebar-item:focus {
+  outline: none;
+  background-color: #4a5568; /* bg-gray-700 */
+}
+
+.sidebar-item.active {
+  background-color: #4a5568; /* bg-gray-700 */
+  color: #fff;
+}
+
+.icon {
+  margin-right: 0.5rem; /* mr-2 */
+  color: #a0aec0; /* text-gray-400 */
+  height: 1.25rem; /* h-5 */
+  width: 1.25rem; /* w-5 */
+}
+
+.link {
+  flex-grow: 1;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+</style>
