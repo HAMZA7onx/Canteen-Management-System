@@ -175,32 +175,69 @@ export default {
       }
     },
     submitForm() {
-      const formData = {
-        meal_name_id: this.mealSchedule.meal_name_id,
-        meal_menu_ids: this.mealSchedule.meal_menu_ids,
-        date: this.mealSchedule.date,
-        start_time: this.mealSchedule.start_time,
-        end_time: this.mealSchedule.end_time,
-      };
+  const formData = {
+    meal_name_id: this.mealSchedule.meal_name_id,
+    meal_menu_ids: this.mealSchedule.meal_menu_ids,
+    date: this.mealSchedule.date,
+    start_time: this.mealSchedule.start_time,
+    end_time: this.mealSchedule.end_time,
+  };
 
-      if (this.isEditMode) {
-        this.updateMealSchedule(formData)
-          .catch(() => {
-            // Reset validation errors and validation error message
-            this.validationErrors = null;
-            this.validationError = '';
-          });
-      } else {
-        this.createMealSchedule(formData)
-          .catch(() => {
-            // Reset validation errors and validation error message
-            this.validationErrors = null;
-            this.validationError = '';
-          });
-      }
+  if (this.isEditMode) {
+    this.updateMealSchedule(formData)
+      .catch((error) => {
+        if (error.message) {
+          this.displayValidationErrors(JSON.parse(error.message));
+        } else {
+          console.error('Error:', error);
+        }
+      });
+  } else {
+    this.createMealSchedule(formData)
+      .catch((error) => {
+        if (error.message) {
+          this.displayValidationErrors(JSON.parse(error.message));
+        } else {
+          console.error('Error:', error);
+        }
+      });
+  }
+},
 
-      this.$emit('close');
-    },
+
+displayValidationErrors(errors) {
+  this.validationErrors = errors;
+  let validationError = '';
+
+  // Check for specific validation errors
+  if (errors.meal_name_id) {
+    validationError = 'Please select a valid meal name.';
+  } else if (errors.date) {
+    validationError = 'Please enter a valid date.';
+  } else if (errors.start_time) {
+    validationError = 'Please enter a valid start time.';
+  } else if (errors.end_time) {
+    if (Array.isArray(errors.end_time) && errors.end_time.includes('The end time field must be a date after start time.')) {
+      validationError = 'The end time must be after the start time.';
+    } else {
+      validationError = 'Please enter a valid end time.';
+    }
+  } else if (errors.meal_menu_ids) {
+    if (Array.isArray(errors.meal_menu_ids) && errors.meal_menu_ids.includes('The meal menu ids field is required.')) {
+      validationError = 'Please select at least one meal menu.';
+    } else {
+      validationError = 'Please select valid meal menus.';
+    }
+  }
+
+  // If no specific error found, display a generic validation error message
+  if (!validationError && Object.keys(errors).length > 0) {
+    validationError = 'Please fix the validation errors and try again.';
+  }
+
+  this.validationError = validationError;
+},
+
   },
 };
 </script>
