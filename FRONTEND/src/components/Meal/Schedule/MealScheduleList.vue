@@ -11,17 +11,20 @@
       </button>
     </div>
 
-    <Modal
-      :show="showCreateModal || showEditModal"
-      :title="modalTitle"
-      @close="closeModal"
-    >
-      <MealScheduleForm
-        :mealSchedule="modalMealSchedule"
-        @update:mealSchedule="handleMealScheduleUpdate"
+    <div v-if="showCreateModal || showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay />
+      <Modal
+        :show="showCreateModal || showEditModal"
+        :title="modalTitle"
         @close="closeModal"
-      />
-    </Modal>
+      >
+        <MealScheduleForm
+          :mealSchedule="modalMealSchedule"
+          @update:mealSchedule="handleMealScheduleUpdate"
+          @close="closeModal"
+        />
+      </Modal>
+    </div>
 
     <div>
       <table class="w-full table-auto">
@@ -144,6 +147,7 @@ export default {
   components: {
     MealScheduleForm,
     Modal,
+    Overlay,
   },
   data() {
     return {
