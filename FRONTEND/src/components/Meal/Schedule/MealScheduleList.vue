@@ -42,9 +42,12 @@
           <tr v-for="mealSchedule in mealSchedules" :key="mealSchedule.id">
             <td class="border px-4 py-2">{{ getMealNameName(mealSchedule.meal_name_id) }}</td>
             <td class="border px-4 py-2">
-              <span v-for="(mealMenuId, index) in mealSchedule.meal_menu_ids" :key="index">
-                {{ getMealMenuName(mealMenuId) }}{{ index !== mealSchedule.meal_menu_ids.length - 1 ? ', ' : '' }}
-              </span>
+              <button
+                class="bg-blue-500 text-white px-2 py-1 rounded-md"
+                @click="showMealMenus(mealSchedule)"
+              >
+                View Menus
+              </button>
             </td>
             <td class="border px-4 py-2">{{ mealSchedule.date }}</td>
             <td class="border px-4 py-2">{{ mealSchedule.start_time }}</td>
@@ -66,6 +69,25 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Meal Menus Modal -->
+    <div v-if="showMealMenusModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay />
+      <Modal
+        :show="showMealMenusModal"
+        title="Meal Menus"
+        @close="closeMealMenusModal"
+      >
+        <div v-if="selectedMealSchedule">
+          <h3 class="text-lg font-medium mb-2">Meal Name: {{ getMealNameName(selectedMealSchedule.meal_name_id) }}</h3>
+          <ul>
+            <li v-for="mealMenu in selectedMealSchedule.meal_menus" :key="mealMenu.id">
+              {{ mealMenu.menu_name }}
+            </li>
+          </ul>
+        </div>
+      </Modal>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -153,6 +175,7 @@ export default {
     return {
       showCreateModal: false,
       showEditModal: false,
+      showMealMenusModal: false,
       showDeleteConfirmationModal: false,
       modalMealSchedule: {
         meal_name_id: null,
@@ -162,6 +185,7 @@ export default {
         end_time: '',
       },
       mealScheduleToDelete: null,
+      selectedMealSchedule: null,
     };
   },
   computed: {
@@ -176,6 +200,9 @@ export default {
     this.fetchMealSchedules();
     this.fetchMealNames();
     this.fetchMealMenus();
+  },
+  mounted() {
+    console.log('mealSchedules :', this.mealSchedules);
   },
   methods: {
     ...mapActions('mealSchedule', ['fetchMealSchedules', 'createMealSchedule', 'updateMealSchedule', 'deleteMealSchedule']),
@@ -235,6 +262,14 @@ export default {
             this.closeDeleteConfirmationModal();
           });
       }
+    },
+    showMealMenus(mealSchedule) {
+      this.selectedMealSchedule = mealSchedule;
+      this.showMealMenusModal = true;
+    },
+    closeMealMenusModal() {
+      this.showMealMenusModal = false;
+      this.selectedMealSchedule = null;
     },
   },
 };
