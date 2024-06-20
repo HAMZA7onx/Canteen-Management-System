@@ -199,7 +199,7 @@ export default {
       // If there are no empty required fields, proceed with the form submission
       if (!this.validationErrors) {
         if (this.isEditMode) {
-          this.updateMealSchedule(formData)
+          this.updateMealSchedule({ ...formData, id: this.mealSchedule.id })
             .then(() => {
               this.$emit('close');
             })
