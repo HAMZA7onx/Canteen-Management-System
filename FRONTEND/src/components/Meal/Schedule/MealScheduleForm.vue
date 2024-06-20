@@ -172,6 +172,9 @@ export default {
       if (this.newMealMenu) {
         const newMealMenuObject = this.mealMenus.find((menu) => menu.id === this.newMealMenu);
         if (newMealMenuObject) {
+          if (!this.mealSchedule.meal_menus) {
+            this.mealSchedule.meal_menus = [];
+          }
           this.mealSchedule.meal_menus.push(newMealMenuObject);
           this.newMealMenu = null;
         }
