@@ -89,26 +89,17 @@
       </div>
     </div>
 
-    <!-- Validation Error Message (Frontend) -->
-    <div
-      v-if="validationError"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
-      role="alert"
-    >
-      {{ validationError }}
-    </div>
-
     <!-- Validation Errors (Server) -->
-    <div
-      v-if="validationErrors"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
-      role="alert"
-    >
+    <div v-if="validationErrors" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
       <strong class="font-bold">Validation Errors:</strong>
       <ul>
         <li v-if="typeof validationErrors === 'string'">{{ validationErrors }}</li>
-        <li v-else v-for="(errors, field) in validationErrors" :key="field">
-          {{ field }}: {{ Array.isArray(errors) ? errors.join(', ') : errors }}
+        <li v-else-if="typeof validationErrors === 'object'">
+          <ul>
+            <li v-for="(errors, field) in validationErrors" :key="field">
+              {{ field }}: {{ Array.isArray(errors) ? errors.join(', ') : errors }}
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -147,7 +138,6 @@ export default {
       newMealMenu: null,
       isEditMode: false,
       validationErrors: null,
-      validationError: '',
     };
   },
   computed: {
@@ -181,43 +171,6 @@ export default {
       const mealMenu = this.mealMenus.find((menu) => menu.id === mealMenuId);
       return mealMenu ? mealMenu.menu_name : '';
     },
-    displayValidationErrors(errors) {
-      this.validationErrors = errors;
-      let validationError = '';
-
-      // Check for specific validation errors
-      if (typeof errors === 'object') {
-        if (errors.meal_name_id) {
-          validationError = 'Please select a valid meal name.';
-        } else if (errors.date) {
-          validationError = 'Please enter a valid date.';
-        } else if (errors.start_time) {
-          validationError = 'Please enter a valid start time.';
-        } else if (errors.end_time) {
-          if (Array.isArray(errors.end_time) && errors.end_time.includes('The end time field must be a date after start time.')) {
-            validationError = 'The end time must be after the start time.';
-          } else {
-            validationError = 'Please enter a valid end time.';
-          }
-        } else if (errors.meal_menu_ids) {
-          if (Array.isArray(errors.meal_menu_ids) && errors.meal_menu_ids.includes('The meal menu ids field is required.')) {
-            validationError = 'Please select at least one meal menu.';
-          } else {
-            validationError = 'Please select valid meal menus.';
-          }
-        }
-      } else if (typeof errors === 'string') {
-        // Handle the case where the server returns a string error message
-        validationError = errors;
-      }
-
-      // If no specific error found, display a generic validation error message
-      if (!validationError && Object.keys(errors).length > 0) {
-        validationError = 'Please fix the validation errors and try again.';
-      }
-
-      this.validationError = validationError;
-    },
     submitForm() {
       const formData = {
         meal_name_id: this.mealSchedule.meal_name_id,
@@ -229,23 +182,22 @@ export default {
 
       // Reset validation errors
       this.validationErrors = null;
-      this.validationError = '';
 
       // Check for empty required fields
       if (!formData.meal_name_id) {
-        this.validationError = 'Please select a meal name.';
+        this.validationErrors = 'Please select a meal name.';
       } else if (!formData.meal_menu_ids.length) {
-        this.validationError = 'Please select at least one meal menu.';
+        this.validationErrors = 'Please select at least one meal menu.';
       } else if (!formData.date) {
-        this.validationError = 'Please enter a date.';
+        this.validationErrors = 'Please enter a date.';
       } else if (!formData.start_time) {
-        this.validationError = 'Please enter a start time.';
+        this.validationErrors = 'Please enter a start time.';
       } else if (!formData.end_time) {
-        this.validationError = 'Please enter an end time.';
+        this.validationErrors = 'Please enter an end time.';
       }
 
       // If there are no empty required fields, proceed with the form submission
-      if (!this.validationError) {
+      if (!this.validationErrors) {
         if (this.isEditMode) {
           this.updateMealSchedule(formData)
             .then(() => {
@@ -268,15 +220,21 @@ export default {
     handleValidationErrors(error) {
       if (error.response) {
         // Handle the case when the server returns a JSON response
-        const errors = error.response.data.errors || error.response.data.message;
-        if (errors) {
-          this.displayValidationErrors(errors);
+        const responseData = error.response.data;
+        if (typeof responseData === 'object') {
+          const errors = responseData.errors;
+          if (errors) {
+            this.validationErrors = errors;
+          } else {
+            console.error('Error:', error);
+          }
         } else {
-          console.error('Error:', error);
+          // Handle the case when the server returns a plain text error message
+          this.validationErrors = responseData;
         }
       } else {
         // Handle the case when the server returns a plain text error message
-        this.displayValidationErrors(error.message);
+        this.validationErrors = error.message;
       }
     },
   },
