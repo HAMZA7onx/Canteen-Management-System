@@ -31,16 +31,17 @@ const actions = {
       });
   },
 
-  updateMealSchedule({ commit }, mealSchedule) {
-    return MealScheduleService.updateMealSchedule(mealSchedule.id, mealSchedule)
-      .then((response) => {
-        commit('UPDATE_MEAL_SCHEDULE', response.data);
-      })
-      .catch((error) => {
-        console.error('Error updating meal schedule:', error);
-        throw error; // Rethrow the error to be caught in the component
-      });
-  },
+ updateMealSchedule({ commit }, { id, ...mealSchedule }) {
+  return MealScheduleService.updateMealSchedule(id, mealSchedule)
+    .then((response) => {
+      commit('UPDATE_MEAL_SCHEDULE', response.data);
+    })
+    .catch((error) => {
+      console.error('Error updating meal schedule:', error);
+      throw error; // Rethrow the error to be caught in the component
+    });
+},
+
 
   deleteMealSchedule({ commit }, mealScheduleId) {
     return MealScheduleService.deleteMealSchedule(mealScheduleId)

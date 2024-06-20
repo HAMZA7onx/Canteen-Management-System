@@ -49,7 +49,7 @@
             <td class="border px-4 py-2">
               <button
                 class="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
-                @click="showEditModal(mealSchedule)"
+                @click="openEditModal(mealSchedule)"
               >
                 Edit
               </button>
@@ -185,8 +185,11 @@ export default {
       const mealMenu = this.mealMenus.find((menu) => menu.id === mealMenuId);
       return mealMenu ? mealMenu.menu_name : '';
     },
-    showEditModal(mealSchedule) {
-      this.modalMealSchedule = { ...mealSchedule };
+    openEditModal(mealSchedule) {
+      this.modalMealSchedule = {
+        ...mealSchedule,
+        meal_menu_ids: mealSchedule.meal_menu_ids || [], // Initialize meal_menu_ids if not present
+      };
       this.showEditModal = true;
     },
     closeModal() {
