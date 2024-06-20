@@ -186,9 +186,10 @@ export default {
       return mealMenu ? mealMenu.menu_name : '';
     },
     openEditModal(mealSchedule) {
+      console.log('Meal Schedule Data:', mealSchedule);
       this.modalMealSchedule = {
         ...mealSchedule,
-        meal_menu_ids: mealSchedule.meal_menu_ids || [], // Initialize meal_menu_ids if not present
+        meal_menu_ids: mealSchedule.meal_menu_ids || [],
       };
       this.showEditModal = true;
     },

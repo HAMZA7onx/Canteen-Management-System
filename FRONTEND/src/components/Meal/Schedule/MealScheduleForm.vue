@@ -10,7 +10,7 @@
         @change="clearSelectedMealMenus"
       >
         <option value="">Select a meal name</option>
-        <option v-for="mealName in mealNames" :key="mealName.id" :value="mealName.id">
+        <option v-for="mealName in mealNames" :key="mealName.id" :value="mealName.id" :selected="mealName.id === mealSchedule.meal_name_id">
           {{ mealName.name }}
         </option>
       </select>
@@ -38,11 +38,11 @@
       </div>
       <div class="grid grid-cols-3 gap-4">
         <div
-          v-for="(selectedMealMenuId, index) in mealSchedule.meal_menu_ids"
+          v-for="(selectedMealMenu, index) in mealSchedule.meal_menus"
           :key="index"
           class="bg-gray-100 p-4 rounded-md flex justify-between items-center"
         >
-          <span>{{ getMealMenuName(selectedMealMenuId) }}</span>
+          <span>{{ selectedMealMenu.menu_name }}</span>
           <button
             class="text-red-500 hover:text-red-700"
             @click="removeMealMenu(index)"
@@ -144,9 +144,19 @@ export default {
     ...mapGetters('mealName', ['mealNames']),
     ...mapGetters('mealMenu', ['mealMenus']),
     availableMealMenus() {
-      return this.mealMenus.filter(
-        (mealMenu) => !this.mealSchedule.meal_menu_ids.includes(mealMenu.id)
-      );
+      const selectedMealMenuIds = [
+        ...new Set([
+          ...(this.mealSchedule.meal_menu_ids || []),
+          ...(this.mealSchedule.meal_menus?.map((mealMenu) => mealMenu.id) || []),
+        ]),
+      ];
+      return this.mealMenus.filter((mealMenu) => !selectedMealMenuIds.includes(mealMenu.id));
+    },
+    selectedMealMenuIds() {
+      return [
+        ...(this.mealSchedule.meal_menu_ids || []),
+        ...(this.mealSchedule.meal_menus?.map((mealMenu) => mealMenu.id) || []),
+      ];
     },
   },
   created() {
@@ -160,12 +170,15 @@ export default {
     },
     addMealMenu() {
       if (this.newMealMenu) {
-        this.mealSchedule.meal_menu_ids.push(this.newMealMenu);
-        this.newMealMenu = null;
+        const newMealMenuObject = this.mealMenus.find((menu) => menu.id === this.newMealMenu);
+        if (newMealMenuObject) {
+          this.mealSchedule.meal_menus.push(newMealMenuObject);
+          this.newMealMenu = null;
+        }
       }
     },
     removeMealMenu(index) {
-      this.mealSchedule.meal_menu_ids.splice(index, 1);
+      this.mealSchedule.meal_menus.splice(index, 1);
     },
     getMealMenuName(mealMenuId) {
       const mealMenu = this.mealMenus.find((menu) => menu.id === mealMenuId);
@@ -174,7 +187,7 @@ export default {
     submitForm() {
       const formData = {
         meal_name_id: this.mealSchedule.meal_name_id,
-        meal_menu_ids: this.mealSchedule.meal_menu_ids,
+        meal_menu_ids: this.selectedMealMenuIds,
         date: this.mealSchedule.date,
         start_time: this.mealSchedule.start_time,
         end_time: this.mealSchedule.end_time,
@@ -236,6 +249,16 @@ export default {
         // Handle the case when the server returns a plain text error message
         this.validationErrors = error.message;
       }
+    },
+  },
+  watch: {
+    mealSchedule: {
+      handler(newValue, oldValue) {
+        if (newValue.id !== oldValue.id) {
+          this.isEditMode = !!newValue.id;
+        }
+      },
+      deep: true,
     },
   },
 };
