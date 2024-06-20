@@ -27,14 +27,7 @@ const actions = {
       })
       .catch((error) => {
         console.error('Error creating meal schedule:', error);
-        // Handle validation errors
-        if (error.response && error.response.status === 422) {
-          // Display validation errors to the user
-          const validationErrors = error.response.data.errors;
-          // You can implement a method to display the errors to the user
-          displayValidationErrors(validationErrors);
-        }
-        throw error;
+        throw error; // Rethrow the error to be caught in the component
       });
   },
 
@@ -45,14 +38,7 @@ const actions = {
       })
       .catch((error) => {
         console.error('Error updating meal schedule:', error);
-        // Handle validation errors
-        if (error.response && error.response.status === 422) {
-          // Display validation errors to the user
-          const validationErrors = error.response.data.errors;
-          // You can implement a method to display the errors to the user
-          displayValidationErrors(validationErrors);
-        }
-        throw error;
+        throw error; // Rethrow the error to be caught in the component
       });
   },
 
