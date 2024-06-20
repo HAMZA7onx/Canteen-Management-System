@@ -247,6 +247,7 @@ export default {
       this.mealScheduleToDelete = mealSchedule;
       this.showDeleteConfirmationModal = true;
     },
+    
     closeDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = false;
       this.mealScheduleToDelete = null;
