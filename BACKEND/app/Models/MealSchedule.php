@@ -29,4 +29,5 @@ class MealSchedule extends Model
     {
         return $this->hasMany(CategoryDiscount::class);
     }
+
 }

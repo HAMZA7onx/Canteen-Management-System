@@ -22,6 +22,14 @@ class MealScheduleService {
   deleteMealSchedule(id) {
     return request.delete(`${API_URL}/meal-schedules/${id}`);
   }
+
+  getCategoryDiscounts(mealScheduleId) {
+    return request.get(`${API_URL}/meal-schedules/${mealScheduleId}/category-discounts`);
+  }
+
+  updateCategoryDiscounts(mealScheduleId, requestPayload) {
+    return request.put(`${API_URL}/meal-schedules/${mealScheduleId}/category-discounts`, requestPayload);
+  }  
 }
 
 export default new MealScheduleService();

@@ -108,6 +108,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [MealScheduleController::class, 'show']);
         Route::put('/{id}', [MealScheduleController::class, 'update']);
         Route::delete('/{id}', [MealScheduleController::class, 'destroy']);
+
+        // Category Discounts
+        Route::get('/{id}/category-discounts', [MealScheduleController::class, 'getCategoryDiscounts']);
+        Route::put('/{id}/category-discounts', [MealScheduleController::class, 'updateCategoryDiscounts']);
     });
 
     Route::prefix('category-discounts')->group(function () {
