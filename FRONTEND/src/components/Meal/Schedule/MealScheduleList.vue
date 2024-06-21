@@ -35,6 +35,7 @@
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Start Time</th>
             <th class="px-4 py-2">End Time</th>
+            <th class="px-4 py-2">Users Discount</th>
             <th class="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -52,6 +53,14 @@
             <td class="border px-4 py-2">{{ mealSchedule.date }}</td>
             <td class="border px-4 py-2">{{ mealSchedule.start_time }}</td>
             <td class="border px-4 py-2">{{ mealSchedule.end_time }}</td>
+            <td class="border px-4 py-2">
+              <button
+                class="bg-blue-500 text-white px-2 py-1 rounded-md"
+                @click="showUserCategoryDiscounts(mealSchedule)"
+              >
+                View Discounts
+              </button>
+            </td>
             <td class="border px-4 py-2">
               <button
                 class="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
@@ -87,6 +96,22 @@
             </li>
           </ul>
         </div>
+      </Modal>
+    </div>
+
+    <!-- User Category Discounts Modal -->
+    <div v-if="showUserCategoryDiscountsModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay />
+      <Modal
+        :show="showUserCategoryDiscountsModal"
+        title="User Category Discounts"
+        @close="closeUserCategoryDiscountsModal"
+      >
+        <UserCategoryDiscountsModal
+          :show="showUserCategoryDiscountsModal"
+          :mealSchedule="selectedMealSchedule"
+          @close="closeUserCategoryDiscountsModal"
+        />
       </Modal>
     </div>
 
@@ -163,6 +188,7 @@ import { mapGetters, mapActions } from 'vuex';
 import MealScheduleForm from './MealScheduleForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
+import UserCategoryDiscountsModal from '@/components/Meal/Schedule/UserCategoryDiscountsModal.vue';
 
 export default {
   name: 'MealScheduleList',
@@ -170,12 +196,14 @@ export default {
     MealScheduleForm,
     Modal,
     Overlay,
+    UserCategoryDiscountsModal,
   },
   data() {
     return {
       showCreateModal: false,
       showEditModal: false,
       showMealMenusModal: false,
+      showUserCategoryDiscountsModal: false,
       showDeleteConfirmationModal: false,
       modalMealSchedule: {
         meal_name_id: null,
@@ -247,7 +275,6 @@ export default {
       this.mealScheduleToDelete = mealSchedule;
       this.showDeleteConfirmationModal = true;
     },
-    
     closeDeleteConfirmationModal() {
       this.showDeleteConfirmationModal = false;
       this.mealScheduleToDelete = null;
@@ -270,6 +297,14 @@ export default {
     },
     closeMealMenusModal() {
       this.showMealMenusModal = false;
+      this.selectedMealSchedule = null;
+    },
+    showUserCategoryDiscounts(mealSchedule) {
+      this.selectedMealSchedule = mealSchedule;
+      this.showUserCategoryDiscountsModal = true;
+    },
+    closeUserCategoryDiscountsModal() {
+      this.showUserCategoryDiscountsModal = false;
       this.selectedMealSchedule = null;
     },
   },

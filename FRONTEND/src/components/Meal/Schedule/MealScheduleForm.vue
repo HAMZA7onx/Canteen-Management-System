@@ -21,20 +21,20 @@
       <h3 class="text-lg font-medium mb-2">Select Meal Menus</h3>
       <div class="flex items-center mb-2">
         <select
-          v-model="newMealMenu"
-          class="border border-gray-300 rounded-md px-3 py-2 mr-2"
-        >
-          <option value="">Select a meal menu</option>
-          <option v-for="mealMenu in availableMealMenus" :key="mealMenu.id" :value="mealMenu.id">
-            {{ mealMenu.menu_name }}
-          </option>
-        </select>
-        <button
-          class="bg-blue-500 text-white px-4 py-2 rounded-md"
-          @click="addMealMenu"
-        >
-          Add
-        </button>
+  v-model="newMealMenu"
+  class="border border-gray-300 rounded-md px-3 py-2 mr-2"
+>
+  <option value="">Select a meal menu</option>
+  <option v-for="mealMenu in availableMealMenus" :key="mealMenu.id" :value="mealMenu.id">
+    {{ mealMenu.menu_name }}
+  </option>
+</select>
+<button
+  class="bg-blue-500 text-white px-4 py-2 rounded-md"
+  @click="addMealMenu"
+>
+  Add
+</button>
       </div>
       <div class="grid grid-cols-3 gap-4">
         <div
@@ -194,6 +194,7 @@ export default {
         date: this.mealSchedule.date,
         start_time: this.mealSchedule.start_time,
         end_time: this.mealSchedule.end_time,
+        categoryDiscounts: this.mealSchedule.categoryDiscounts || {},
       };
 
       // Reset validation errors
