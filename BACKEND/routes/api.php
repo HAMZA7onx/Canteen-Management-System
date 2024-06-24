@@ -84,6 +84,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [BadgeController::class, 'show']);
         Route::put('/{id}', [BadgeController::class, 'update']);
         Route::delete('/{id}', [BadgeController::class, 'destroy']);
+
+        Route::post('/import', [BadgeController::class, 'importRfids']);
     });
 
     Route::prefix('meal-names')->group(function () {

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('meal_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('badge_id')->constrained('badges', 'id');
-            $table->foreignId('meal_schedule_id')->constrained('meal_schedules', 'id');
+            $table->foreignId('badge_id')->constrained('badges', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('meal_schedule_id')->constrained('meal_schedules', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamp('taken_at');
         });
     }

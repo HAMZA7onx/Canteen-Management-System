@@ -8,11 +8,11 @@
       class="mb-4"
     />
     <button
-      @click="importRecords"
+      @click="importRfids"
       :disabled="!file"
       class="bg-blue-500 text-white px-4 py-2 rounded-md"
     >
-      Import Records
+      Import RFIDs
     </button>
   </div>
 </template>
@@ -30,22 +30,22 @@ export default {
     handleFileChange(event) {
       this.file = event.target.files[0];
     },
-    async importRecords() {
+    async importRfids() {
       const formData = new FormData();
       formData.append('file', this.file);
 
       try {
-        await axios.post('/api/meal-records/import', formData, {
+        await axios.post('/api/badges/import', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log('Meal records imported successfully');
+        console.log('RFIDs imported successfully');
         this.$emit('import-success');
         this.$refs.fileInput.value = null;
         this.file = null;
       } catch (error) {
-        console.error('Error importing meal records:', error);
+        console.error('Error importing RFIDs:', error);
       }
     },
   },
