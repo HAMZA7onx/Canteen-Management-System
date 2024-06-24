@@ -46,7 +46,7 @@ export default {
       menuItems: [
         { label: 'Admins', icon: 'admins', route: '/' },
         { label: 'Roles', icon: 'roles', route: '/roles' },
-        { label: 'Users', icon: 'users', route: '/users' },
+        { label: 'Collaborators', icon: 'users', route: '/users' },
         { label: 'User Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Badges', icon: 'badges', route: '/badges' },
         { label: 'Meal Menus', icon: 'meal-menus', route: '/meal-menus' },

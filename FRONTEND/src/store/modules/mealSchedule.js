@@ -2,10 +2,12 @@ import MealScheduleService from '@/services/mealSchedule.service';
 
 const state = {
   mealSchedules: [],
+  categoryDiscounts: {},
 };
 
 const getters = {
   mealSchedules: (state) => state.mealSchedules,
+  categoryDiscounts: (state) => state.categoryDiscounts,
 };
 
 const actions = {
@@ -53,12 +55,7 @@ const actions = {
       });
   },
 
-  fetchCategoryDiscounts({ commit, state }, mealScheduleId) {
-    const mealSchedule = state.mealSchedules.find((schedule) => schedule.id === mealScheduleId);
-    if (mealSchedule && mealSchedule.categoryDiscounts) {
-      return Promise.resolve();
-    }
-
+  fetchCategoryDiscounts({ commit }, mealScheduleId) {
     return MealScheduleService.getCategoryDiscounts(mealScheduleId)
       .then((response) => {
         commit('SET_CATEGORY_DISCOUNTS', { mealScheduleId, categoryDiscounts: response.data });
@@ -68,32 +65,32 @@ const actions = {
         throw error;
       });
   },
-
-  updateCategoryDiscounts({ commit }, { mealScheduleId, requestPayload }) {
-    return MealScheduleService.updateCategoryDiscounts(mealScheduleId, requestPayload)
+  updateCategoryDiscount({ commit }, { mealScheduleId, categoryDiscount }) {
+    return MealScheduleService.updateCategoryDiscount(mealScheduleId, categoryDiscount)
       .then((response) => {
-        commit('SET_CATEGORY_DISCOUNTS', { mealScheduleId, categoryDiscounts: response.data });
+        commit('UPDATE_CATEGORY_DISCOUNT', { mealScheduleId, categoryDiscount: response.data });
       })
       .catch((error) => {
-        console.error('Error updating category discounts:', error);
+        console.error('Error updating category discount:', error);
         throw error;
       });
   },
-  
-  
 };
 
 const mutations = {
   SET_MEAL_SCHEDULES(state, mealSchedules) {
-    state.mealSchedules = mealSchedules;
+    state.mealSchedules = mealSchedules.map((mealSchedule) => ({
+      ...mealSchedule,
+      categoryDiscounts: [],
+    }));
   },
   ADD_MEAL_SCHEDULE(state, mealSchedule) {
-    state.mealSchedules.push(mealSchedule);
+    state.mealSchedules.push({ ...mealSchedule, categoryDiscounts: [] });
   },
   UPDATE_MEAL_SCHEDULE(state, updatedMealSchedule) {
     const index = state.mealSchedules.findIndex((schedule) => schedule.id === updatedMealSchedule.id);
     if (index !== -1) {
-      state.mealSchedules.splice(index, 1, updatedMealSchedule);
+      state.mealSchedules.splice(index, 1, { ...updatedMealSchedule, categoryDiscounts: [] });
     }
   },
   DELETE_MEAL_SCHEDULE(state, mealScheduleId) {
@@ -103,9 +100,21 @@ const mutations = {
     }
   },
   SET_CATEGORY_DISCOUNTS(state, { mealScheduleId, categoryDiscounts }) {
-    const mealScheduleIndex = state.mealSchedules.findIndex((schedule) => schedule.id === mealScheduleId);
-    if (mealScheduleIndex !== -1) {
-      state.mealSchedules[mealScheduleIndex].categoryDiscounts = categoryDiscounts;
+    const mealSchedule = state.mealSchedules.find((schedule) => schedule.id === mealScheduleId);
+    if (mealSchedule) {
+      mealSchedule.category_discounts = categoryDiscounts;
+    }
+  },
+
+  UPDATE_CATEGORY_DISCOUNT(state, { mealScheduleId, categoryDiscount }) {
+    const mealSchedule = state.mealSchedules.find((schedule) => schedule.id === mealScheduleId);
+    if (mealSchedule) {
+      const index = mealSchedule.category_discounts.findIndex((cd) => cd.id === categoryDiscount.id);
+      if (index !== -1) {
+        mealSchedule.category_discounts.splice(index, 1, categoryDiscount);
+      } else {
+        mealSchedule.category_discounts.push(categoryDiscount);
+      }
     }
   },
 };

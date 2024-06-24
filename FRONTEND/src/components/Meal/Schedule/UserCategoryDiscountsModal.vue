@@ -1,29 +1,29 @@
 <template>
   <div>
-    <div v-if="userCategories.length">
-      <div v-for="category in userCategories" :key="category.id" class="mb-4">
-        <label :for="`category-${category.id}`" class="block font-medium mb-2">{{ category.name }}</label>
-        <input
-          :id="`category-${category.id}`"
-          v-model.number="localCategoryDiscounts[category.id]"
-          type="number"
-          min="0"
-          max="100"
-          class="w-full border border-gray-300 rounded-md px-3 py-2"
-        />
+    <h2 class="text-xl font-bold mb-4">User Category Discounts</h2>
+    <div v-if="mealSchedule && mealSchedule.category_discounts">
+      <div v-for="categoryDiscount in mealSchedule.category_discounts" :key="categoryDiscount.id" class="mb-4">
+        <div class="flex items-center">
+          <span class="mr-4">{{ getCategoryName(categoryDiscount.category_id) }}:</span>
+          <input
+            v-model.number="categoryDiscount.meal_discount"
+            type="number"
+            min="0"
+            max="100"
+            class="border border-gray-300 rounded-md px-2 py-1"
+            @input="updateCategoryDiscount(categoryDiscount)"
+          />
+        </div>
       </div>
     </div>
-    <div class="mt-4 flex justify-end">
-      <button class="bg-blue-500 text-white px-4 py-2 rounded-md mr-2" @click="updateCategoryDiscounts">
-        Save
-      </button>
-      <button class="bg-gray-500 text-white px-4 py-2 rounded-md" @click="closeModal">
-        Cancel
-      </button>
+    <div v-else-if="mealSchedule">
+      No user categories found.
+    </div>
+    <div v-else>
+      Loading...
     </div>
   </div>
 </template>
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -40,43 +40,24 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      localCategoryDiscounts: {},
-    };
-  },
   computed: {
     ...mapGetters('userCategory', ['userCategories']),
   },
   created() {
     this.fetchUserCategories();
   },
-  mounted() {
-    this.fetchCategoryDiscounts(this.mealSchedule.id);
-  },
   methods: {
     ...mapActions('userCategory', ['fetchUserCategories']),
-    ...mapActions('mealSchedule', ['fetchCategoryDiscounts', 'updateCategoryDiscounts']),
-    closeModal() {
-      this.$emit('close');
+    ...mapActions('mealSchedule', ['updateCategoryDiscount']),
+    getCategoryName(categoryId) {
+      const category = this.userCategories.find((c) => c.id === categoryId);
+      return category ? category.name : '';
     },
-    updateCategoryDiscounts() {
-      const mealScheduleId = this.mealSchedule.id;
-      const discounts = Object.entries(this.localCategoryDiscounts).map(([categoryId, discount]) => ({
-        category_id: categoryId.toString(),
-        meal_discount: discount.toString(),
-      }));
-
-      const requestPayload = { discounts };
-
-      this.updateCategoryDiscounts({ mealScheduleId, requestPayload })
-        .then((response) => {
-          this.localCategoryDiscounts = { ...response.data }; // Create a new object
-          this.closeModal();
-        })
-        .catch((error) => {
-          console.error('Error updating category discounts:', error);
-        });
+    updateCategoryDiscount(categoryDiscount) {
+      this.updateCategoryDiscount({
+        mealScheduleId: this.mealSchedule.id,
+        categoryDiscount,
+      });
     },
   },
 };

@@ -27,4 +27,9 @@ class Badge extends Model
             $this->save();
         });
     }
+
+    public function mealRecords()
+    {
+        return $this->hasMany(MealRecord::class);
+    }
 }
