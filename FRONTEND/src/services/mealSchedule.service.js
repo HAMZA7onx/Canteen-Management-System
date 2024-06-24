@@ -27,9 +27,9 @@ class MealScheduleService {
     return request.get(`${API_URL}/meal-schedules/${mealScheduleId}/category-discounts`);
   }
 
-  updateCategoryDiscounts(mealScheduleId, requestPayload) {
-    return request.put(`${API_URL}/meal-schedules/${mealScheduleId}/category-discounts`, requestPayload);
-  }  
+  updateCategoryDiscount(mealScheduleId, categoryDiscount) {
+    return request.put(`${API_URL}/meal-schedules/${mealScheduleId}/category-discounts`, categoryDiscount);
+  }
 }
 
 export default new MealScheduleService();

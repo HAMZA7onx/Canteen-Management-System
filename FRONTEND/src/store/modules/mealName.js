@@ -1,5 +1,5 @@
 import MealNameService from '@/services/mealName.service';
-
+console.log('meal name');
 const state = {
   mealNames: [],
 };

@@ -11,6 +11,7 @@ import badge from './modules/badge';
 import mealMenu from './modules/mealMenu';
 import mealName from './modules/mealName';
 import mealSchedule from './modules/mealSchedule';
+import record from './modules/record';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -29,6 +30,7 @@ const store = createStore({
     mealMenu,
     mealName,
     mealSchedule,
+    record
   },
   plugins: [vuexLocal.plugin]
 });

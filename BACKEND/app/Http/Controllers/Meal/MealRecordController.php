@@ -10,7 +10,7 @@ class MealRecordController extends Controller
 {
     public function index()
     {
-        $mealRecords = MealRecord::all();
+        $mealRecords = MealRecord::with('badge.user.category', 'mealSchedule.mealName')->get();
         return response()->json($mealRecords);
     }
 
