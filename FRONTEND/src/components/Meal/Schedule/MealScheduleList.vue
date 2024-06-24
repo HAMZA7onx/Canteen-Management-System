@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-6 bg-white rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-4">Meal Schedules</h2>
 
     <div class="mb-4">

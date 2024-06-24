@@ -1,14 +1,23 @@
 <template>
   <div class="container mx-auto px-4">
     <!-- User List -->
-    <div class="mb-4">
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        @click="openCreateUserModal"
-      >
-        Create User
-      </button>
-    </div>
+
+<div class="mb-4 flex space-x-4 items-center">
+  <!-- Create User Button -->
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
+    @click="openCreateUserModal"
+  >
+    Create User
+  </button>
+
+  <!-- Import Users Input -->
+  <label class="relative cursor-pointer bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300">
+    Import Users
+    <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+  </label>
+</div>
+
 
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">

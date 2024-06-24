@@ -1,31 +1,27 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
-const API_URL = 'http://127.0.0.1:8000/api'
+const API_URL = 'http://127.0.0.1:8000/api';
 
 class BadgeService {
-  getBadges(query = '') {
-    return request.get(`${API_URL}/badges${query}`)
+  getAll() {
+    return request.get(`${API_URL}/badges`);
   }
 
-  getBadge(id) {
-    return request.get(`${API_URL}/badges/${id}`)
+  get(id) {
+    return request.get(`${API_URL}/badges/${id}`);
   }
 
-  getUsers() {
-    return request.get(`${API_URL}/users`)
+  create(badge) {
+    return request.post(`${API_URL}/badges`, badge);
   }
 
-  createBadge(badge) {
-    return request.post(`${API_URL}/badges`, badge)
+  update(id, badge) {
+    return request.put(`${API_URL}/badges/${id}`, badge);
   }
 
-  updateBadge(id, badge) {
-    return request.put(`${API_URL}/badges/${id}`, badge)
-  }
-
-  deleteBadge(id) {
-    return request.delete(`${API_URL}/badges/${id}`)
+  delete(id) {
+    return request.delete(`${API_URL}/badges/${id}`);
   }
 }
 
-export default new BadgeService()
+export default new BadgeService();

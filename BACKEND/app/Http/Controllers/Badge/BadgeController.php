@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Badge;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Imports\RfidImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class BadgeController extends Controller
 {
@@ -65,5 +68,18 @@ class BadgeController extends Controller
         $badge = Badge::findOrFail($id);
         $badge->delete();
         return response()->json(null, 204);
+    }
+
+    public function importRfids(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        $file = $request->file('file');
+
+        Excel::import(new RfidImport, $file);
+
+        return response()->json(['message' => 'RFIDs imported successfully']);
     }
 }
