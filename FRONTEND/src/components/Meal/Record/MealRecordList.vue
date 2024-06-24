@@ -1,23 +1,23 @@
 <template>
-    <div>
-      <h2>Meal Records</h2>
-      <table>
+    <div class="p-6 bg-white rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Meal Records</h2>
+      <table class="min-w-full bg-white">
         <thead>
-          <tr>
-            <th>Meal Name</th>
-            <th>Schedule Date</th>
-            <th>Badge RFID</th>
-            <th>User</th>
-            <th>User Category</th>
+          <tr class="w-full bg-gray-200 text-left text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6">Meal Name</th>
+            <th class="py-3 px-6">Schedule Date</th>
+            <th class="py-3 px-6">Badge RFID</th>
+            <th class="py-3 px-6">User</th>
+            <th class="py-3 px-6">User Category</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="record in mealRecords" :key="record.id" class="hover:bg-gray-100">
-            <td class="border px-4 py-2">{{ record.meal_schedule.meal_name.name }}</td>
-            <td class="border px-4 py-2">{{ formatDate(record.meal_schedule.date) }}</td>
-            <td class="border px-4 py-2">{{ record.badge.rfid }}</td>
-            <td class="border px-4 py-2">{{ record.badge.user.name }}</td>
-            <td class="border px-4 py-2">{{ record.badge.user.category.name }}</td>
+        <tbody class="text-gray-600 text-sm font-light">
+          <tr v-for="record in mealRecords" :key="record.id" class="border-b border-gray-200 hover:bg-gray-100">
+            <td class="py-3 px-6">{{ record.meal_schedule.meal_name.name }}</td>
+            <td class="py-3 px-6">{{ formatDate(record.meal_schedule.date) }}</td>
+            <td class="py-3 px-6">{{ record.badge.rfid }}</td>
+            <td class="py-3 px-6">{{ record.badge.user.name }}</td>
+            <td class="py-3 px-6">{{ record.badge.user.category.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -50,4 +50,8 @@
     },
   };
   </script>
+  
+  <style scoped>
+  /* Optional: Add custom styles if needed */
+  </style>
   
