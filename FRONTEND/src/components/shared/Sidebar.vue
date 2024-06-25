@@ -49,7 +49,7 @@ export default {
         { label: 'Les collaborateurs', icon: 'users', route: '/users' },
         { label: 'Les user-Categories', icon: 'user-categories', route: '/user-categories' },
         { label: 'Les badges', icon: 'badges', route: '/badges' },
-        { label: 'Les menus', icon: 'meal-menus', route: '/meal-menus' },
+        { label: 'Les menus', icon: 'meal-menus', route: '/menus' },
         { label: 'Les composants du menus', icon: 'meal-menus', route: '/food-composants' },
         { label: 'Le profiles repats', icon: 'meal-schedules', route: '/lll' },
         { label: 'Records', icon: 'meal-records', route: '/meal-records' },

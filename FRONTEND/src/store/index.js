@@ -9,6 +9,7 @@ import permission from './modules/permission';
 import userCategory from './modules/userCategory';
 import badge from './modules/badge';
 import foodComposant from './modules/foodComposant';
+import menu from './modules/menu';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -24,7 +25,8 @@ const store = createStore({
     permission,
     userCategory,
     badge,
-    foodComposant
+    foodComposant, 
+    menu
   },
   plugins: [vuexLocal.plugin]
 });
