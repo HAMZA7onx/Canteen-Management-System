@@ -10,10 +10,7 @@ use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
-use App\Http\Controllers\Meal\MealRecordController;
-use App\Http\Controllers\Meal\MealScheduleController;
-use App\Http\Controllers\Meal\MealMenuController;
-use App\Http\Controllers\Meal\MealNamesController;
+use App\Http\Controllers\WeekSchedule\WeekScheduleController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
@@ -88,34 +85,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/import', [BadgeController::class, 'importRfids']);
     });
 
-    Route::prefix('meal-names')->group(function () {
-        Route::get('/', [App\Http\Controllers\Meal\MealNameController::class, 'index']);
-        Route::post('/', [App\Http\Controllers\Meal\MealNameController::class, 'store']);
-        Route::get('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'show']);
-        Route::put('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'update']);
-        Route::delete('/{id}', [App\Http\Controllers\Meal\MealNameController::class, 'destroy']);
-    });
-
-    Route::prefix('meal-menus')->group(function () {
-        Route::get('/', [MealMenuController::class, 'index']);
-        Route::post('/', [MealMenuController::class, 'store']);
-        Route::get('/{id}', [MealMenuController::class, 'show']);
-        Route::put('/{id}', [MealMenuController::class, 'update']);
-        Route::delete('/{id}', [MealMenuController::class, 'destroy']);
-    });
-
-    Route::prefix('meal-schedules')->group(function () {
-        Route::get('/', [MealScheduleController::class, 'index']);
-        Route::post('/', [MealScheduleController::class, 'store']);
-        Route::get('/{id}', [MealScheduleController::class, 'show']);
-        Route::put('/{id}', [MealScheduleController::class, 'update']);
-        Route::delete('/{id}', [MealScheduleController::class, 'destroy']);
-
-        // Category Discounts
-        Route::get('/{id}/category-discounts', [MealScheduleController::class, 'getCategoryDiscounts']);
-        Route::put('/{id}/category-discounts', [MealScheduleController::class, 'updateCategoryDiscounts']);
-    });
-
     Route::prefix('category-discounts')->group(function () {
         Route::get('/', [CategoryDiscountController::class, 'index']);
         Route::post('/', [CategoryDiscountController::class, 'store']);
@@ -124,11 +93,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{categoryDiscount}', [CategoryDiscountController::class, 'destroy']);
     });
 
-    Route::prefix('meal-records')->group(function () {
-        Route::get('/', [MealRecordController::class, 'index']);
-        Route::post('/', [MealRecordController::class, 'store']);
-        Route::get('/{id}', [MealRecordController::class, 'show']);
-        Route::put('/{id}', [MealRecordController::class, 'update']);
-        Route::delete('/{id}', [MealRecordController::class, 'destroy']);
+    Route::prefix('week-schedules')->group(function () {
+        Route::get('/', [WeekScheduleController::class, 'index']);
+        Route::post('/', [WeekScheduleController::class, 'store']);
+        Route::get('/{weekSchedule}', [WeekScheduleController::class, 'show']);
+        Route::put('/{weekSchedule}', [WeekScheduleController::class, 'update']);
+        Route::delete('/{weekSchedule}', [WeekScheduleController::class, 'destroy']);
     });
 });
