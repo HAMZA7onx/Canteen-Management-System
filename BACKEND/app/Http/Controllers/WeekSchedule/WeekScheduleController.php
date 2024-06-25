@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WeekSchedule;
 
 use App\Http\Controllers\Controller;
 use App\Models\WeekSchedule;
+use App\Models\DailyMeal;
 use Illuminate\Http\Request;
 
 class WeekScheduleController extends Controller
@@ -53,5 +54,24 @@ class WeekScheduleController extends Controller
         $weekSchedule->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function attachDailyMeal(Request $request, WeekSchedule $weekSchedule, $day)
+    {
+        $validatedData = $request->validate([
+            'daily_meal_id' => 'required|exists:daily_meals,id',
+        ]);
+
+        $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
+        $weekSchedule->{"${day}Meals"}()->attach($dailyMeal);
+
+        return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
+    }
+
+    public function detachDailyMeal(WeekSchedule $weekSchedule, DailyMeal $dailyMeal, $day)
+    {
+        $weekSchedule->{"${day}Meals"}()->detach($dailyMeal);
+
+        return response()->json(['message' => 'Daily meal detached from the week schedule for ' . $day]);
     }
 }

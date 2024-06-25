@@ -11,6 +11,10 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
 use App\Http\Controllers\WeekSchedule\WeekScheduleController;
+use App\Http\Controllers\WeekSchedule\DailyMealController;
+use App\Http\Controllers\WeekSchedule\MenuController;
+use App\Http\Controllers\WeekSchedule\FoodComposantsController;
+
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
@@ -99,5 +103,41 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{weekSchedule}', [WeekScheduleController::class, 'show']);
         Route::put('/{weekSchedule}', [WeekScheduleController::class, 'update']);
         Route::delete('/{weekSchedule}', [WeekScheduleController::class, 'destroy']);
+
+        Route::post('/{weekSchedule}/daily-meals/{day}', [WeekScheduleController::class, 'attachDailyMeal']);
+        Route::delete('/{weekSchedule}/daily-meals/{dailyMeal}/{day}', [WeekScheduleController::class, 'detachDailyMeal']);
+    });
+
+    Route::prefix('daily-meals')->group(function () {
+        Route::get('/', [DailyMealController::class, 'index']);
+        Route::post('/', [DailyMealController::class, 'store']);
+        Route::get('/{dailyMeal}', [DailyMealController::class, 'show']);
+        Route::put('/{dailyMeal}', [DailyMealController::class, 'update']);
+        Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy']);
+
+        Route::post('/{dailyMeal}/week-schedules/{day}', [DailyMealController::class, 'attachWeekSchedule']);
+        Route::delete('/{dailyMeal}/week-schedules/{weekSchedule}/{day}', [DailyMealController::class, 'detachWeekSchedule']);
+    });
+
+    Route::prefix('menus')->group(function () {
+        Route::get('/', [MenuController::class, 'index']);
+        Route::post('/', [MenuController::class, 'store']);
+        Route::get('/{menu}', [MenuController::class, 'show']);
+        Route::put('/{menu}', [MenuController::class, 'update']);
+        Route::delete('/{menu}', [MenuController::class, 'destroy']);
+
+        Route::post('/{menu}/daily-meals', [MenuController::class, 'attachToDailyMeal']);
+        Route::delete('/{menu}/daily-meals/{dailyMeal}', [MenuController::class, 'detachFromDailyMeal']);
+    });
+
+    Route::prefix('food-composants')->group(function () {
+        Route::get('/', [FoodComposantsController::class, 'index']);
+        Route::post('/', [FoodComposantsController::class, 'store']);
+        Route::get('/{foodComposant}', [FoodComposantsController::class, 'show']);
+        Route::put('/{foodComposant}', [FoodComposantsController::class, 'update']);
+        Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
+
+        Route::post('/{foodComposant}/menus', [FoodComposantsController::class, 'attachToMenu']);
+        Route::delete('/{foodComposant}/menus/{menu}', [FoodComposantsController::class, 'detachFromMenu']);
     });
 });
