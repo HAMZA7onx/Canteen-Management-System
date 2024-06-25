@@ -22,6 +22,12 @@
             scope="col"
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
+            Description
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
             Actions
           </th>
         </tr>
@@ -29,6 +35,7 @@
       <tbody class="bg-white divide-y divide-gray-200">
         <tr v-for="category in userCategories" :key="category.id">
           <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ category.description }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
             <button
               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"

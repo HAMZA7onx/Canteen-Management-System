@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 
-class AdminsTableSeeder extends Seeder
+class Seeder2_AdminsTable extends Seeder
 {
     public function run()
     {
