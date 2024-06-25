@@ -12,6 +12,7 @@ const actions = {
   fetchFoodComposants({ commit }) {
     return FoodComposantService.getFoodComposants()
       .then(response => {
+        console.log('fetched FoodComposants: ', response);
         commit('SET_FOOD_COMPOSANTS', response.data)
       })
       .catch(error => {

@@ -12,6 +12,7 @@ const actions = {
   fetchMenus({ commit }) {
     return MenuService.getMenus()
       .then(response => {
+        console.log('Menus fetched:', response.data)
         commit('SET_MENUS', response.data)
       })
       .catch(error => {

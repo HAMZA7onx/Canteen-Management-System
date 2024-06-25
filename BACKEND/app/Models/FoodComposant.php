@@ -13,6 +13,6 @@ class FoodComposant extends Model
 
     public function menus()
     {
-        return $this->belongsToMany(Menu::class);
+        return $this->belongsToMany(Menu::class, 'menu_composant', 'food_composant_id', 'menu_id');
     }
 }
