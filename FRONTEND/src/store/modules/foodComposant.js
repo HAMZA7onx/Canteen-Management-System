@@ -42,16 +42,18 @@ const actions = {
       })
   },
 
-  deleteFoodComposant({ commit }, id) {
-    return FoodComposantService.deleteFoodComposant(id)
+  deleteFoodComposant({ commit }, foodComposant) {
+    console.log('item to delete:', foodComposant);
+    return FoodComposantService.deleteFoodComposant(foodComposant.id)
       .then(() => {
-        commit('DELETE_FOOD_COMPOSANT', id)
+        commit('DELETE_FOOD_COMPOSANT', foodComposant.id)
       })
       .catch(error => {
         console.error('Error deleting food composant:', error)
         throw error
       })
   },
+  
 
   attachToMenu({ commit }, { foodComposantId, menuId }) {
     return FoodComposantService.attachToMenu(foodComposantId, menuId)

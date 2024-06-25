@@ -75,10 +75,10 @@ export default {
 
       if (this.isEditMode) {
         this.$emit('update', formData)
-        this.$emit('close') // Emit the 'close' event after updating a food composant
+        this.$emit('close')
       } else {
         this.$emit('create', formData)
-        this.$emit('close') // Emit the 'close' event after creating a new food composant
+        this.$emit('close')
       }
     }
   }

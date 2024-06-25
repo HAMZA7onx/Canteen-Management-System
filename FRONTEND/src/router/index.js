@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
+import Login from '@/views/Auth/Login.vue';
 import store from '@/store';
 import UserList from '@/components/User/UserList.vue';
 import AdminListView from '@/views/Admin/AdminListView.vue';
@@ -7,7 +9,7 @@ import PermissionList from '@/components/Permission/PermissionList.vue';
 import UserCategoryList from '@/components/UserCategory/UserCategoryList.vue';
 import BadgeList from '@/components/Badge/BadgeList.vue';
 import FoodComposantList from '@/components/WeekSchedule/FoodComposant/FoodComposantList.vue'
-import Login from '@/views/Auth/Login.vue';
+import MenuList from '@/components/WeekSchedule/Menu/MenuList.vue'
  
 const routes = [
   { path: '/', component: AdminListView },
@@ -18,6 +20,7 @@ const routes = [
   { path: '/user-categories', component: UserCategoryList },
   { path: '/badges', component: BadgeList },
   { path: '/food-composants', component: FoodComposantList },
+  { path: '/menus', component: MenuList },
 ];
 
 
