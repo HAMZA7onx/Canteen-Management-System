@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminRolePermissionController;
 use App\Http\Controllers\User\UserCategoryController;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
@@ -87,14 +86,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [BadgeController::class, 'destroy']);
 
         Route::post('/import', [BadgeController::class, 'importRfids']);
-    });
-
-    Route::prefix('category-discounts')->group(function () {
-        Route::get('/', [CategoryDiscountController::class, 'index']);
-        Route::post('/', [CategoryDiscountController::class, 'store']);
-        Route::get('/{categoryDiscount}', [CategoryDiscountController::class, 'show']);
-        Route::put('/{categoryDiscount}', [CategoryDiscountController::class, 'update']);
-        Route::delete('/{categoryDiscount}', [CategoryDiscountController::class, 'destroy']);
     });
 
     Route::prefix('week-schedules')->group(function () {

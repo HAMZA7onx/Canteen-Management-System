@@ -8,10 +8,7 @@ import role from './modules/role';
 import permission from './modules/permission';
 import userCategory from './modules/userCategory';
 import badge from './modules/badge';
-import mealMenu from './modules/mealMenu';
-import mealName from './modules/mealName';
-import mealSchedule from './modules/mealSchedule';
-import record from './modules/record';
+import foodComposant from './modules/foodComposant';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -27,10 +24,7 @@ const store = createStore({
     permission,
     userCategory,
     badge,
-    mealMenu,
-    mealName,
-    mealSchedule,
-    record
+    foodComposant
   },
   plugins: [vuexLocal.plugin]
 });
