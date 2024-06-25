@@ -14,7 +14,7 @@ class User extends Model
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
 
     protected $table = 'users';
-    protected $fillable = ['category_id', 'name', 'email', 'phone_number', 'gender'];
+    protected $fillable = ['category_id' ,'affected_categories', 'editor', 'name', 'email', 'phone_number', 'gender'];
     protected $hidden = ['password'];
     protected $casts = [
         'email_verified_at' => 'datetime',

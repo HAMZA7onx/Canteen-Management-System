@@ -7,15 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class UserCategory extends Model
 {
     protected $table = 'user_category';
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'description', 'editor'];
 
     public function users()
     {
         return $this->hasMany(User::class);
-    }
-
-    public function categoryDiscounts()
-    {
-        return $this->hasMany(CategoryDiscount::class);
     }
 }

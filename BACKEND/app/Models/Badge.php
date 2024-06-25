@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class Badge extends Model
 {
+    protected $table = 'badges';
     protected $fillable = ['user_id', 'rfid', 'status'];
 
     public function user()
@@ -26,10 +27,5 @@ class Badge extends Model
             $this->status = 'active';
             $this->save();
         });
-    }
-
-    public function mealRecords()
-    {
-        return $this->hasMany(MealRecord::class);
     }
 }
