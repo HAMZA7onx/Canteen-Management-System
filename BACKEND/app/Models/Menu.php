@@ -13,7 +13,7 @@ class Menu extends Model
 
     public function food_composants()
     {
-        return $this->belongsToMany(FoodComposant::class);
+        return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');
     }
 
     public function daily_meals()

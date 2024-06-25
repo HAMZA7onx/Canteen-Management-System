@@ -29,7 +29,7 @@
               {{ menu.name }}
             </td>
             <td class="py-3 px-6 text-left">
-              {{ menu.description }}
+              {{ menu.description !== null ? menu.description : '-' }}
             </td>
             <td class="py-3 px-6 text-center">
               <button

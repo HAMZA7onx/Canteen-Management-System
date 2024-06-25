@@ -29,7 +29,7 @@
               {{ foodComposant.name }}
             </td>
             <td class="py-3 px-6 text-left">
-              {{ foodComposant.description }}
+              {{ foodComposant.description !== null ? foodComposant.description : '-' }}
             </td>
             <td class="py-3 px-6 text-center">
               <button
@@ -165,6 +165,13 @@ export default {
   },
   created() {
     this.fetchFoodComposants()
+  },
+  watch: {
+    foodComposants(newValue) {
+      if (newValue.length > 0) {
+        console.log('Food composants loaded:', newValue)
+      }
+    }
   },
   methods: {
     ...mapActions('foodComposant', [

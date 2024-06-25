@@ -11,7 +11,7 @@ class FoodComposantsController extends Controller
 {
     public function index()
     {
-        $foodComposants = FoodComposant::all();
+        $foodComposants = FoodComposant::latest()->get();
         return response()->json($foodComposants);
     }
 
