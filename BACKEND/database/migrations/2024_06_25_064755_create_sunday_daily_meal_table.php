@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('daily_meal_id')->constrained('daily_meals')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('week_schedule_id')->constrained('week_schedule')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->time('start_time');
+            $table->time('end_time');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
