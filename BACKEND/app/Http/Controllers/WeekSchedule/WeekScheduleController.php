@@ -21,11 +21,11 @@ class WeekScheduleController extends Controller
             'mode_name' => 'required',
             'description' => 'nullable',
             'status' => 'required|in:active,inactive',
-            'editor' => 'required',
+            'creator' => 'required',
+            'editors' => 'required|json',
         ]);
 
         $weekSchedule = WeekSchedule::create($validatedData);
-
         return response()->json($weekSchedule, 201);
     }
 
@@ -41,18 +41,17 @@ class WeekScheduleController extends Controller
             'mode_name' => 'required',
             'description' => 'nullable',
             'status' => 'required|in:active,inactive',
-            'editor' => 'required',
+            'creator' => 'required',
+            'editors' => 'required|json',
         ]);
 
         $weekSchedule->update($validatedData);
-
         return response()->json($weekSchedule);
     }
 
     public function destroy(WeekSchedule $weekSchedule)
     {
         $weekSchedule->delete();
-
         return response()->json(null, 204);
     }
 
@@ -64,14 +63,12 @@ class WeekScheduleController extends Controller
 
         $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
         $weekSchedule->{"${day}Meals"}()->attach($dailyMeal);
-
         return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
     }
 
     public function detachDailyMeal(WeekSchedule $weekSchedule, DailyMeal $dailyMeal, $day)
     {
         $weekSchedule->{"${day}Meals"}()->detach($dailyMeal);
-
         return response()->json(['message' => 'Daily meal detached from the week schedule for ' . $day]);
     }
 }

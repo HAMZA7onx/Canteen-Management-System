@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('week_schedule_id')->constrained('week_schedule')->cascadeOnUpdate()->cascadeOnDelete();
             $table->time('start_time');
             $table->time('end_time');
+            $table->unsignedFloat('price');
             $table->timestamps();
         });
     }

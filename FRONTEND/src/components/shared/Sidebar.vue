@@ -51,7 +51,8 @@ export default {
         { label: 'Les badges', icon: 'badges', route: '/badges' },
         { label: 'Les menus', icon: 'meal-menus', route: '/menus' },
         { label: 'Les composants du menus', icon: 'meal-menus', route: '/food-composants' },
-        { label: 'Le profiles repats', icon: 'meal-schedules', route: '/lll' },
+        { label: 'Gestion des repats', icon: 'meal-menus', route: '/daily' },
+        { label: 'Le profiles repats', icon: 'meal-schedules', route: '/daily' },
         { label: 'Records', icon: 'meal-records', route: '/meal-records' },
       ],
     };

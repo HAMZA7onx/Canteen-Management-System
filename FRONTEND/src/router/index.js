@@ -10,6 +10,7 @@ import UserCategoryList from '@/components/UserCategory/UserCategoryList.vue';
 import BadgeList from '@/components/Badge/BadgeList.vue';
 import FoodComposantList from '@/components/WeekSchedule/FoodComposant/FoodComposantList.vue'
 import MenuList from '@/components/WeekSchedule/Menu/MenuList.vue'
+import DailyMealList from '@/components/WeekSchedule/DailyMeal/DailyMealList.vue'
  
 const routes = [
   { path: '/', component: AdminListView },
@@ -21,6 +22,7 @@ const routes = [
   { path: '/badges', component: BadgeList },
   { path: '/food-composants', component: FoodComposantList },
   { path: '/menus', component: MenuList },
+  { path: '/daily', component: DailyMealList },
 ];
 
 

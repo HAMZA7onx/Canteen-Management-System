@@ -15,6 +15,7 @@ class ThursdayDailyMeal extends Model
         'daily_meal_id',
         'week_schedule_id',
         'start_time',
-        'end_time'
+        'end_time',
+        'price'
     ];
 }

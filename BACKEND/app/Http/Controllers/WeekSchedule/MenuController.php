@@ -12,9 +12,6 @@ class MenuController extends Controller
     public function index()
     {
         $menus = Menu::with(['food_composants', 'daily_meals'])->get();
-//        $menus = Menu::latest()->get();
-//        $menus = Menu::with('food_composants')->latest()->get();
-
         return response()->json($menus);
 
     }

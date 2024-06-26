@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('mode_name');
             $table->text('description');
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->string('editor');
+            $table->string('creator');
+            $table->json('editors');
             $table->timestamps();
         });
     }

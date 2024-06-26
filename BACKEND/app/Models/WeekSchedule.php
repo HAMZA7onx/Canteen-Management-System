@@ -9,7 +9,11 @@ class WeekSchedule extends Model
 {
     use HasFactory;
     protected $table = 'week_schedule';
-    protected $fillable = ['mode_name', 'description', 'editor'];
+    protected $casts = [
+        'editors' => 'json',
+    ];
+
+    protected $fillable = ['mode_name', 'description', 'creator', 'editors'];
 
     public function mondayMeals()
     {
