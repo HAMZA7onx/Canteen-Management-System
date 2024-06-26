@@ -12,7 +12,6 @@ class DailyMealController extends Controller
     public function index()
     {
         $dailyMeals = DailyMeal::latest()->get();
-//        $dailyMeals = DailyMeal::with(['menus', 'mondaySchedules', 'tuesdaySchedules', 'wednesdaySchedules', 'thursdaySchedules', 'fridaySchedules', 'saturdaySchedules', 'sundaySchedules'])->get();
         return response()->json($dailyMeals);
     }
 
@@ -30,7 +29,6 @@ class DailyMealController extends Controller
 
     public function show(DailyMeal $dailyMeal)
     {
-//        $dailyMeal->load(['menus', 'mondaySchedules', 'tuesdaySchedules', 'wednesdaySchedules', 'thursdaySchedules', 'fridaySchedules', 'saturdaySchedules', 'sundaySchedules']);
         return response()->json($dailyMeal);
     }
 

@@ -17,6 +17,10 @@ class SundayDailyMeal extends Model
         'start_time',
         'end_time',
         'price'
-
     ];
+
+    public function dailyMeal()
+    {
+        return $this->belongsTo(DailyMeal::class);
+    }
 }

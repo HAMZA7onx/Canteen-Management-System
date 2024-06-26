@@ -18,4 +18,9 @@ class MondayDailyMeal extends Pivot
         'end_time',
         'price'
     ];
+
+    public function dailyMeal()
+    {
+        return $this->belongsTo(DailyMeal::class);
+    }
 }

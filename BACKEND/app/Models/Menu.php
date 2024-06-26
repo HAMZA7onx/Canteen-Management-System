@@ -11,13 +11,23 @@ class Menu extends Model
     protected $table = 'menu';
     protected $fillable = ['name', 'description'];
 
-    public function food_composants()
+//    public function food_composants()
+//    {
+//        return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');
+//    }
+//
+//    public function daily_meals()
+//    {
+//        return $this->belongsToMany(DailyMeal::class);
+//    }
+
+    public function dailyMeals()
     {
-        return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');
+        return $this->belongsToMany(DailyMeal::class, 'daily_meal_menu');
     }
 
-    public function daily_meals()
+    public function foodComposants()
     {
-        return $this->belongsToMany(DailyMeal::class);
+        return $this->belongsToMany(FoodComposant::class, 'menu_composant');
     }
 }
