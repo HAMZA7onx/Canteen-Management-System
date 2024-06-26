@@ -11,9 +11,10 @@ class MenuController extends Controller
 {
     public function index()
     {
-        $menus = Menu::with(['food_composants', 'daily_meals'])->get();
+        $menus = Menu::with([
+            'foodComposants'
+        ])->get();
         return response()->json($menus);
-
     }
 
     public function store(Request $request)
@@ -24,13 +25,14 @@ class MenuController extends Controller
         ]);
 
         $menu = Menu::create($validatedData);
-
         return response()->json($menu, 201);
     }
 
     public function show(Menu $menu)
     {
-        $menu->load(['food_composants', 'daily_meals']);
+        $menu->load([
+            'foodComposants'
+        ]);
         return response()->json($menu);
     }
 

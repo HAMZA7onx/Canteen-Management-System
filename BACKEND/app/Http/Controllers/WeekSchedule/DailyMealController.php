@@ -5,14 +5,25 @@ namespace App\Http\Controllers\WeekSchedule;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DailyMeal;
-use App\Models\WeekSchedule;
+use App\Models\Menu;
+
 
 class DailyMealController extends Controller
 {
     public function index()
     {
-        $dailyMeals = DailyMeal::latest()->get();
+        $dailyMeals = DailyMeal::with([
+            "menus"
+        ])->get();
         return response()->json($dailyMeals);
+    }
+
+    public function show(DailyMeal $dailyMeal)
+    {
+        $dailyMeal =  DailyMeal::where('id', $dailyMeal->id)->with([
+            "menus"
+        ])->get();
+        return response()->json($dailyMeal);
     }
 
     public function store(Request $request)
@@ -23,13 +34,7 @@ class DailyMealController extends Controller
         ]);
 
         $dailyMeal = DailyMeal::create($validatedData);
-
         return response()->json($dailyMeal, 201);
-    }
-
-    public function show(DailyMeal $dailyMeal)
-    {
-        return response()->json($dailyMeal);
     }
 
     public function update(Request $request, DailyMeal $dailyMeal)
@@ -40,33 +45,25 @@ class DailyMealController extends Controller
         ]);
 
         $dailyMeal->update($validatedData);
-
         return response()->json($dailyMeal);
     }
 
     public function destroy(DailyMeal $dailyMeal)
     {
         $dailyMeal->delete();
-
         return response()->json(null, 204);
     }
 
-    public function attachWeekSchedule(Request $request, DailyMeal $dailyMeal, $day)
+    public function attachMenu(Request $request, DailyMeal $dailyMeal, $menuId)
     {
-        $validatedData = $request->validate([
-            'week_schedule_id' => 'required|exists:week_schedule,id',
-        ]);
+        $dailyMeal->menus()->attach($menuId);
 
-        $weekSchedule = WeekSchedule::findOrFail($validatedData['week_schedule_id']);
-        $dailyMeal->{"${day}Schedules"}()->attach($weekSchedule);
-
-        return response()->json(['message' => 'Week schedule attached to the daily meal for ' . $day]);
+        return response()->json(['message' => 'Menu attached to the daily meal']);
     }
 
-    public function detachWeekSchedule(DailyMeal $dailyMeal, WeekSchedule $weekSchedule, $day)
-    {
-        $dailyMeal->{"${day}Schedules"}()->detach($weekSchedule);
 
-        return response()->json(['message' => 'Week schedule detached from the daily meal for ' . $day]);
+    public function detachMenu(DailyMeal $dailyMeal, Menu $menu) {
+        $dailyMeal->menus()->detach($menu);
+        return response()->json(['message' => 'menu detached from the dailyMeal'. $dailyMeal->name]);
     }
 }

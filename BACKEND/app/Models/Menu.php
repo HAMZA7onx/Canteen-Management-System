@@ -11,16 +11,6 @@ class Menu extends Model
     protected $table = 'menu';
     protected $fillable = ['name', 'description'];
 
-//    public function food_composants()
-//    {
-//        return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');
-//    }
-//
-//    public function daily_meals()
-//    {
-//        return $this->belongsToMany(DailyMeal::class);
-//    }
-
     public function dailyMeals()
     {
         return $this->belongsToMany(DailyMeal::class, 'daily_meal_menu');
@@ -28,6 +18,6 @@ class Menu extends Model
 
     public function foodComposants()
     {
-        return $this->belongsToMany(FoodComposant::class, 'menu_composant');
+        return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');
     }
 }

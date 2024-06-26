@@ -106,8 +106,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{dailyMeal}', [DailyMealController::class, 'update']);
         Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy']);
 
-        Route::post('/{dailyMeal}/week-schedules/{day}', [DailyMealController::class, 'attachWeekSchedule']);
-        Route::delete('/{dailyMeal}/week-schedules/{weekSchedule}/{day}', [DailyMealController::class, 'detachWeekSchedule']);
+        // Attach a menu to a daily meal
+        Route::post('/{dailyMeal}/menus/{menuId}', [DailyMealController::class, 'attachMenu']);
+        // Detach a menu from a daily meal
+        Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu']);
     });
 
     Route::prefix('menus')->group(function () {
