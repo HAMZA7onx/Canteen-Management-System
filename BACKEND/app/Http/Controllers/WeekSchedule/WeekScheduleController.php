@@ -57,11 +57,10 @@ class WeekScheduleController extends Controller
     public function update(Request $request, WeekSchedule $weekSchedule)
     {
         $validatedData = $request->validate([
-            'mode_name' => 'required',
+            'mode_name' => 'min:5',
             'description' => 'nullable',
-            'status' => 'required|in:active,inactive',
-            'creator' => 'required',
-            'editors' => 'required|json',
+            'status' => 'in:active,inactive',
+            'editors' => 'json',
         ]);
 
         $weekSchedule->update($validatedData);
@@ -72,7 +71,6 @@ class WeekScheduleController extends Controller
     public function destroy(WeekSchedule $weekSchedule)
     {
         $weekSchedule->delete();
-
         return response()->json(null, 204);
     }
 
