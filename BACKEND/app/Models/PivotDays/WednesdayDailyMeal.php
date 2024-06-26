@@ -15,6 +15,12 @@ class WednesdayDailyMeal extends Model
         'daily_meal_id',
         'week_schedule_id',
         'start_time',
-        'end_time'
+        'end_time',
+        'price'
     ];
+
+    public function dailyMeal()
+    {
+        return $this->belongsTo(DailyMeal::class);
+    }
 }

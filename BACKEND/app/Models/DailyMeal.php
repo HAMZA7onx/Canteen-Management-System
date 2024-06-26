@@ -1,51 +1,53 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
 
 class DailyMeal extends Model
 {
-    use HasFactory;
-    protected $table = 'daily_meals';
-    protected $fillable = ['name', 'description', 'price'];
+    protected $fillable = [
+        'name',
+        'description',
+    ];
 
     public function menus()
     {
-        return $this->belongsToMany(Menu::class);
+        return $this->belongsToMany(Menu::class, 'daily_meal_menu');
     }
 
-    public function mondaySchedules()
+    public function mondayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\MondayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'monday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function tuesdaySchedules()
+    public function tuesdayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\TuesdayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'tuesday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function wednesdaySchedules()
+    public function wednesdayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\WednesdayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'wednesday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function thursdaySchedules()
+    public function thursdayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\ThursdayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'thursday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function fridaySchedules()
+    public function fridayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\FridayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'friday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function saturdaySchedules()
+    public function saturdayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\SaturdayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'saturday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 
-    public function sundaySchedules()
+    public function sundayDailyMeals()
     {
-        return $this->belongsToMany(WeekSchedule::class)->using(PivotDays\SundayDailyMeal::class);
+        return $this->belongsToMany(WeekSchedule::class, 'sunday_daily_meal', 'daily_meal_id', 'week_schedule_id');
     }
 }
