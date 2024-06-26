@@ -50,29 +50,4 @@ class FoodComposantsController extends Controller
 
         return response()->json(null, 204);
     }
-
-    /**
-     * Attach a food composant to a menu.
-     */
-    public function attachToMenu(Request $request, FoodComposant $foodComposant)
-    {
-        $validatedData = $request->validate([
-            'menu_id' => 'required|exists:menu,id',
-        ]);
-
-        $menu = Menu::findOrFail($validatedData['menu_id']);
-        $foodComposant->menus()->attach($menu);
-
-        return response()->json(['message' => 'Food composant attached to the menu']);
-    }
-
-    /**
-     * Dettach a food composant to a menu.
-     */
-    public function detachFromMenu(FoodComposant $foodComposant, Menu $menu)
-    {
-        $foodComposant->menus()->detach($menu);
-
-        return response()->json(['message' => 'Food composant detached from the menu']);
-    }
 }
