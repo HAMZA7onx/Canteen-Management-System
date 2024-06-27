@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WeekSchedule;
 use App\Models\DailyMeal;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class WeekScheduleController extends Controller
 {
@@ -80,19 +81,42 @@ class WeekScheduleController extends Controller
         $validatedData = $request->validate([
             'daily_meal_id' => 'required|exists:daily_meals,id',
             'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
             'price' => 'required|numeric',
         ]);
 
         $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
+        $weekSchedule = WeekSchedule::findOrFail($weekScheduleId);
 
-        WeekSchedule::findOrFail($weekScheduleId)
-            ->{"${day}DailyMeals"}()
-            ->attach($dailyMeal, [
-                'start_time' => $validatedData['start_time'],
-                'end_time' => $validatedData['end_time'],
-                'price' => $validatedData['price'],
-            ]);
+        // Check if the daily meal is already attached to the same day
+        $existingDailyMeals = $weekSchedule->{"${day}DailyMeals"}()->get();
+        foreach ($existingDailyMeals as $existingDailyMeal) {
+            if ($existingDailyMeal->id === $dailyMeal->id) {
+                return response()->json(['error' => 'The daily meal is already attached to ' . $day], 400);
+            }
+        }
+
+        // Check if the duration overlaps with any existing daily meal for the same day
+        foreach ($existingDailyMeals as $existingDailyMeal) {
+            $existingStartTime = Carbon::parse($existingDailyMeal->pivot->start_time);
+            $existingEndTime = Carbon::parse($existingDailyMeal->pivot->end_time);
+            $newStartTime = Carbon::parse($validatedData['start_time']);
+            $newEndTime = Carbon::parse($validatedData['end_time']);
+
+            if (
+                ($newStartTime->between($existingStartTime, $existingEndTime) || $newEndTime->between($existingStartTime, $existingEndTime)) ||
+                ($existingStartTime->between($newStartTime, $newEndTime) || $existingEndTime->between($newStartTime, $newEndTime))
+            ) {
+                return response()->json(['error' => 'The specified duration overlaps with an existing daily meal for ' . $day], 400);
+            }
+        }
+
+        $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, [
+            'start_time' => $validatedData['start_time'],
+            'end_time' => $validatedData['end_time'],
+            'price' => $validatedData['price'],
+        ]);
+
         return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
     }
 
