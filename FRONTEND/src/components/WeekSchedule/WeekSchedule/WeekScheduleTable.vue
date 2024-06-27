@@ -152,7 +152,7 @@
             dailyMealData,
           })
             .then(() => {
-              this.closeAssignModal()
+            //   this.closeAssignModal()
               this.fetchWeekSchedules()
             })
             .catch((error) => {
