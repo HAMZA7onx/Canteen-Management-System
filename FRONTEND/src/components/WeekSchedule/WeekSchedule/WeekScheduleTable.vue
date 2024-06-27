@@ -93,12 +93,12 @@
           :title="`Assign Daily Meals for ${selectedDay}`"
           @close="closeAssignModal"
         >
-          <week-schedule-form
-            :weekSchedule="selectedWeekSchedule"
+        <week-schedule-form
+            :weekScheduleId="selectedWeekSchedule.id"
             :day="selectedDay"
             @assign="handleAssignDailyMeals"
             @detach="handleDetachDailyMeal"
-          />
+        />
         </modal>
       </overlay>
     </div>
@@ -136,9 +136,9 @@
           'detachDailyMeal',
         ]),
         openAssignModal(weekSchedule, day) {
-          this.selectedWeekSchedule = weekSchedule
-          this.selectedDay = day
-          this.showAssignModal = true
+            this.selectedWeekSchedule = weekSchedule
+            this.selectedDay = day
+            this.showAssignModal = true
         },
         closeAssignModal() {
           this.showAssignModal = false

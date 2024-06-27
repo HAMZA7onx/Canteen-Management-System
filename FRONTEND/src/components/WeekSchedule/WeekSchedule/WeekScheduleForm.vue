@@ -10,27 +10,27 @@
         <div v-else>
           <ul role="list" class="divide-y divide-gray-200">
             <li
-              v-for="dailyMeal in assignedDailyMeals"
-              :key="dailyMeal.id"
+              v-for="dailyMealData in assignedDailyMeals"
+              :key="dailyMealData.daily_meal_id"
               class="py-4"
             >
               <div class="flex items-center space-x-4">
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-gray-900 truncate">
-                    {{ dailyMeal.name }}
+                    {{ getDailyMealName(dailyMealData.daily_meal_id) }}
                   </p>
                   <p class="text-sm text-gray-500 truncate">
-                    {{ dailyMeal.description }}
+                    {{ getDailyMealDescription(dailyMealData.daily_meal_id) }}
                   </p>
                   <p class="text-sm text-gray-500">
-                    {{ dailyMeal.pivot.start_time }} -
-                    {{ dailyMeal.pivot.end_time }} ({{ dailyMeal.pivot.price }}$)
+                    {{ dailyMealData.start_time }} -
+                    {{ dailyMealData.end_time }} ({{ dailyMealData.price }}$)
                   </p>
                 </div>
                 <div>
                   <button
                     class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    @click="detachDailyMeal(dailyMeal.id)"
+                    @click="detachDailyMeal(dailyMealData.daily_meal_id)"
                   >
                     Detach
                   </button>
@@ -111,60 +111,68 @@
   </template>
   
   <script>
-  import { mapGetters, mapActions } from 'vuex'
-  
-  export default {
-    props: {
-      weekSchedule: {
-        type: Object,
-        required: true,
-      },
-      day: {
-        type: String,
-        required: true,
-      },
+import { mapGetters, mapActions } from 'vuex'
+
+export default {
+  props: {
+    weekScheduleId: {
+      type: Number,
+      required: true,
     },
-    data() {
-      return {
-        selectedDailyMealIds: [],
-        startTime: '',
-        endTime: '',
-        price: '',
-      }
+    day: {
+      type: String,
+      required: true,
     },
-    computed: {
-      ...mapGetters('dailyMeal', ['dailyMeals']),
-      assignedDailyMeals() {
-        return this.weekSchedule[`${this.day}DailyMeals`] || []
-      },
-      availableDailyMeals() {
-        const assignedDailyMealIds = this.assignedDailyMeals.map(
-          (dailyMeal) => dailyMeal.id
-        )
-        return this.dailyMeals.filter(
-          (dailyMeal) => !assignedDailyMealIds.includes(dailyMeal.id)
-        )
-      },
+  },
+  data() {
+    return {
+      selectedDailyMealIds: [],
+      startTime: '',
+      endTime: '',
+      price: '',
+    }
+  },
+  computed: {
+    ...mapGetters('dailyMeal', ['dailyMeals']),
+    ...mapGetters('weekSchedule', ['getAssignedDailyMealsForDay']),
+    assignedDailyMeals() {
+      return this.getAssignedDailyMealsForDay(this.weekScheduleId, this.day) || []
     },
-    created() {
-      this.fetchDailyMeals()
+    availableDailyMeals() {
+      const assignedDailyMealIds = this.assignedDailyMeals.map(
+        (dailyMealData) => dailyMealData.daily_meal_id
+      )
+      return this.dailyMeals.filter(
+        (dailyMeal) => !assignedDailyMealIds.includes(dailyMeal.id)
+      )
     },
-    methods: {
-      ...mapActions('dailyMeal', ['fetchDailyMeals']),
-      ...mapActions('weekSchedule', ['assignDailyMeals', 'detachDailyMeal']),
-      assignDailyMeals() {
+  },
+  created() {
+    this.fetchDailyMeals()
+  },
+  methods: {
+    ...mapActions('dailyMeal', ['fetchDailyMeals']),
+    ...mapActions('weekSchedule', ['assignDailyMeals', 'detachDailyMeal']),
+    getDailyMealName(dailyMealId) {
+      const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
+      return dailyMeal ? dailyMeal.name : ''
+    },
+    getDailyMealDescription(dailyMealId) {
+      const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
+      return dailyMeal ? dailyMeal.description : ''
+    },
+    assignDailyMeals() {
       const dailyMealData = {
-        daily_meal_id: this.selectedDailyMealIds[0], // Assuming you're assigning only one daily meal at a time
+        daily_meal_id: this.selectedDailyMealIds[0],
         start_time: this.startTime,
         end_time: this.endTime,
         price: this.price,
       }
       this.$emit('assign', dailyMealData)
     },
-      detachDailyMeal(dailyMealId) {
-        this.$emit('detach', dailyMealId)
-      },
+    detachDailyMeal(dailyMealId) {
+      this.$emit('detach', dailyMealId)
     },
-  }
-  </script>
-  
+  },
+}
+</script>

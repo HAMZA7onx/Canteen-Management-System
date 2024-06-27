@@ -6,6 +6,18 @@ const state = {
 
 const getters = {
   weekSchedules: (state) => state.weekSchedules,
+  getAssignedDailyMealsForDay: (state) => (weekScheduleId, day) => {
+    const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
+    const assignedDailyMealsData = weekSchedule ? weekSchedule[`${day}_daily_meals`] : []
+    const assignedDailyMeals = assignedDailyMealsData.map((dailyMealData) => ({
+      daily_meal_id: dailyMealData.id,
+      start_time: dailyMealData.pivot.start_time,
+      end_time: dailyMealData.pivot.end_time,
+      price: dailyMealData.pivot.price,
+    }))
+    console.log(`Assigned daily meals for weekScheduleId ${weekScheduleId} and day ${day}:`, assignedDailyMeals)
+    return assignedDailyMeals
+  },
 }
 
 const actions = {
