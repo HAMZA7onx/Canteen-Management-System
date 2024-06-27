@@ -119,8 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{menu}', [MenuController::class, 'update']);
         Route::delete('/{menu}', [MenuController::class, 'destroy']);
 
-        Route::post('/{menu}/daily-meals', [MenuController::class, 'attachToDailyMeal']);
-        Route::delete('/{menu}/daily-meals/{dailyMeal}', [MenuController::class, 'detachFromDailyMeal']);
+        Route::post('/{menu}/food-composants/{foodComposantId}', [MenuController::class, 'attachFoodComposant']);
+        Route::delete('/{menu}/food-composants/{foodComposant}', [MenuController::class, 'detachFoodComposant']);
     });
 
     Route::prefix('food-composants')->group(function () {
@@ -129,8 +129,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{foodComposant}', [FoodComposantsController::class, 'show']);
         Route::put('/{foodComposant}', [FoodComposantsController::class, 'update']);
         Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
-
-        Route::post('/{foodComposant}/menus', [FoodComposantsController::class, 'attachToMenu']);
-        Route::delete('/{foodComposant}/menus/{menu}', [FoodComposantsController::class, 'detachFromMenu']);
     });
 });

@@ -39,6 +39,7 @@ class WeekScheduleController extends Controller
         return response()->json($weekSchedule);
     }
 
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([

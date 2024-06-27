@@ -13,7 +13,7 @@ class DailyMealController extends Controller
     public function index()
     {
         $dailyMeals = DailyMeal::with([
-            "menus"
+            "menus.foodComposants"
         ])->get();
         return response()->json($dailyMeals);
     }
@@ -21,7 +21,7 @@ class DailyMealController extends Controller
     public function show(DailyMeal $dailyMeal)
     {
         $dailyMeal =  DailyMeal::where('id', $dailyMeal->id)->with([
-            "menus"
+            "menus.foodComposants"
         ])->get();
         return response()->json($dailyMeal);
     }
