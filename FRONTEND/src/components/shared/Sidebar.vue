@@ -52,7 +52,7 @@ export default {
         { label: 'Les menus', icon: 'meal-menus', route: '/menus' },
         { label: 'Les composants du menus', icon: 'meal-menus', route: '/food-composants' },
         { label: 'Gestion des repats', icon: 'meal-menus', route: '/daily' },
-        { label: 'Le profiles repats', icon: 'meal-schedules', route: '/daily' },
+        { label: 'Le profiles repats', icon: 'meal-schedules', route: '/week-schedules' },
         { label: 'Records', icon: 'meal-records', route: '/meal-records' },
       ],
     };

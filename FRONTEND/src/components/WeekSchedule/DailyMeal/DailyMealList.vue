@@ -21,7 +21,7 @@
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
           <tr
-            v-for="dailyMeal in dailyMeals"
+            v-for="dailyMeal in sortedDailyMeals"
             :key="dailyMeal.id"
             class="border-b border-gray-200 hover:bg-gray-100"
           >
@@ -71,7 +71,29 @@
     </overlay>
 
     <!-- Delete Confirmation Modal -->
-    <!-- ... (same as before) -->
+    <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
+      <modal
+        :show="showDeleteConfirmation"
+        title="Delete Daily Meal"
+        @close="closeDeleteConfirmation"
+      >
+        <p>Are you sure you want to delete this daily meal?</p>
+        <div class="flex justify-end mt-4">
+          <button
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
+            @click="handleDeleteDailyMeal"
+          >
+            Delete
+          </button>
+          <button
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            @click="closeDeleteConfirmation"
+          >
+            Cancel
+          </button>
+        </div>
+      </modal>
+    </overlay>
   </div>
 </template>
 
@@ -96,7 +118,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('dailyMeal', ['dailyMeals'])
+    ...mapGetters('dailyMeal', ['dailyMeals']),
+    sortedDailyMeals() {
+      return [...this.dailyMeals].sort((a, b) => a.name.localeCompare(b.name));
+    }
   },
   created() {
     this.fetchDailyMeals()
