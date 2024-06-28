@@ -10,6 +10,7 @@ const getters = {
 
 const actions = {
   fetchMenus({ commit }) {
+    console.log('Fetching menus...')
     return MenuService.getMenus()
       .then(response => {
         console.log('Menus fetched:', response.data)
