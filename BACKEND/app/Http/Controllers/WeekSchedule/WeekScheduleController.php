@@ -47,12 +47,12 @@ class WeekScheduleController extends Controller
             'mode_name' => 'required',
             'description' => 'nullable',
             'status' => 'required|in:active,inactive',
-            'creator' => 'required',
-            'editors' => 'required|json',
         ]);
 
-        $weekSchedule = WeekSchedule::create($validatedData);
+        $validatedData['creator'] = auth()->user()->email;
+        $validatedData['editors'] = []; // Initialize the editors array as empty
 
+        $weekSchedule = WeekSchedule::create($validatedData);
         return response()->json($weekSchedule, 201);
     }
 
@@ -62,13 +62,21 @@ class WeekScheduleController extends Controller
             'mode_name' => 'min:5',
             'description' => 'nullable',
             'status' => 'in:active,inactive',
-            'editors' => 'json',
         ]);
 
-        $weekSchedule->update($validatedData);
+        // Get the existing editors array
+        $editors = $weekSchedule->editors;
 
+        // Add the authenticated user's email to the editors array
+        $editors[] = auth()->user()->email;
+
+        // Update the editors array in the validated data
+        $validatedData['editors'] = $editors;
+
+        $weekSchedule->update($validatedData);
         return response()->json($weekSchedule);
     }
+
 
     public function destroy(WeekSchedule $weekSchedule)
     {
