@@ -120,9 +120,12 @@ const mutations = {
   DETACH_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
     if (weekSchedule) {
-      weekSchedule[`${day}DailyMeals`] = weekSchedule[`${day}DailyMeals`].filter(
-        (dailyMeal) => dailyMeal.id !== dailyMealId
-      )
+      const dailyMealsArray = weekSchedule[`${day}DailyMeals`]
+      if (dailyMealsArray) {
+        weekSchedule[`${day}DailyMeals`] = dailyMealsArray.filter(
+          (dailyMeal) => dailyMeal.daily_meal_id !== dailyMealId
+        )
+      }
     }
   },
 }

@@ -47,19 +47,19 @@
           >Select Daily Meals</label
         >
         <select
-          id="dailyMealSelect"
-          v-model="selectedDailyMealIds"
-          multiple
-          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <option
-            v-for="dailyMeal in availableDailyMeals"
-            :key="dailyMeal.id"
-            :value="dailyMeal.id"
-          >
-            {{ dailyMeal.name }}
-          </option>
-        </select>
+    id="dailyMealSelect"
+    v-model="selectedDailyMealId"
+    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+  >
+    <option value="" disabled selected>Select a daily meal</option>
+    <option
+      v-for="dailyMeal in availableDailyMeals"
+      :key="dailyMeal.id"
+      :value="dailyMeal.id"
+    >
+      {{ dailyMeal.name }}
+    </option>
+  </select>
       </div>
       <div class="mt-4">
         <label for="startTime" class="block text-sm font-medium text-gray-700"
@@ -87,7 +87,7 @@
       </div>
       <div class="mt-4">
         <label for="price" class="block text-sm font-medium text-gray-700"
-          >Price</label
+          >Price (DH)</label
         >
         <input
           id="price"
@@ -126,7 +126,7 @@ export default {
   },
   data() {
     return {
-      selectedDailyMealIds: [],
+      selectedDailyMealId: null,
       startTime: '',
       endTime: '',
       price: '',
@@ -163,12 +163,13 @@ export default {
     },
     assignDailyMeals() {
       const dailyMealData = {
-        daily_meal_id: this.selectedDailyMealIds[0],
+        daily_meal_id: this.selectedDailyMealId,
         start_time: this.startTime,
         end_time: this.endTime,
         price: this.price,
       }
       this.$emit('assign', dailyMealData)
+      this.selectedDailyMealId = null // Reset selectedDailyMealId after assignment
     },
     detachDailyMeal(dailyMealId) {
       this.$emit('detach', dailyMealId)
