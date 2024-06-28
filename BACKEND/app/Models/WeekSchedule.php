@@ -19,7 +19,7 @@ class WeekSchedule extends Model
     protected $casts = [
         'editors' => 'json',
     ];
-    protected $fillable = ['mode_name', 'description', 'creator', 'editors'];
+    protected $fillable = ['mode_name', 'description', 'creator', 'editors', 'status'];
 
     public function mondayDailyMeals()
     {
