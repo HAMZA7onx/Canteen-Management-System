@@ -33,6 +33,25 @@
         </select>
       </div>
   
+      <div class="mb-4">
+        <h3 class="text-md font-medium leading-6 text-gray-900">L'email d'utilisateur qui creer le calendrier:</h3>
+        <div class="mt-2 text-sm text-gray-500">{{ creatorEmail }}</div>
+      </div>
+      
+      <div class="mb-4">
+        <h3 class="text-md font-medium leading-6 text-gray-900">L'email des utilisateurs qui modifier le calendrier:</h3>
+        <div v-if="editors.length === 0" class="mt-2 text-sm text-gray-500">
+          No editors assigned.
+        </div>
+        <div v-else class="mt-2">
+          <ul role="list" class="divide-y divide-gray-200">
+            <li v-for="(email, index) in editors" :key="index" class="py-2">
+              <div class="text-sm text-gray-500">{{ email }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+  
       <div class="flex justify-end">
         <button
           type="button"
@@ -47,8 +66,7 @@
   
   <script>
   import { mapActions } from 'vuex'
-  import store from '@/store' // Import the Vuex store instance
-
+  
   export default {
     props: {
       weekSchedule: {
@@ -61,32 +79,38 @@
         modeName: this.weekSchedule.mode_name,
         description: this.weekSchedule.description,
         status: this.weekSchedule.status,
+        creatorEmail: this.weekSchedule.creator,
+        editors: this.weekSchedule.editors || [],
       }
+    },
+    created() {
+      console.log('creatorEmail:', this.creatorEmail)
+      console.log('editors:', this.editors)
     },
     methods: {
       ...mapActions('weekSchedule', ['updateWeekSchedule']),
       updateWeekSchedule() {
-      try {
-        const updatedWeekScheduleData = {
-          mode_name: this.modeName,
-          description: this.description,
-          status: this.status,
+        try {
+          const updatedWeekScheduleData = {
+            mode_name: this.modeName,
+            description: this.description,
+            status: this.status,
+          }
+  
+          this.$store.dispatch('weekSchedule/updateWeekSchedule', { id: this.weekSchedule.id, data: updatedWeekScheduleData })
+            .then(() => {
+              this.$emit('updated')
+              this.$emit('close')
+            })
+            .catch((error) => {
+              console.error('Error updating week schedule:', error)
+              // Handle error if needed
+            })
+        } catch (error) {
+          console.error('Error updating week schedule:', error)
+          // Handle error if needed
         }
-
-        store.dispatch('weekSchedule/updateWeekSchedule', { id: this.weekSchedule.id, data: updatedWeekScheduleData })
-          .then(() => {
-            this.$emit('updated')
-            this.$emit('close')
-          })
-          .catch((error) => {
-            console.error('Error updating week schedule:', error)
-            // Handle error if needed
-          })
-      } catch (error) {
-        console.error('Error updating week schedule:', error)
-        // Handle error if needed
       }
-    }
     },
   }
   </script>

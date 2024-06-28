@@ -55,7 +55,6 @@ class WeekScheduleController extends Controller
         $weekSchedule = WeekSchedule::create($validatedData);
         return response()->json($weekSchedule, 201);
     }
-
     public function update(Request $request, WeekSchedule $weekSchedule)
     {
         $validatedData = $request->validate([
@@ -67,8 +66,14 @@ class WeekScheduleController extends Controller
         // Get the existing editors array
         $editors = $weekSchedule->editors;
 
-        // Add the authenticated user's email to the editors array
-        $editors[] = auth()->user()->email;
+        // Get the authenticated user's email
+        $authUserEmail = auth()->user()->email;
+
+        // Check if the authenticated user's email already exists in the editors array
+        if (!in_array($authUserEmail, $editors)) {
+            // If not, add it to the editors array
+            $editors[] = $authUserEmail;
+        }
 
         // Update the editors array in the validated data
         $validatedData['editors'] = $editors;
@@ -76,6 +81,7 @@ class WeekScheduleController extends Controller
         $weekSchedule->update($validatedData);
         return response()->json($weekSchedule);
     }
+
 
 
     public function destroy(WeekSchedule $weekSchedule)
