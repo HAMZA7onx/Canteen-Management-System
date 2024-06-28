@@ -32,8 +32,9 @@ const actions = {
       })
   },
 
-  createWeekSchedule({ commit }, data) {
-    return WeekScheduleService.createWeekSchedule(data)
+  createWeekSchedule({ commit }, weekScheduleData) {
+    console.log('weekScheduleData', weekScheduleData)
+    return WeekScheduleService.createWeekSchedule(weekScheduleData)
       .then((response) => {
         commit('ADD_WEEK_SCHEDULE', response.data)
       })
@@ -42,7 +43,6 @@ const actions = {
         throw error
       })
   },
-
   updateWeekSchedule({ commit }, { id, data }) {
     return WeekScheduleService.updateWeekSchedule(id, data)
       .then((response) => {
@@ -94,8 +94,8 @@ const mutations = {
     state.weekSchedules = weekSchedules
   },
 
-  ADD_WEEK_SCHEDULE(state, weekSchedule) {
-    state.weekSchedules.push(weekSchedule)
+  ADD_WEEK_SCHEDULE(state, newWeekSchedule) {
+    state.weekSchedules.push(newWeekSchedule)
   },
 
   UPDATE_WEEK_SCHEDULE(state, updatedWeekSchedule) {
