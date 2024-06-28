@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\DailyMeal;
 use App\Models\Menu;
 
-
 class DailyMealController extends Controller
 {
     public function index()
@@ -20,7 +19,7 @@ class DailyMealController extends Controller
 
     public function show(DailyMeal $dailyMeal)
     {
-        $dailyMeal =  DailyMeal::where('id', $dailyMeal->id)->with([
+        $dailyMeal = DailyMeal::where('id', $dailyMeal->id)->with([
             "menus.foodComposants"
         ])->get();
         return response()->json($dailyMeal);
@@ -32,7 +31,6 @@ class DailyMealController extends Controller
             'name' => 'required',
             'description' => 'nullable',
         ]);
-
         $dailyMeal = DailyMeal::create($validatedData);
         return response()->json($dailyMeal, 201);
     }
@@ -43,7 +41,6 @@ class DailyMealController extends Controller
             'name' => 'required',
             'description' => 'nullable',
         ]);
-
         $dailyMeal->update($validatedData);
         return response()->json($dailyMeal);
     }
@@ -57,13 +54,12 @@ class DailyMealController extends Controller
     public function attachMenu(Request $request, DailyMeal $dailyMeal, $menuId)
     {
         $dailyMeal->menus()->attach($menuId);
-
         return response()->json(['message' => 'Menu attached to the daily meal']);
     }
 
-
-    public function detachMenu(DailyMeal $dailyMeal, Menu $menu) {
+    public function detachMenu(DailyMeal $dailyMeal, Menu $menu)
+    {
         $dailyMeal->menus()->detach($menu);
-        return response()->json(['message' => 'menu detached from the dailyMeal'. $dailyMeal->name]);
+        return response()->json(['message' => 'Menu detached from the daily meal ' . $dailyMeal->name]);
     }
 }

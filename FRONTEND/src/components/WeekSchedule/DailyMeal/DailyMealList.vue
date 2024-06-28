@@ -16,6 +16,7 @@
           <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             <th class="py-3 px-6 text-left">Name</th>
             <th class="py-3 px-6 text-left">Description</th>
+            <th class="py-3 px-6 text-center">Menus</th>
             <th class="py-3 px-6 text-center">Actions</th>
           </tr>
         </thead>
@@ -33,10 +34,18 @@
             </td>
             <td class="py-3 px-6 text-center">
               <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                @click="openAssignMenuModal(dailyMeal)"
+              >
+                Assign Menus
+              </button>
+            </td>
+            <td class="py-3 px-6 text-center">
+              <button
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditModal(dailyMeal)"
               >
-                show
+                Show
               </button>
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -70,6 +79,24 @@
       </modal>
     </overlay>
 
+    <!-- Assign Menu Modal -->
+    <overlay v-if="showAssignMenuModal" @close="closeAssignMenuModal">
+    <modal
+      :show="showAssignMenuModal"
+      :title="`Assign Menus for ${selectedDailyMeal.name}`"
+      @close="closeAssignMenuModal"
+    >
+      <daily-meal-menu-form
+        :dailyMealId="selectedDailyMeal.id"
+        :assignedMenus="selectedDailyMeal.menus"
+        @assign="handleAssignMenu"
+        @detach="handleDetachMenu"
+        @menuAssigned="updateAssignedMenus"
+        @menuDetached="updateAssignedMenus($event)"
+      />
+    </modal>
+  </overlay>
+
     <!-- Delete Confirmation Modal -->
     <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
       <modal
@@ -100,28 +127,31 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import DailyMealForm from './DailyMealForm.vue'
+import DailyMealMenuForm from './DailyMealMenuForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 
 export default {
   components: {
     DailyMealForm,
+    DailyMealMenuForm,
     Modal,
-    Overlay
+    Overlay,
   },
   data() {
     return {
       showCreateModal: false,
       showEditModal: false,
+      showAssignMenuModal: false,
       showDeleteConfirmation: false,
-      selectedDailyMeal: null
+      selectedDailyMeal: null,
     }
   },
   computed: {
     ...mapGetters('dailyMeal', ['dailyMeals']),
     sortedDailyMeals() {
-      return [...this.dailyMeals].sort((a, b) => a.name.localeCompare(b.name));
-    }
+      return [...this.dailyMeals].sort((a, b) => a.name.localeCompare(b.name))
+    },
   },
   created() {
     this.fetchDailyMeals()
@@ -131,7 +161,9 @@ export default {
       'fetchDailyMeals',
       'createDailyMeal',
       'updateDailyMeal',
-      'deleteDailyMeal'
+      'deleteDailyMeal',
+      'attachMenu',
+      'detachMenu',
     ]),
     openCreateModal() {
       this.showCreateModal = true
@@ -144,7 +176,7 @@ export default {
         .then(() => {
           this.closeCreateModal()
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error creating daily meal:', error)
           // Handle error if needed
         })
@@ -162,8 +194,36 @@ export default {
         .then(() => {
           this.closeEditModal()
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error updating daily meal:', error)
+          // Handle error if needed
+        })
+    },
+    openAssignMenuModal(dailyMeal) {
+      this.selectedDailyMeal = { ...dailyMeal }
+      this.showAssignMenuModal = true
+    },
+    closeAssignMenuModal() {
+      this.showAssignMenuModal = false
+      this.selectedDailyMeal = null
+    },
+    handleAssignMenu(menuId) {
+      this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
+        .then(() => {
+          this.fetchDailyMeals()
+        })
+        .catch((error) => {
+          console.error('Error assigning menu:', error)
+          // Handle error if needed
+        })
+    },
+    handleDetachMenu(menuId) {
+      this.detachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
+        .then(() => {
+          this.fetchDailyMeals()
+        })
+        .catch((error) => {
+          console.error('Error detaching menu:', error)
           // Handle error if needed
         })
     },
@@ -180,11 +240,11 @@ export default {
         .then(() => {
           this.closeDeleteConfirmation()
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error deleting daily meal:', error)
           // Handle error if needed
         })
-    }
-  }
+    },
+  },
 }
 </script>

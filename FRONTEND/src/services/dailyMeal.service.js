@@ -23,12 +23,12 @@ class DailyMealService {
     return request.delete(`${API_URL}/${id}`)
   }
 
-  attachWeekSchedule(dailyMealId, weekScheduleId, day) {
-    return request.post(`${API_URL}/${dailyMealId}/week-schedules/${day}`, { week_schedule_id: weekScheduleId })
+  attachMenu(dailyMealId, menuId) {
+    return request.post(`${API_URL}/${dailyMealId}/menus/${menuId}`)
   }
 
-  detachWeekSchedule(dailyMealId, weekScheduleId, day) {
-    return request.delete(`${API_URL}/${dailyMealId}/week-schedules/${weekScheduleId}/${day}`)
+  detachMenu(dailyMealId, menuId) {
+    return request.delete(`${API_URL}/${dailyMealId}/menus/${menuId}`)
   }
 }
 

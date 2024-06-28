@@ -51,6 +51,28 @@ const actions = {
         console.error('Error deleting daily meal:', error)
         throw error
       })
+  },
+
+  attachMenu({ commit }, { dailyMealId, menuId }) {
+    return DailyMealService.attachMenu(dailyMealId, menuId)
+      .then(response => {
+        commit('ATTACH_MENU', { dailyMealId, menuId })
+      })
+      .catch(error => {
+        console.error('Error attaching menu:', error)
+        throw error
+      })
+  },
+
+  detachMenu({ commit }, { dailyMealId, menuId }) {
+    return DailyMealService.detachMenu(dailyMealId, menuId)
+      .then(() => {
+        commit('DETACH_MENU', { dailyMealId, menuId })
+      })
+      .catch(error => {
+        console.error('Error detaching menu:', error)
+        throw error
+      })
   }
 }
 
@@ -71,6 +93,23 @@ const mutations = {
 
   DELETE_DAILY_MEAL(state, id) {
     state.dailyMeals = state.dailyMeals.filter(dailyMeal => dailyMeal.id !== id)
+  },
+
+  ATTACH_MENU(state, { dailyMealId, menuId }) {
+    const dailyMeal = state.dailyMeals.find(meal => meal.id === dailyMealId)
+    if (dailyMeal) {
+      if (!dailyMeal.menus) {
+        dailyMeal.menus = []
+      }
+      dailyMeal.menus.push({ id: menuId })
+    }
+  },
+
+  DETACH_MENU(state, { dailyMealId, menuId }) {
+    const dailyMeal = state.dailyMeals.find(meal => meal.id === dailyMealId)
+    if (dailyMeal && dailyMeal.menus) {
+      dailyMeal.menus = dailyMeal.menus.filter(menu => menu.id !== menuId)
+    }
   }
 }
 
