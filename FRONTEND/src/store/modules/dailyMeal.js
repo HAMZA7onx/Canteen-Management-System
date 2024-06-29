@@ -53,16 +53,27 @@ const actions = {
       })
   },
 
-  attachMenu({ commit }, { dailyMealId, menuId }) {
+  attachMenu({ commit, state }, { dailyMealId, menuId }) {
     return DailyMealService.attachMenu(dailyMealId, menuId)
-      .then(response => {
-        commit('ATTACH_MENU', { dailyMealId, menuId })
+      .then(() => {
+        const dailyMeal = state.dailyMeals.find(meal => meal.id === dailyMealId)
+        if (dailyMeal) {
+          const updatedDailyMeal = { ...dailyMeal }
+          if (!updatedDailyMeal.menus) {
+            updatedDailyMeal.menus = []
+          }
+          updatedDailyMeal.menus.push({ id: menuId })
+          commit('UPDATE_DAILY_MEAL', updatedDailyMeal)
+          console.log('UPDATE_DAILY_MEAL', updatedDailyMeal)
+          return updatedDailyMeal
+        }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error attaching menu:', error)
         throw error
       })
   },
+  
 
   detachMenu({ commit }, { dailyMealId, menuId }) {
     return DailyMealService.detachMenu(dailyMealId, menuId)

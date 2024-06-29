@@ -92,11 +92,10 @@
         @assign="handleAssignMenu"
         @detach="handleDetachMenu"
         @menuAssigned="updateAssignedMenus"
-        @menuDetached="updateAssignedMenus($event)"
+        @menuDetached="updateAssignedMenus"
       />
     </modal>
   </overlay>
-
     <!-- Delete Confirmation Modal -->
     <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
       <modal
@@ -207,26 +206,6 @@ export default {
       this.showAssignMenuModal = false
       this.selectedDailyMeal = null
     },
-    handleAssignMenu(menuId) {
-      this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
-        .then(() => {
-          this.fetchDailyMeals()
-        })
-        .catch((error) => {
-          console.error('Error assigning menu:', error)
-          // Handle error if needed
-        })
-    },
-    handleDetachMenu(menuId) {
-      this.detachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
-        .then(() => {
-          this.fetchDailyMeals()
-        })
-        .catch((error) => {
-          console.error('Error detaching menu:', error)
-          // Handle error if needed
-        })
-    },
     openDeleteConfirmation(dailyMeal) {
       this.selectedDailyMeal = { ...dailyMeal }
       this.showDeleteConfirmation = true
@@ -244,6 +223,38 @@ export default {
           console.error('Error deleting daily meal:', error)
           // Handle error if needed
         })
+    },
+    handleAssignMenu(menuId) {
+      this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
+        .then((updatedDailyMeal) => {
+          this.selectedDailyMeal.menus = updatedDailyMeal.menus
+          this.fetchDailyMeals()
+        })
+        .catch((error) => {
+          console.error('Error assigning menu:', error)
+          // Handle error if needed
+        })
+    },
+
+    handleDetachMenu(menuId) {
+      this.detachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
+        .then(() => {
+          // Update the assignedMenus array by removing the detached menu
+          const updatedAssignedMenus = this.selectedDailyMeal.menus.filter(
+            (menu) => menu.id !== menuId
+          )
+          this.selectedDailyMeal.menus = updatedAssignedMenus
+          this.fetchDailyMeals()
+        })
+        .catch((error) => {
+          console.error('Error detaching menu:', error)
+          // Handle error if needed
+        })
+    },
+    updateAssignedMenus(menuId = null) {
+      this.selectedDailyMeal.menus = this.selectedDailyMeal.menus.filter(
+        (menu) => menu.id !== menuId
+      )
     },
   },
 }
