@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Badge;
 
 use App\Http\Controllers\Controller;
 use App\Models\Badge;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Imports\RfidImport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use App\Imports\RfidImport;
 
 class BadgeController extends Controller
 {
@@ -78,8 +78,50 @@ class BadgeController extends Controller
 
         $file = $request->file('file');
 
-        Excel::import(new RfidImport, $file);
+        try {
+            $rfids = Excel::toArray(new RfidImport, $file)[0];
+            \Log::info('Imported RFIDs:', $rfids);
+        } catch (\Exception $e) {
+            \Log::error('Error reading RFIDs from file: ' . $e->getMessage());
+            return response()->json(['error' => 'Error reading RFIDs from file'], 500);
+        }
+
+        $usersWithoutBadge = User::whereDoesntHave('badge')->get()->pluck('id');
+
+        foreach ($rfids as $rfidData) {
+            try {
+                if ($usersWithoutBadge->isNotEmpty()) {
+                    $userId = $usersWithoutBadge->shift();
+                    $context = [
+                        'userId' => $userId,
+                        'rfid' => $rfidData['rfid'],
+                    ];
+                    \Log::info('Creating badge with user ID and RFID', $context);
+                    $badge = Badge::create([
+                        'user_id' => $userId,
+                        'rfid' => $rfidData['rfid'],
+                        'status' => 'assigned',
+                    ]);
+                    \Log::info('Created badge:', $badge->toArray());
+                } else {
+                    $context = [
+                        'rfid' => $rfidData['rfid'],
+                    ];
+                    \Log::info('Creating badge with RFID', $context);
+                    $badge = Badge::create([
+                        'rfid' => $rfidData['rfid'],
+                        'status' => 'available',
+                    ]);
+                    \Log::info('Created badge:', $badge->toArray());
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error creating badge: ' . $e->getMessage());
+                return response()->json(['error' => 'Error creating badges'], 500);
+            }
+        }
 
         return response()->json(['message' => 'RFIDs imported successfully']);
     }
+
+
 }

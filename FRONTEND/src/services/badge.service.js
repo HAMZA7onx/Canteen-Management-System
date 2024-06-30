@@ -22,6 +22,15 @@ class BadgeService {
   delete(id) {
     return request.delete(`${API_URL}/badges/${id}`);
   }
+
+  importRfids(formData) {
+    return request.post(`${API_URL}/badges/import`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
 }
 
 export default new BadgeService();

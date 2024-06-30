@@ -31,7 +31,7 @@
       <tbody>
         <tr v-for="badge in badges" :key="badge.id" class="hover:bg-gray-100">
           <td class="border px-4 py-2">{{ badge.rfid }}</td>
-          <td class="border px-4 py-2">{{ badge.user.name }}</td>
+          <td class="border px-4 py-2">{{ getUserName(badge) }}</td>
           <td class="border px-4 py-2">{{ badge.status }}</td>
           <td class="border px-4 py-2">
             <button
@@ -72,6 +72,15 @@ export default {
   },
   computed: {
     ...mapGetters('badge', ['badges']),
+    getUserName() {
+      return (badge) => {
+        if (badge.user) {
+          return badge.user.name;
+        } else {
+          return 'Available';
+        }
+      };
+    },
   },
   created() {
     this.fetchBadges();

@@ -1,52 +1,43 @@
 <template>
   <div>
-    <input
-      type="file"
-      ref="fileInput"
-      @change="handleFileChange"
-      accept=".xlsx,.xls"
-      class="mb-4"
-    />
-    <button
-      @click="importRfids"
-      :disabled="!file"
-      class="bg-blue-500 text-white px-4 py-2 rounded-md"
-    >
-      Import RFIDs
-    </button>
+    <input type="file" ref="fileInput" @change="handleFileChange" accept=".xlsx,.xls" />
+    <button @click="importRfids" :disabled="!file">Import RFIDs</button>
+    <div v-if="error" class="text-red-500">{{ error }}</div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import BadgeService from '@/services/badge.service';
 
 export default {
   data() {
     return {
       file: null,
+      error: null,
     };
   },
   methods: {
     handleFileChange(event) {
       this.file = event.target.files[0];
     },
-    async importRfids() {
+    importRfids() {
       const formData = new FormData();
       formData.append('file', this.file);
 
-      try {
-        await axios.post('/api/badges/import', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      BadgeService.importRfids(formData)
+        .then(() => {
+          this.$emit('import-success');
+          this.file = null;
+          this.error = null;
+        })
+        .catch((error) => {
+          console.error('Error importing RFIDs:', error);
+          if (error.response && error.response.data && error.response.data.error) {
+            this.error = error.response.data.error;
+          } else {
+            this.error = 'An error occurred while importing RFIDs';
+          }
         });
-        console.log('RFIDs imported successfully');
-        this.$emit('import-success');
-        this.$refs.fileInput.value = null;
-        this.file = null;
-      } catch (error) {
-        console.error('Error importing RFIDs:', error);
-      }
     },
   },
 };

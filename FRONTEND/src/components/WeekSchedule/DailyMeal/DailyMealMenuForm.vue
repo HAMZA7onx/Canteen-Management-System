@@ -3,9 +3,11 @@
     <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
       Assign Menus for Daily Meal: {{ dailyMealName }}
     </h3>
+
     <div v-if="assignedMenus.length === 0" class="text-sm text-gray-500 mb-4">
       No menus assigned.
     </div>
+
     <ul v-else role="list" class="divide-y divide-gray-200">
       <li
         v-for="menu in assignedMenus"
@@ -72,10 +74,10 @@ export default {
   data() {
     return {
       selectedMenuId: null,
+      dailyMeals: [], // Add a local data property to store the dailyMeals
     }
   },
   computed: {
-    ...mapGetters('dailyMeal', ['dailyMeals']),
     ...mapGetters('menu', ['menus']),
     dailyMealName() {
       const dailyMeal = this.dailyMeals.find(
@@ -87,7 +89,14 @@ export default {
       const dailyMeal = this.dailyMeals.find(
         (meal) => meal.id === this.dailyMealId
       )
-      return dailyMeal ? dailyMeal.menus : []
+      if (dailyMeal && dailyMeal.menus) {
+        return dailyMeal.menus.map(menu => ({
+          id: menu.id,
+          name: menu.name,
+          description: menu.description,
+        }))
+      }
+      return []
     },
     availableMenus() {
       const assignedMenuIds = this.assignedMenus.map((menu) => menu.id)
@@ -105,20 +114,28 @@ export default {
     },
   },
   created() {
-    this.fetchMenus()
-    this.fetchDailyMeals()
+    this.fetchDailyMeals().then(() => {
+      this.fetchMenus().then(() => {
+        this.updateAvailableMenus(this.assignedMenus);
+      });
+    });
   },
   methods: {
     ...mapActions('menu', ['fetchMenus']),
     ...mapActions('dailyMeal', ['fetchDailyMeals', 'attachMenu', 'detachMenu']),
     updateAvailableMenus(assignedMenus) {
-      const assignedMenuIds = assignedMenus.map((menu) => menu.id)
-      this.availableMenus = this.menus.filter(
-        (menu) => !assignedMenuIds.includes(menu.id)
-      )
+      if (this.menus && this.menus.length > 0) {
+        const assignedMenuIds = assignedMenus.map((menu) => menu.id);
+        this.availableMenus = this.menus.filter(
+          (menu) => !assignedMenuIds.includes(menu.id)
+        );
+      } else {
+        this.availableMenus = [];
+      }
     },
     assignMenu() {
-      this.attachMenu({ dailyMealId: this.dailyMealId, menuId: this.selectedMenuId })
+      const dailyMeals = this.dailyMeals; // Use the local dailyMeals data
+      this.attachMenu({ dailyMealId: this.dailyMealId, menuId: this.selectedMenuId, dailyMeals })
         .then(() => {
           this.selectedMenuId = null
         })
@@ -138,5 +155,3 @@ export default {
   },
 }
 </script>
-
-// Working code
