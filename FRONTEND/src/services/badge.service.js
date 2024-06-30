@@ -31,6 +31,21 @@ class BadgeService {
     });
   }
 
+  getUsersWithAllRfidsLost() {
+    return request.get(`${API_URL}/users/all-rfids-lost`);
+  }
+
+  getUsersWithoutRfids() {
+    return request.get(`${API_URL}/users/without-rfids`);
+  }
+
+  updateBadgeStatus(badgeId, status) {
+    return request.put(`${API_URL}/badges/${badgeId}/status`, { status });
+  }
+
+  assignRfidToUser(badgeId, userId) {
+    return request.put(`${API_URL}/badges/${badgeId}/assign`, { userId });
+  }
 }
 
 export default new BadgeService();

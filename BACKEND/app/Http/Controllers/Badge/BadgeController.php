@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\RfidImport;
+use Illuminate\Support\Facades\Log;
+
 
 class BadgeController extends Controller
 {
@@ -132,6 +134,67 @@ class BadgeController extends Controller
         return response()->json(['message' => 'RFIDs imported successfully']);
     }
 
+    public function getUsersWithAllRfidsLost()
+    {
+        $users = User::whereHas('badges', function ($query) {
+            $query->where('status', 'lost');
+        })
+            ->with('badges')
+            ->get();
 
+        $usersWithAllRfidsLost = $users->filter(function ($user) {
+            return $user->badges->every(function ($badge) {
+                return $badge->status === 'lost';
+            });
+        });
+
+        return response()->json($usersWithAllRfidsLost);
+    }
+
+    public function getUsersWithoutRfids()
+    {
+        $users = User::doesntHave('badges')->get();
+        return response()->json($users);
+    }
+
+    public function updateBadgeStatus(Request $request, $badgeId)
+    {
+        try {
+            $badge = Badge::findOrFail($badgeId);
+
+            $validatedData = $request->validate([
+                'status' => 'required|in:available,assigned,lost',
+            ]);
+
+            $badge->status = $validatedData['status'];
+            $badge->save();
+
+            return response()->json($badge);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Error updating badge status: ' . $e->getMessage());
+
+            // Return an error response
+            return response()->json(['error' => 'An error occurred while updating the badge status.'], 500);
+        }
+    }
+
+
+    public function assignRfidToUser(Request $request, $badgeId)
+    {
+        $badge = Badge::findOrFail($badgeId);
+
+        $validatedData = $request->validate([
+            'userId' => 'required|exists:users,id',
+        ]);
+
+        $userId = $validatedData['userId'];
+
+        $badge->user_id = $userId;
+        $badge->status = 'assigned';
+        $badge->save();
+
+        return response()->json($badge);
+    }
 
 }

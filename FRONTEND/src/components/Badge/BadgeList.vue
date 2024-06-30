@@ -9,7 +9,10 @@
         Import RFIDs
       </button>
     </div>
-    <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      v-if="showImportModal"
+      class="fixed inset-0 z-50 flex items-center justify-center"
+    >
       <Overlay />
       <Modal
         :show="showImportModal"
@@ -17,6 +20,24 @@
         @close="showImportModal = false"
       >
         <ImportRfidsForm @import-success="handleImportSuccess" />
+      </Modal>
+    </div>
+    <div
+      v-if="showEditModal"
+      class="fixed inset-0 z-50 flex items-center justify-center"
+    >
+      <Overlay class="modal-overlay" />
+      <Modal
+        :show="showEditModal"
+        title="Edit Badge"
+        @close="showEditModal = false"
+        class="modal-content"
+      >
+        <EditBadgeModal
+          :badge="selectedBadge"
+          :users="eligibleUsers"
+          @update-success="handleUpdateSuccess"
+        />
       </Modal>
     </div>
     <table class="w-full table-auto">
@@ -58,16 +79,21 @@ import { mapGetters, mapActions } from 'vuex';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import ImportRfidsForm from '@/components/Badge/ImportRfidsForm.vue';
+import EditBadgeModal from '@/components/Badge/EditBadgeModal.vue';
 
 export default {
   components: {
     Modal,
     Overlay,
     ImportRfidsForm,
+    EditBadgeModal,
   },
   data() {
     return {
       showImportModal: false,
+      showEditModal: false,
+      selectedBadge: null,
+      eligibleUsers: [],
     };
   },
   computed: {
@@ -84,12 +110,13 @@ export default {
   },
   created() {
     this.fetchBadges();
+    this.fetchEligibleUsers();
   },
   methods: {
-    ...mapActions('badge', ['fetchBadges', 'deleteBadge']),
+    ...mapActions('badge', ['fetchBadges', 'deleteBadge', 'updateBadge']),
     editBadge(badge) {
-      // Implement edit badge functionality
-      console.log('Edit badge:', badge);
+      this.selectedBadge = badge;
+      this.showEditModal = true;
     },
     deleteBadge(badge) {
       this.deleteBadge(badge.id)
@@ -104,6 +131,42 @@ export default {
       this.showImportModal = false;
       this.fetchBadges();
     },
+    handleUpdateSuccess(updatedBadge) {
+      this.showEditModal = false;
+      // Update the badge in the badges array
+      const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
+      if (index !== -1) {
+        this.$set(this.badges, index, updatedBadge);
+      }
+    },
+    fetchEligibleUsers() {
+      // Fetch users with all RFIDs lost
+      this.$store.dispatch('badge/fetchUsersWithAllRfidsLost')
+        .then(usersWithAllRfidsLost => {
+          // Fetch users without any RFIDs
+          this.$store.dispatch('badge/fetchUsersWithoutRfids')
+            .then(usersWithoutRfids => {
+              // Combine the two arrays into one
+              this.eligibleUsers = [...usersWithAllRfidsLost.data, ...usersWithoutRfids.data];
+            })
+            .catch(error => {
+              console.error('Error fetching eligible users:', error);
+            });
+        })
+        .catch(error => {
+          console.error('Error fetching eligible users:', error);
+        });
+    },
   },
 };
 </script>
+
+<style scoped>
+.modal-overlay {
+  z-index: 40;
+}
+
+.modal-content {
+  z-index: 50;
+}
+</style>
