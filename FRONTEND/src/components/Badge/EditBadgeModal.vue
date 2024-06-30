@@ -60,19 +60,26 @@
         this.updateBadgeStatus('lost');
       },
       updateBadgeStatus(status) {
-        return this.$store.dispatch('badge/updateBadgeStatus', {
-          badgeId: this.badge.id,
-          status: status,
-        })
-          .then(response => {
-            console.log('Response from server:', response);
-            this.$emit('update-success', response.data);
-          })
-          .catch(error => {
-            console.error('Error updating badge status:', error);
-            this.$emit('update-error', error);
-          });
-      },
+  return this.$store.dispatch('badge/updateBadgeStatus', {
+    badgeId: this.badge.id,
+    status: status,
+  })
+    .then(response => {
+      console.log('Response from server:', response);
+      const updatedBadge = {
+        id: response.id,
+        rfid: response.rfid,
+        status: response.status,
+        user: response.user, // Assuming the user data is in a different property
+      };
+      this.$emit('update-success', updatedBadge);
+    })
+    .catch(error => {
+      console.error('Error updating badge status:', error);
+      this.$emit('update-error', error);
+    });
+},
+
       assignRfidToUser(userId) {
         this.$store.dispatch('badge/assignRfidToUser', {
           badgeId: this.badge.id,

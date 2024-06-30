@@ -144,12 +144,14 @@ export default {
     // Update the badge in the badges array
     const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
     if (index !== -1) {
-      this.$set(this.badges, index, updatedBadge);
+      // Use regular array assignment instead of $set
+      this.badges.splice(index, 1, updatedBadge);
     }
   } else {
     console.error('Invalid updated badge data:', updatedBadge);
   }
 },
+
 
     handleUpdateError(error) {
       this.showEditModal = false;
