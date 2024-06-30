@@ -87,29 +87,38 @@ class BadgeController extends Controller
         }
 
         $usersWithoutBadge = User::whereDoesntHave('badge')->get()->pluck('id');
+        $existingRfids = Badge::pluck('rfid')->toArray();
 
         foreach ($rfids as $rfidData) {
             try {
+                $rfid = $rfidData['rfid'];
+
+                // Check if the RFID already exists in the badges table
+                if (in_array($rfid, $existingRfids)) {
+                    \Log::info("RFID $rfid already exists, skipping.");
+                    continue;
+                }
+
                 if ($usersWithoutBadge->isNotEmpty()) {
                     $userId = $usersWithoutBadge->shift();
                     $context = [
                         'userId' => $userId,
-                        'rfid' => $rfidData['rfid'],
+                        'rfid' => $rfid,
                     ];
                     \Log::info('Creating badge with user ID and RFID', $context);
                     $badge = Badge::create([
                         'user_id' => $userId,
-                        'rfid' => $rfidData['rfid'],
+                        'rfid' => $rfid,
                         'status' => 'assigned',
                     ]);
                     \Log::info('Created badge:', $badge->toArray());
                 } else {
                     $context = [
-                        'rfid' => $rfidData['rfid'],
+                        'rfid' => $rfid,
                     ];
                     \Log::info('Creating badge with RFID', $context);
                     $badge = Badge::create([
-                        'rfid' => $rfidData['rfid'],
+                        'rfid' => $rfid,
                         'status' => 'available',
                     ]);
                     \Log::info('Created badge:', $badge->toArray());
@@ -122,6 +131,7 @@ class BadgeController extends Controller
 
         return response()->json(['message' => 'RFIDs imported successfully']);
     }
+
 
 
 }

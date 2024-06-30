@@ -77,7 +77,7 @@ export default {
         if (badge.user) {
           return badge.user.name;
         } else {
-          return 'Available';
+          return 'Unassigned';
         }
       };
     },
