@@ -60,14 +60,17 @@ const actions = {
 
   updateBadgeStatus({ commit }, { badgeId, status }) {
     return BadgeService.updateBadgeStatus(badgeId, status)
-      .then((response) => {
+      .then(response => {
+        console.log('updateBadgeStatus: ', response.data);
         commit('UPDATE_BADGE_STATUS', response.data);
+        return response.data; // Return only the data property
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error updating badge status:', error);
         throw error;
       });
   },
+  
 
   assignRfidToUser({ commit }, { badgeId, userId }) {
     return BadgeService.assignRfidToUser(badgeId, userId)

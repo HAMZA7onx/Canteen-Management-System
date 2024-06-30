@@ -37,6 +37,7 @@
           :badge="selectedBadge"
           :users="eligibleUsers"
           @update-success="handleUpdateSuccess"
+          @update-error="handleUpdateError"
         />
       </Modal>
     </div>
@@ -102,6 +103,10 @@ export default {
       return (badge) => {
         if (badge.user) {
           return badge.user.name;
+        } else if (badge.userId) {
+          // Find the user name based on the userId
+          const user = this.users.find(u => u.id === badge.userId);
+          return user ? user.name : 'Unassigned';
         } else {
           return 'Unassigned';
         }
@@ -132,12 +137,27 @@ export default {
       this.fetchBadges();
     },
     handleUpdateSuccess(updatedBadge) {
+  this.showEditModal = false;
+  this.selectedBadge = null;
+
+  if (updatedBadge) {
+    // Update the badge in the badges array
+    const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
+    if (index !== -1) {
+      // Use regular array assignment instead of $set
+      this.badges.splice(index, 1, updatedBadge);
+    }
+  } else {
+    console.error('Invalid updated badge data:', updatedBadge);
+  }
+},
+
+
+    handleUpdateError(error) {
       this.showEditModal = false;
-      // Update the badge in the badges array
-      const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
-      if (index !== -1) {
-        this.$set(this.badges, index, updatedBadge);
-      }
+      this.selectedBadge = null;
+      console.error('Error updating badge status:', error);
+      // Display an error message to the user
     },
     fetchEligibleUsers() {
       // Fetch users with all RFIDs lost

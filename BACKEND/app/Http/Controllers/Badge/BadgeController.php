@@ -160,7 +160,7 @@ class BadgeController extends Controller
     public function updateBadgeStatus(Request $request, $badgeId)
     {
         try {
-            $badge = Badge::findOrFail($badgeId);
+            $badge = Badge::with('user')->findOrFail($badgeId);
 
             $validatedData = $request->validate([
                 'status' => 'required|in:available,assigned,lost',
@@ -169,16 +169,15 @@ class BadgeController extends Controller
             $badge->status = $validatedData['status'];
             $badge->save();
 
-            return response()->json($badge);
-        } catch (\Exception $e) {
-            // Log the error
-            Log::error('Error updating badge status: ' . $e->getMessage());
+            Log::info('Updated badge data:', $badge->toArray());
 
-            // Return an error response
+            // Load the user relationship and return the updated badge data
+            return response()->json($badge->load('user'));
+        } catch (\Exception $e) {
+            \Log::error('Error updating badge status: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while updating the badge status.'], 500);
         }
     }
-
 
     public function assignRfidToUser(Request $request, $badgeId)
     {
