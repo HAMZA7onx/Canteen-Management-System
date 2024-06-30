@@ -225,15 +225,17 @@ export default {
         })
     },
     handleAssignMenu(menuId) {
-      this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
+      const dailyMeals = this.dailyMeals; // Get the dailyMeals from the component
+      console.log( '229:',dailyMeals)
+      this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId, dailyMeals })
         .then((updatedDailyMeal) => {
-          this.selectedDailyMeal.menus = updatedDailyMeal.menus
-          this.fetchDailyMeals()
+          this.selectedDailyMeal.menus = updatedDailyMeal.menus;
+          this.fetchDailyMeals();
         })
         .catch((error) => {
-          console.error('Error assigning menu:', error)
+          console.error('Error assigning menu:', error);
           // Handle error if needed
-        })
+        });
     },
 
     handleDetachMenu(menuId) {

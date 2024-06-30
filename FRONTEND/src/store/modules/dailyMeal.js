@@ -53,27 +53,41 @@ const actions = {
       })
   },
 
-  attachMenu({ commit, state }, { dailyMealId, menuId }) {
+  attachMenu({ commit, rootGetters }, { dailyMealId, menuId, dailyMeals }) {
     return DailyMealService.attachMenu(dailyMealId, menuId)
       .then(() => {
-        const dailyMeal = state.dailyMeals.find(meal => meal.id === dailyMealId)
+        const dailyMeal = dailyMeals.find(meal => meal.id === dailyMealId);
+  
         if (dailyMeal) {
-          const updatedDailyMeal = { ...dailyMeal }
+          const updatedDailyMeal = { ...dailyMeal };
           if (!updatedDailyMeal.menus) {
-            updatedDailyMeal.menus = []
+            updatedDailyMeal.menus = [];
           }
-          updatedDailyMeal.menus.push({ id: menuId })
-          commit('UPDATE_DAILY_MEAL', updatedDailyMeal)
-          console.log('UPDATE_DAILY_MEAL', updatedDailyMeal)
-          return updatedDailyMeal
+  
+          // Find the full menu object from the rootGetters
+          const menuToAttach = rootGetters['menu/menus'].find(menu => menu.id === menuId);
+  
+          // Create a new menus array with the attached menu
+          updatedDailyMeal.menus = [...updatedDailyMeal.menus, menuToAttach];
+  
+          // Update the dailyMeals array with the updated daily meal
+          const updatedDailyMeals = dailyMeals.map(meal =>
+            meal.id === dailyMealId ? updatedDailyMeal : meal
+          );
+  
+          // Commit the SET_DAILY_MEALS mutation with the updated dailyMeals array
+          commit('SET_DAILY_MEALS', updatedDailyMeals);
+  
+          return updatedDailyMeal;
         }
       })
       .catch((error) => {
-        console.error('Error attaching menu:', error)
-        throw error
-      })
-  },
+        console.error('Error attaching menu:', error);
+        throw error;
+      });
+  }
   
+  ,
 
   detachMenu({ commit }, { dailyMealId, menuId }) {
     return DailyMealService.detachMenu(dailyMealId, menuId)
@@ -97,9 +111,13 @@ const mutations = {
   },
 
   UPDATE_DAILY_MEAL(state, updatedDailyMeal) {
-    state.dailyMeals = state.dailyMeals.map(dailyMeal =>
-      dailyMeal.id === updatedDailyMeal.id ? updatedDailyMeal : dailyMeal
-    )
+    const index = state.dailyMeals.findIndex(dailyMeal => dailyMeal.id === updatedDailyMeal.id);
+
+    if (index !== -1) {
+      state.dailyMeals.splice(index, 1, updatedDailyMeal);
+    } else {
+      state.dailyMeals.push(updatedDailyMeal);
+    }
   },
 
   DELETE_DAILY_MEAL(state, id) {

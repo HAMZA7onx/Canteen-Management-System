@@ -29,8 +29,8 @@ class User extends Model
         return $this->belongsTo(UserCategory::class);
     }
 
-    public function badges()
+    public function badge()
     {
-        return $this->hasMany(Badge::class);
+        return $this->hasOne(Badge::class);
     }
 }
