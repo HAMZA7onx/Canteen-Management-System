@@ -66,17 +66,21 @@
         }
       },
       updateBadgeStatus(status) {
-        this.$store.dispatch('badge/updateBadgeStatus', {
-          badgeId: this.badge.id,
-          status: status,
+        return this.$store.dispatch('badge/updateBadgeStatus', {
+            badgeId: this.badge.id,
+            status: status,
         })
-          .then(response => {
-            this.$emit('update-success', response.data);
-          })
-          .catch(error => {
+            .catch(error => {
             console.error('Error updating badge status:', error);
-          });
-      },
+            // Display an error message to the user
+            this.$swal({
+                title: 'Error',
+                text: 'An error occurred while updating the badge status. Please try again later.',
+                icon: 'error',
+            });
+            throw error; // Re-throw the error to propagate it to the parent component
+            });
+        },
       assignRfidToUser(userId) {
         this.$store.dispatch('badge/assignRfidToUser', {
           badgeId: this.badge.id,

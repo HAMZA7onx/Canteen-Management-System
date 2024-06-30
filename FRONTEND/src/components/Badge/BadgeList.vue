@@ -102,6 +102,10 @@ export default {
       return (badge) => {
         if (badge.user) {
           return badge.user.name;
+        } else if (badge.userId) {
+          // Find the user name based on the userId
+          const user = this.users.find(u => u.id === badge.userId);
+          return user ? user.name : 'Unassigned';
         } else {
           return 'Unassigned';
         }
@@ -117,6 +121,16 @@ export default {
     editBadge(badge) {
       this.selectedBadge = badge;
       this.showEditModal = true;
+
+      this.$refs.editBadgeModal.updateBadgeStatus(badge.status)
+        .then(response => {
+          console.log('Response from server:', response);
+          this.handleUpdateSuccess(response.data);
+        })
+        .catch(error => {
+          console.error('Error updating badge status:', error);
+          // Handle the error as needed
+        });
     },
     deleteBadge(badge) {
       this.deleteBadge(badge.id)

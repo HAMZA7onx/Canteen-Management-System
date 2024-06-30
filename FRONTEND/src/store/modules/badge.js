@@ -61,6 +61,7 @@ const actions = {
   updateBadgeStatus({ commit }, { badgeId, status }) {
     return BadgeService.updateBadgeStatus(badgeId, status)
       .then((response) => {
+        console.log('updateBadgeStatus: ', response);
         commit('UPDATE_BADGE_STATUS', response.data);
       })
       .catch((error) => {
