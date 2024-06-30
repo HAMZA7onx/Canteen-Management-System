@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users', 'id');
             $table->string('rfid');
-            $table->enum('status', ['available', 'assigned', 'losed'])->default('available');
+            $table->enum('status', ['available', 'assigned', 'lost'])->default('available');
             $table->timestamps();
         });
     }
