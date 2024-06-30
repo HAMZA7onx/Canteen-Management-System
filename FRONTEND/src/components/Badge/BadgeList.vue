@@ -37,6 +37,7 @@
           :badge="selectedBadge"
           :users="eligibleUsers"
           @update-success="handleUpdateSuccess"
+          @update-error="handleUpdateError"
         />
       </Modal>
     </div>
@@ -121,16 +122,6 @@ export default {
     editBadge(badge) {
       this.selectedBadge = badge;
       this.showEditModal = true;
-
-      this.$refs.editBadgeModal.updateBadgeStatus(badge.status)
-        .then(response => {
-          console.log('Response from server:', response);
-          this.handleUpdateSuccess(response.data);
-        })
-        .catch(error => {
-          console.error('Error updating badge status:', error);
-          // Handle the error as needed
-        });
     },
     deleteBadge(badge) {
       this.deleteBadge(badge.id)
@@ -146,12 +137,25 @@ export default {
       this.fetchBadges();
     },
     handleUpdateSuccess(updatedBadge) {
+  this.showEditModal = false;
+  this.selectedBadge = null;
+
+  if (updatedBadge) {
+    // Update the badge in the badges array
+    const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
+    if (index !== -1) {
+      this.$set(this.badges, index, updatedBadge);
+    }
+  } else {
+    console.error('Invalid updated badge data:', updatedBadge);
+  }
+},
+
+    handleUpdateError(error) {
       this.showEditModal = false;
-      // Update the badge in the badges array
-      const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
-      if (index !== -1) {
-        this.$set(this.badges, index, updatedBadge);
-      }
+      this.selectedBadge = null;
+      console.error('Error updating badge status:', error);
+      // Display an error message to the user
     },
     fetchEligibleUsers() {
       // Fetch users with all RFIDs lost

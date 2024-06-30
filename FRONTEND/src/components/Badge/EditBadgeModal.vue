@@ -5,8 +5,9 @@
         <div v-if="badge.status === 'assigned'">
           <p>Are you sure you want to mark this RFID as lost?</p>
           <button
-            type="submit"
+            type="button"
             class="bg-red-500 text-white px-4 py-2 rounded-md mt-4"
+            @click="markAsLost"
           >
             Mark as Lost
           </button>
@@ -26,8 +27,9 @@
             </select>
           </div>
           <button
-            type="submit"
+            type="button"
             class="bg-blue-500 text-white px-4 py-2 rounded-md"
+            @click="assignRfidToUser(selectedUser)"
           >
             Assign RFID
           </button>
@@ -39,10 +41,6 @@
   <script>
   export default {
     props: {
-      show: {
-        type: Boolean,
-        required: true,
-      },
       badge: {
         type: Object,
         required: true,
@@ -58,29 +56,23 @@
       };
     },
     methods: {
-      handleSubmit() {
-        if (this.badge.status === 'assigned') {
-          this.updateBadgeStatus('lost');
-        } else if (this.badge.status === 'available') {
-          this.assignRfidToUser(this.selectedUser);
-        }
+      markAsLost() {
+        this.updateBadgeStatus('lost');
       },
       updateBadgeStatus(status) {
         return this.$store.dispatch('badge/updateBadgeStatus', {
-            badgeId: this.badge.id,
-            status: status,
+          badgeId: this.badge.id,
+          status: status,
         })
-            .catch(error => {
+          .then(response => {
+            console.log('Response from server:', response);
+            this.$emit('update-success', response.data);
+          })
+          .catch(error => {
             console.error('Error updating badge status:', error);
-            // Display an error message to the user
-            this.$swal({
-                title: 'Error',
-                text: 'An error occurred while updating the badge status. Please try again later.',
-                icon: 'error',
-            });
-            throw error; // Re-throw the error to propagate it to the parent component
-            });
-        },
+            this.$emit('update-error', error);
+          });
+      },
       assignRfidToUser(userId) {
         this.$store.dispatch('badge/assignRfidToUser', {
           badgeId: this.badge.id,
@@ -91,6 +83,7 @@
           })
           .catch(error => {
             console.error('Error assigning RFID to user:', error);
+            this.$emit('update-error', error);
           });
       },
     },
