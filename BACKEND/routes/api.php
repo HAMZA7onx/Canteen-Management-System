@@ -89,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/users/all-rfids-lost', [BadgeController::class, 'getUsersWithAllRfidsLost']);
         Route::get('/users/without-rfids', [BadgeController::class, 'getUsersWithoutRfids']);
+
         Route::put('/{badgeId}/status', [BadgeController::class, 'updateBadgeStatus']);
         Route::put('/{badgeId}/assign', [BadgeController::class, 'assignRfidToUser']);
     });

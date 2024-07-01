@@ -16,7 +16,7 @@ const actions = {
   fetchBadges({ commit }) {
     return BadgeService.getAll()
       .then((response) => {
-        console.log('Badges fetched successfully:', response.data);
+        // console.log('Badges fetched successfully:', response.data);
         commit('SET_BADGES', response.data);
       })
       .catch((error) => {
@@ -38,27 +38,33 @@ const actions = {
 
   fetchUsersWithAllRfidsLost({ commit }) {
     return BadgeService.getUsersWithAllRfidsLost()
-      .then((response) => {
-        console.log('fetchUsersWithAllRfidsLost: ', response);
+      .then(response => {
+        // If you need to commit the data to the store, you can do it here
         commit('SET_USERS_WITH_ALL_RFIDS_LOST', response.data);
+        console.log('SET_USERS_WITH_ALL_RFIDS_LOST', response.data);
+        // Return the response data
+        return response.data;
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching users with all RFIDs lost:', error);
         throw error;
       });
   },
+  
 
   fetchUsersWithoutRfids({ commit }) {
     return BadgeService.getUsersWithoutRfids()
-      .then((response) => {
-        commit('SET_USERS_WITHOUT_RFIDS', response.data);
+      .then(response => {
+        const usersWithoutRfids = response.data || []; // Handle the case where response.data is falsy
+        commit('SET_USERS_WITHOUT_RFIDS', usersWithoutRfids);
+        return usersWithoutRfids;
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching users without RFIDs:', error);
         throw error;
       });
   },
-
+  
   updateBadgeStatus({ commit }, { badgeId, status }) {
     return BadgeService.updateBadgeStatus(badgeId, status)
       .then(response => {
