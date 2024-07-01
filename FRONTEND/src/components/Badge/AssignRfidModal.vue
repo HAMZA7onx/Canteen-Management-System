@@ -72,7 +72,6 @@ export default {
       })
         .then(response => {
           this.$emit('update-success', response);
-          // this.$parent.fetchEligibleUsers();
         })
         .catch(error => {
           console.error('Error assigning RFID to user:', error);

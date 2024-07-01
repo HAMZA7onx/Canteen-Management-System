@@ -163,13 +163,24 @@ class BadgeController extends Controller
 //        return response()->json($usersWithAllRfidsLost);
 //    }
 
+//    public function getUsersWithAllRfidsLost()
+//    {
+//        $users = User::whereHas('badge', function ($query) {
+//            $query->where('status', 'lost');
+//        })->with('badge')->get();
+//
+//        return response()->json($users);
+//    }
     public function getUsersWithAllRfidsLost()
     {
-        $users = User::whereHas('badge', function ($query) {
-            $query->where('status', 'lost');
-        })->with('badge')->get();
+        $usersWithAllLostRfids = User::select('users.*')
+            ->join('badges', 'users.id', '=', 'badges.user_id')
+            ->groupBy('users.id')
+            ->havingRaw('COUNT(CASE WHEN badges.status != ? THEN 1 END) = 0', ['lost'])
+            ->havingRaw('COUNT(badges.id) > 0')
+            ->get();
 
-        return response()->json($users);
+        return response()->json($usersWithAllLostRfids);
     }
 
     public function getUsersWithoutRfids()
