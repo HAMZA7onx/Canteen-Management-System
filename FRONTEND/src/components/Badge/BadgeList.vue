@@ -159,20 +159,19 @@ export default {
       console.error('Error updating badge status:', error);
     },
     fetchEligibleUsers() {
-      this.$store.dispatch('badge/fetchUsersWithAllRfidsLost')
-        .then(usersWithAllRfidsLost => {
-          this.$store.dispatch('badge/fetchUsersWithoutRfids')
-            .then(usersWithoutRfids => {
-              this.eligibleUsers = [...usersWithAllRfidsLost.data, ...usersWithoutRfids.data];
-            })
-            .catch(error => {
-              console.error('Error fetching eligible users:', error);
-            });
-        })
-        .catch(error => {
-          console.error('Error fetching eligible users:', error);
-        });
+      Promise.all([
+        this.$store.dispatch('badge/fetchUsersWithAllRfidsLost'),
+        this.$store.dispatch('badge/fetchUsersWithoutRfids')
+      ])
+      .then(([usersWithAllRfidsLost, usersWithoutRfids]) => {
+        this.eligibleUsers = [...usersWithAllRfidsLost, ...usersWithoutRfids];
+      })
+      .catch(error => {
+        console.error('Error fetching eligible users:', error);
+        // Handle the error here (e.g., display an error message)
+      });
     },
+
     getStatusClass(status) {
       switch (status) {
         case 'assigned':

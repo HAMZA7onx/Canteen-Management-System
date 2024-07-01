@@ -134,23 +134,64 @@ class BadgeController extends Controller
         return response()->json(['message' => 'RFIDs imported successfully']);
     }
 
+//    public function getUsersWithAllRfidsLost()
+//    {
+//        $users = User::with('badge')->get();
+//
+//        $usersWithAllRfidsLost = $users->filter(function ($user) {
+//            $badges = $user->badge;
+//
+//            if ($badges instanceof Illuminate\Database\Eloquent\Collection && $badges->isEmpty()) {
+//                return false; // User doesn't have any badges
+//            }
+//
+//            if (!$badges instanceof Illuminate\Database\Eloquent\Collection) {
+//                $badges = collect([$badges]);
+//            }
+//
+//            $hasLostBadge = $badges->contains(function ($badge) {
+//                return $badge->status === 'lost';
+//            });
+//
+//            $hasNonLostBadge = $badges->contains(function ($badge) {
+//                return $badge->status !== 'lost';
+//            });
+//
+//            return $hasLostBadge && !$hasNonLostBadge;
+//        });
+//
+//        return response()->json($usersWithAllRfidsLost);
+//    }
+
     public function getUsersWithAllRfidsLost()
     {
-        $usersWithAllRfidsLost = User::whereHas('badge', function ($query) {
-            $query->withoutGlobalScopes()->where('status', 'lost');
-        }, '>=', 1)->doesntHave('badge', function ($query) {
-            $query->withoutGlobalScopes()->where('status', '!=', 'lost');
-        })->get();
+        $users = User::whereHas('badge', function ($query) {
+            $query->where('status', 'lost');
+        })->with('badge')->get();
 
-        return response()->json($usersWithAllRfidsLost);
-    }
-    
-    public function getUsersWithoutRfids()
-    {
-        $users = User::doesntHave('badge')->get();
         return response()->json($users);
     }
 
+    public function getUsersWithoutRfids()
+    {
+        $users = User::with('badge')
+            ->get()
+            ->filter(function ($user) {
+                $badges = $user->badge;
+
+                if ($badges instanceof Illuminate\Database\Eloquent\Collection && $badges->isEmpty()) {
+                    return true; // User doesn't have any badges
+                }
+
+                if (!$badges instanceof Illuminate\Database\Eloquent\Collection) {
+                    return false; // User has one badge
+                }
+
+                return false; // User has multiple badges
+            });
+
+        return response()->json($users);
+    }
 
     public function updateBadgeStatus(Request $request, $badgeId)
     {

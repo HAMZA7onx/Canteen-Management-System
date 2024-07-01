@@ -84,6 +84,7 @@
           .catch(error => {
             console.error('Error assigning RFID to user:', error);
             this.$emit('update-error', error);
+            // Handle the error here (e.g., display an error message)
           });
       },
     },

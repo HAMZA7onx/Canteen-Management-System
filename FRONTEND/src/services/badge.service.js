@@ -32,11 +32,11 @@ class BadgeService {
   }
 
   getUsersWithAllRfidsLost() {
-    return request.get(`${API_URL}/users/all-rfids-lost`);
+    return request.get(`${API_URL}/badges/users/all-rfids-lost`);
   }
 
   getUsersWithoutRfids() {
-    return request.get(`${API_URL}/users/without-rfids`);
+    return request.get(`${API_URL}/badges/users/without-rfids`);
   }
 
   updateBadgeStatus(badgeId, status) {
