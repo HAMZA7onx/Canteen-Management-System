@@ -23,6 +23,7 @@ const actions = {
   createUser({ commit }, user) {
     return UserService.createUser(user)
       .then((response) => {
+        console.log('response.data.user: ', response);
         commit('ADD_USER', response.data.user);
       })
       .catch((error) => {

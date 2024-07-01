@@ -4,19 +4,20 @@ const state = {
   badges: [],
   usersWithAllRfidsLost: [],
   usersWithoutRfids: [],
+  eligibleUsers: [],
 };
 
 const getters = {
   badges: (state) => state.badges,
   usersWithAllRfidsLost: (state) => state.usersWithAllRfidsLost,
   usersWithoutRfids: (state) => state.usersWithoutRfids,
+  eligibleUsers: (state) => state.eligibleUsers,
 };
 
 const actions = {
   fetchBadges({ commit }) {
     return BadgeService.getAll()
       .then((response) => {
-        // console.log('Badges fetched successfully:', response.data);
         commit('SET_BADGES', response.data);
       })
       .catch((error) => {
@@ -39,10 +40,8 @@ const actions = {
   fetchUsersWithAllRfidsLost({ commit }) {
     return BadgeService.getUsersWithAllRfidsLost()
       .then(response => {
-        // If you need to commit the data to the store, you can do it here
+        console.log('Users with all RFIDs lost:', response.data);
         commit('SET_USERS_WITH_ALL_RFIDS_LOST', response.data);
-        console.log('SET_USERS_WITH_ALL_RFIDS_LOST', response.data);
-        // Return the response data
         return response.data;
       })
       .catch(error => {
@@ -50,12 +49,12 @@ const actions = {
         throw error;
       });
   },
-  
 
   fetchUsersWithoutRfids({ commit }) {
     return BadgeService.getUsersWithoutRfids()
       .then(response => {
-        const usersWithoutRfids = response.data || []; // Handle the case where response.data is falsy
+        console.log('Users without RFIDs:', response.data);
+        const usersWithoutRfids = response.data || [];
         commit('SET_USERS_WITHOUT_RFIDS', usersWithoutRfids);
         return usersWithoutRfids;
       })
@@ -64,26 +63,45 @@ const actions = {
         throw error;
       });
   },
-  
-  updateBadgeStatus({ commit }, { badgeId, status }) {
+
+  updateBadgeStatus({ commit, dispatch }, { badgeId, status }) {
     return BadgeService.updateBadgeStatus(badgeId, status)
       .then(response => {
         commit('UPDATE_BADGE_STATUS', response.data);
-        return response.data; // Return only the data property
+        // Fetch the updated list of eligible users
+        return dispatch('fetchEligibleUsers');
       })
       .catch(error => {
         console.error('Error updating badge status:', error);
         throw error;
       });
   },
-  
-  assignRfidToUser({ commit }, { badgeId, userId }) {
+
+  assignRfidToUser({ commit, dispatch }, { badgeId, userId }) {
     return BadgeService.assignRfidToUser(badgeId, userId)
-      .then((response) => {
+      .then(response => {
         commit('ASSIGN_RFID_TO_USER', response.data);
+        // Fetch the updated list of eligible users
+        return dispatch('fetchEligibleUsers');
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error assigning RFID to user:', error);
+        throw error;
+      });
+  },
+
+  fetchEligibleUsers({ commit, dispatch }) {
+    return Promise.all([
+      dispatch('fetchUsersWithAllRfidsLost'),
+      dispatch('fetchUsersWithoutRfids'),
+    ])
+      .then(([usersWithAllRfidsLost, usersWithoutRfids]) => {
+        const eligibleUsers = [...usersWithAllRfidsLost, ...usersWithoutRfids];
+        commit('UPDATE_ELIGIBLE_USERS', eligibleUsers);
+        return eligibleUsers;
+      })
+      .catch(error => {
+        console.error('Error fetching eligible users:', error);
         throw error;
       });
   },
@@ -114,12 +132,16 @@ const mutations = {
       state.badges.splice(index, 1, updatedBadge);
     }
   },
-};
-
-export default {
-  namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations,
-};
+  UPDATE_ELIGIBLE_USERS(state, eligibleUsers) {
+    state.eligibleUsers = eligibleUsers;
+  },
+  };
+  
+  export default {
+    namespaced: true,
+    state,
+    getters,
+    actions,
+    mutations,
+  };
+  
