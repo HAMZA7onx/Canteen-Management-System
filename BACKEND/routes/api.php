@@ -94,7 +94,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{badgeId}/assign', [BadgeController::class, 'assignRfidToUser']);
     });
 
-
     Route::prefix('week-schedules')->group(function () {
         Route::get('/', [WeekScheduleController::class, 'index']);
         Route::post('/', [WeekScheduleController::class, 'store']);

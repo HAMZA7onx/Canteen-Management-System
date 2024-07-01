@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h2 class="text-3xl font-bold mb-6 text-gray-800">Badge Management</h2>
-    
+
     <div class="mb-6">
       <button
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out"
@@ -35,13 +35,13 @@
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300 ease-in-out"
                 @click="editBadge(badge)"
               >
-              <font-awesome-icon icon="edit" />
+                <font-awesome-icon icon="edit" />
               </button>
               <button
                 class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
                 @click="deleteBadge(badge)"
               >
-              <font-awesome-icon icon="trash" />
+                <font-awesome-icon icon="trash" />
               </button>
             </td>
           </tr>
@@ -64,14 +64,12 @@
           v-if="selectedBadge && selectedBadge.status === 'assigned'"
           :badge="selectedBadge"
           @update-success="handleUpdateSuccess"
-          @update-error="handleUpdateError"
         />
         <AssignRfidModal
           v-else-if="selectedBadge && selectedBadge.status === 'available'"
+          :key="eligibleUsersKey"
           :badge="selectedBadge"
-          :eligibleUsers="eligibleUsers"
           @update-success="handleUpdateSuccess"
-          @update-error="handleUpdateError"
         />
       </Modal>
     </div>
@@ -99,7 +97,7 @@ export default {
       showImportModal: false,
       showEditModal: false,
       selectedBadge: null,
-      eligibleUsers: [],
+      eligibleUsersKey: 0,
     };
   },
   computed: {
@@ -152,26 +150,14 @@ export default {
       } else {
         console.error('Invalid updated badge data:', updatedBadge);
       }
-    },
-    handleUpdateError(error) {
-      this.showEditModal = false;
-      this.selectedBadge = null;
-      console.error('Error updating badge status:', error);
+
+      this.fetchEligibleUsers();
+      this.eligibleUsersKey++;
     },
     fetchEligibleUsers() {
-      Promise.all([
-        this.$store.dispatch('badge/fetchUsersWithAllRfidsLost'),
-        this.$store.dispatch('badge/fetchUsersWithoutRfids')
-      ])
-      .then(([usersWithAllRfidsLost, usersWithoutRfids]) => {
-        this.eligibleUsers = [...usersWithAllRfidsLost, ...usersWithoutRfids];
-      })
-      .catch(error => {
-        console.error('Error fetching eligible users:', error);
-        // Handle the error here (e.g., display an error message)
-      });
+      this.$store.dispatch('badge/fetchEligibleUsers');
+      this.eligibleUsersKey++;
     },
-
     getStatusClass(status) {
       switch (status) {
         case 'assigned':
