@@ -12,28 +12,6 @@
             Mark as Lost
           </button>
         </div>
-        <div v-else-if="badge.status === 'available'">
-          <div class="mb-4">
-            <label for="user" class="block font-bold mb-2">Assign to User:</label>
-            <select
-              id="user"
-              v-model="selectedUser"
-              class="border border-gray-300 rounded-md px-3 py-2 w-full"
-            >
-              <option value="">Select a user</option>
-              <option v-for="user in users" :key="user.id" :value="user.id">
-                {{ user.name }}
-              </option>
-            </select>
-          </div>
-          <button
-            type="button"
-            class="bg-blue-500 text-white px-4 py-2 rounded-md"
-            @click="assignRfidToUser(selectedUser)"
-          >
-            Assign RFID
-          </button>
-        </div>
       </form>
     </div>
   </template>

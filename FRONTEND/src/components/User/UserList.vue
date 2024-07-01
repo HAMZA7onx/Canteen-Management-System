@@ -73,13 +73,13 @@
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditUserModal(user)"
               >
-                Edit
+              <font-awesome-icon icon="edit" />
               </button>
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="deleteUser(user)"
               >
-                Delete
+              <font-awesome-icon icon="trash" />
               </button>
             </td>
           </tr>

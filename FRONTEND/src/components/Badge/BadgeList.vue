@@ -1,77 +1,80 @@
 <template>
-  <div>
-    <h2 class="text-2xl font-bold mb-4">Badges</h2>
-    <div class="mb-4">
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">Badge Management</h2>
+    
+    <div class="mb-6">
       <button
-        class="bg-blue-500 text-white px-4 py-2 rounded-md"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out"
         @click="showImportModal = true"
       >
         Import RFIDs
       </button>
     </div>
-    <div
-      v-if="showImportModal"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <table class="w-full table-auto">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr v-for="badge in badges" :key="badge.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">{{ badge.rfid }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ getUserName(badge) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span :class="getStatusClass(badge.status)">
+                {{ badge.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300 ease-in-out"
+                @click="editBadge(badge)"
+              >
+              <font-awesome-icon icon="edit" />
+              </button>
+              <button
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
+                @click="deleteBadge(badge)"
+              >
+              <font-awesome-icon icon="trash" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal components (unchanged) -->
+    <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <Overlay />
-      <Modal
-        :show="showImportModal"
-        title="Import RFIDs"
-        @close="showImportModal = false"
-      >
+      <Modal :show="showImportModal" title="Import RFIDs" @close="showImportModal = false">
         <ImportRfidsForm @import-success="handleImportSuccess" />
       </Modal>
     </div>
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-    >
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <Overlay class="modal-overlay" />
-      <Modal
-        :show="showEditModal"
-        title="Edit Badge"
-        @close="showEditModal = false"
-        class="modal-content"
-      >
-        <EditBadgeModal
+      <Modal :show="showEditModal" title="Edit Badge" @close="showEditModal = false" class="modal-content">
+        <MarkAsLostModal
+          v-if="selectedBadge && selectedBadge.status === 'assigned'"
           :badge="selectedBadge"
-          :users="eligibleUsers"
+          @update-success="handleUpdateSuccess"
+          @update-error="handleUpdateError"
+        />
+        <AssignRfidModal
+          v-else-if="selectedBadge && selectedBadge.status === 'available'"
+          :badge="selectedBadge"
+          :eligibleUsers="eligibleUsers"
           @update-success="handleUpdateSuccess"
           @update-error="handleUpdateError"
         />
       </Modal>
     </div>
-    <table class="w-full table-auto">
-      <thead>
-        <tr>
-          <th class="px-4 py-2">RFID</th>
-          <th class="px-4 py-2">User</th>
-          <th class="px-4 py-2">Status</th>
-          <th class="px-4 py-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="badge in badges" :key="badge.id" class="hover:bg-gray-100">
-          <td class="border px-4 py-2">{{ badge.rfid }}</td>
-          <td class="border px-4 py-2">{{ getUserName(badge) }}</td>
-          <td class="border px-4 py-2">{{ badge.status }}</td>
-          <td class="border px-4 py-2">
-            <button
-              class="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
-              @click="editBadge(badge)"
-            >
-              Edit
-            </button>
-            <button
-              class="bg-red-500 text-white px-2 py-1 rounded-md"
-              @click="deleteBadge(badge)"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
@@ -80,14 +83,16 @@ import { mapGetters, mapActions } from 'vuex';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import ImportRfidsForm from '@/components/Badge/ImportRfidsForm.vue';
-import EditBadgeModal from '@/components/Badge/EditBadgeModal.vue';
+import MarkAsLostModal from '@/components/Badge/MarkAsLostModal.vue';
+import AssignRfidModal from '@/components/Badge/AssignRfidModal.vue';
 
 export default {
   components: {
     Modal,
     Overlay,
     ImportRfidsForm,
-    EditBadgeModal,
+    MarkAsLostModal,
+    AssignRfidModal,
   },
   data() {
     return {
@@ -104,7 +109,6 @@ export default {
         if (badge.user) {
           return badge.user.name;
         } else if (badge.userId) {
-          // Find the user name based on the userId
           const user = this.users.find(u => u.id === badge.userId);
           return user ? user.name : 'Unassigned';
         } else {
@@ -137,36 +141,28 @@ export default {
       this.fetchBadges();
     },
     handleUpdateSuccess(updatedBadge) {
-  this.showEditModal = false;
-  this.selectedBadge = null;
+      this.showEditModal = false;
+      this.selectedBadge = null;
 
-  if (updatedBadge) {
-    // Update the badge in the badges array
-    const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
-    if (index !== -1) {
-      // Use regular array assignment instead of $set
-      this.badges.splice(index, 1, updatedBadge);
-    }
-  } else {
-    console.error('Invalid updated badge data:', updatedBadge);
-  }
-},
-
-
+      if (updatedBadge) {
+        const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
+        if (index !== -1) {
+          this.badges.splice(index, 1, updatedBadge);
+        }
+      } else {
+        console.error('Invalid updated badge data:', updatedBadge);
+      }
+    },
     handleUpdateError(error) {
       this.showEditModal = false;
       this.selectedBadge = null;
       console.error('Error updating badge status:', error);
-      // Display an error message to the user
     },
     fetchEligibleUsers() {
-      // Fetch users with all RFIDs lost
       this.$store.dispatch('badge/fetchUsersWithAllRfidsLost')
         .then(usersWithAllRfidsLost => {
-          // Fetch users without any RFIDs
           this.$store.dispatch('badge/fetchUsersWithoutRfids')
             .then(usersWithoutRfids => {
-              // Combine the two arrays into one
               this.eligibleUsers = [...usersWithAllRfidsLost.data, ...usersWithoutRfids.data];
             })
             .catch(error => {
@@ -176,6 +172,18 @@ export default {
         .catch(error => {
           console.error('Error fetching eligible users:', error);
         });
+    },
+    getStatusClass(status) {
+      switch (status) {
+        case 'assigned':
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
+        case 'available':
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800';
+        case 'lost':
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
+        default:
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
+      }
     },
   },
 };
