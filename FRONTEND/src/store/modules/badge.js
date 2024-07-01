@@ -39,6 +39,7 @@ const actions = {
   fetchUsersWithAllRfidsLost({ commit }) {
     return BadgeService.getUsersWithAllRfidsLost()
       .then((response) => {
+        console.log('fetchUsersWithAllRfidsLost: ', response);
         commit('SET_USERS_WITH_ALL_RFIDS_LOST', response.data);
       })
       .catch((error) => {
@@ -61,7 +62,6 @@ const actions = {
   updateBadgeStatus({ commit }, { badgeId, status }) {
     return BadgeService.updateBadgeStatus(badgeId, status)
       .then(response => {
-        console.log('updateBadgeStatus: ', response.data);
         commit('UPDATE_BADGE_STATUS', response.data);
         return response.data; // Return only the data property
       })
@@ -71,7 +71,6 @@ const actions = {
       });
   },
   
-
   assignRfidToUser({ commit }, { badgeId, userId }) {
     return BadgeService.assignRfidToUser(badgeId, userId)
       .then((response) => {

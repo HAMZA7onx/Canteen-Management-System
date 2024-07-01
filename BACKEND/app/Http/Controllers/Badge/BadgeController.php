@@ -136,26 +136,21 @@ class BadgeController extends Controller
 
     public function getUsersWithAllRfidsLost()
     {
-        $users = User::whereHas('badges', function ($query) {
-            $query->where('status', 'lost');
-        })
-            ->with('badges')
-            ->get();
-
-        $usersWithAllRfidsLost = $users->filter(function ($user) {
-            return $user->badges->every(function ($badge) {
-                return $badge->status === 'lost';
-            });
-        });
+        $usersWithAllRfidsLost = User::whereHas('badge', function ($query) {
+            $query->withoutGlobalScopes()->where('status', 'lost');
+        }, '>=', 1)->doesntHave('badge', function ($query) {
+            $query->withoutGlobalScopes()->where('status', '!=', 'lost');
+        })->get();
 
         return response()->json($usersWithAllRfidsLost);
     }
-
+    
     public function getUsersWithoutRfids()
     {
-        $users = User::doesntHave('badges')->get();
+        $users = User::doesntHave('badge')->get();
         return response()->json($users);
     }
+
 
     public function updateBadgeStatus(Request $request, $badgeId)
     {
