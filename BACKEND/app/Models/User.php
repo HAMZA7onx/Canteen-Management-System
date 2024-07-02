@@ -16,10 +16,12 @@ class User extends Model
     protected $table = 'users';
     protected $casts = [
         'affected_categories' => 'json',
+        'editors' => 'json',
         'email_verified_at' => 'datetime',
+
     ];
 
-    protected $fillable = ['category_id' ,'affected_categories', 'editor', 'name', 'email', 'phone_number', 'gender'];
+    protected $fillable = ['category_id' ,'affected_categories', 'creator', 'editors', 'name', 'email', 'phone_number', 'gender'];
     protected $hidden = ['password'];
 
     protected $guard_name = 'api';

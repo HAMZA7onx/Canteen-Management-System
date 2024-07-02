@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->text('description')->nullable();
-            $table->text('editor');
+            $table->string('creator');
+            $table->json('editors');
             $table->timestamps();
         });
     }
