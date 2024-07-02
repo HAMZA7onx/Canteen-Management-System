@@ -1,4 +1,5 @@
 import UserCategoryService from '@/services/userCategory.service';
+import store from '@/store'; // Import the Vuex store instance
 
 const state = {
   userCategories: [],
@@ -20,7 +21,15 @@ const actions = {
       });
   },
   createUserCategory({ commit }, category) {
-    return UserCategoryService.createUserCategory(category)
+    const user = store.getters['auth/user']; // Get the authenticated user from the store
+    const newCategory = {
+      name: category.name,
+      description: category.description,
+      creator: user.email,
+      editors: [],
+    };
+
+    return UserCategoryService.createUserCategory(newCategory)
       .then((response) => {
         commit('ADD_USER_CATEGORY', response.data);
       })
@@ -30,7 +39,21 @@ const actions = {
       });
   },
   updateUserCategory({ commit }, category) {
-    return UserCategoryService.updateUserCategory(category.id, category)
+    const user = store.getters['auth/user']; // Get the authenticated user from the store
+    const updatedCategory = {
+      id: category.id,
+      name: category.name,
+      description: category.description,
+      creator: category.creator,
+      editors: category.editors,
+    };
+
+    // Add the current user's email to the editors array if not already present
+    if (!updatedCategory.editors.includes(user.email)) {
+      updatedCategory.editors.push(user.email);
+    }
+
+    return UserCategoryService.updateUserCategory(category.id, updatedCategory)
       .then((response) => {
         commit('UPDATE_USER_CATEGORY', response.data);
       })

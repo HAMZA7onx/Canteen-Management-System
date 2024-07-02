@@ -15,20 +15,48 @@
       <table class="w-full table-auto">
         <thead class="bg-gray-100">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByRfid"
+            >
+              RFID
+              <span v-if="sortBy === 'rfid'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
+            <!-- <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th> -->
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByEmail"
+            >
+              Email
+              <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByStatus"
+            >
+              Status 
+              <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="badge in badges" :key="badge.id" class="hover:bg-gray-50">
+          <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">{{ badge.rfid }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ getUserName(badge) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span :class="getStatusClass(badge.status)">
                 {{ badge.status }}
               </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
+                @click="showDetails(badge)"
+              >
+                Details
+              </button>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <button
@@ -77,6 +105,33 @@
         />
       </Modal>
     </div>
+
+    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay class="modal-overlay" />
+      <Modal :show="showDetailsModal" title="Badge Details" @close="showDetailsModal = false" class="modal-content">
+        <div v-if="selectedBadge">
+          <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
+
+          <p><strong>Editors:</strong></p>
+          <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0">
+            <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
+          </ul>
+          <p v-else class="text-gray-500">No editors</p>
+
+          <p><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
+
+          <p>
+            <strong>Updated At:</strong>
+            <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
+              {{ formatDate(selectedBadge.updated_at) }} (No updates)
+            </span>
+            <span v-else>
+              {{ formatDate(selectedBadge.updated_at) }}
+            </span>
+          </p>
+        </div>
+      </Modal>
+    </div>
   </div>
 </template>
 
@@ -100,8 +155,11 @@ export default {
     return {
       showImportModal: false,
       showEditModal: false,
+      showDetailsModal: false,
       selectedBadge: null,
       eligibleUsersKey: 0,
+      sortBy: null,
+      sortDirection: 'asc',
     };
   },
   computed: {
@@ -109,14 +167,33 @@ export default {
     getUserName() {
       return (badge) => {
         if (badge.user) {
-          return badge.user.name;
+          return badge.user.email;
         } else if (badge.userId) {
           const user = this.users.find(u => u.id === badge.userId);
-          return user ? user.name : 'Unassigned';
+          return user ? user.email : 'Unassigned';
         } else {
           return 'Unassigned';
         }
       };
+    },
+    sortedBadges() {
+      let sortedBadges = [...this.badges];
+
+      if (this.sortBy === 'email') {
+        sortedBadges.sort((a, b) => {
+          const emailA = this.getUserName(a).toLowerCase();
+          const emailB = this.getUserName(b).toLowerCase();
+          return this.sortDirection === 'asc' ? emailA.localeCompare(emailB) : emailB.localeCompare(emailA);
+        });
+      } else if (this.sortBy === 'status') {
+        sortedBadges.sort((a, b) => {
+          const statusA = a.status.toLowerCase();
+          const statusB = b.status.toLowerCase();
+          return this.sortDirection === 'asc' ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
+        });
+      }
+
+      return sortedBadges;
     },
   },
   created() {
@@ -172,6 +249,35 @@ export default {
           return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
         default:
           return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
+      }
+    },
+    showDetails(badge) {
+      this.selectedBadge = badge;
+      this.showDetailsModal = true;
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    },
+    isUpdatedAtSameAsCreatedAt(badge) {
+      const createdAt = new Date(badge.created_at);
+      const updatedAt = new Date(badge.updated_at);
+      return createdAt.getTime() === updatedAt.getTime();
+    },
+    sortByEmail() {
+      if (this.sortBy === 'email') {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortBy = 'email';
+        this.sortDirection = 'asc';
+      }
+    },
+    sortByStatus() {
+      if (this.sortBy === 'status') {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortBy = 'status';
+        this.sortDirection = 'asc';
       }
     },
   },
