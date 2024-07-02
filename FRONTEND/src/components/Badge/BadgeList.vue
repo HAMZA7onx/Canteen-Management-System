@@ -1,136 +1,156 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h2 class="text-3xl font-bold mb-6 text-gray-800">Badge Management</h2>
-
-    <div class="mb-6">
-      <button
-        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out"
-        @click="showImportModal = true"
-      >
-        Import RFIDs
-      </button>
-    </div>
-
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <table class="w-full table-auto">
-        <thead class="bg-gray-100">
-          <tr>
-            <th
-              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
-              @click="sortByRfid"
-            >
-              RFID
-              <span v-if="sortBy === 'rfid'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
-            </th>
-            <!-- <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th> -->
-            <th
-              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
-              @click="sortByEmail"
-            >
-              Email
-              <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
-              @click="sortByStatus"
-            >
-              Status 
-              <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">{{ badge.rfid }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ getUserName(badge) }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span :class="getStatusClass(badge.status)">
-                {{ badge.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <button
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
-                @click="showDetails(badge)"
-              >
-                Details
-              </button>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <button
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300 ease-in-out"
-                @click="editBadge(badge)"
-                :disabled="badge.status === 'lost'"
-              >
-                <font-awesome-icon icon="edit" />
-              </button>
-              <button
-                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
-                @click="deleteBadge(badge)"
-              >
-                <font-awesome-icon icon="trash" />
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Modal components (unchanged) -->
-    <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center">
-      <Overlay />
-      <Modal :show="showImportModal" title="Import RFIDs" @close="showImportModal = false">
-        <ImportRfidsForm @import-success="handleImportSuccess" />
-      </Modal>
-    </div>
-
-    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
-      <Overlay class="modal-overlay" />
-      <Modal :show="showEditModal" title="Edit Badge" @close="showEditModal = false" class="modal-content">
-        <div v-if="selectedBadge && selectedBadge.status === 'lost'">
-          <p class="text-red-500">No operation can be performed on this RFID, it is marked as lost.</p>
+  <div class="min-h-screen bg-gradient-to-br from-teal-100 to-cyan-200 dark:from-gray-900 dark:to-cyan-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 mb-4">Badge Management</h1>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Efficiently manage and organize your RFID badges. Import, assign, and track badges for your users with ease.
+        </p>
+        <div class="flex items-center text-sm text-teal-600 dark:text-teal-400">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+          </svg>
+          Streamline your badge management process
         </div>
-        <MarkAsLostModal
-          v-else-if="selectedBadge && selectedBadge.status === 'assigned'"
-          :badge="selectedBadge"
-          @update-success="handleUpdateSuccess"
-        />
-        <AssignRfidModal
-          v-else-if="selectedBadge && selectedBadge.status === 'available'"
-          :key="eligibleUsersKey"
-          :badge="selectedBadge"
-          @update-success="handleUpdateSuccess"
-        />
-      </Modal>
-    </div>
+      </div>
 
-    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center">
-      <Overlay class="modal-overlay" />
-      <Modal :show="showDetailsModal" title="Badge Details" @close="showDetailsModal = false" class="modal-content">
-        <div v-if="selectedBadge">
-          <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
+      <!-- Action Buttons -->
+      <div class="mb-6 flex space-x-4">
+        <button
+          class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          @click="showImportModal = true"
+        >
+          Import RFIDs
+        </button>
+      </div>
 
-          <p><strong>Editors:</strong></p>
-          <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0">
-            <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
-          </ul>
-          <p v-else class="text-gray-500">No editors</p>
-
-          <p><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
-
-          <p>
-            <strong>Updated At:</strong>
-            <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
-              {{ formatDate(selectedBadge.updated_at) }} (No updates)
-            </span>
-            <span v-else>
-              {{ formatDate(selectedBadge.updated_at) }}
-            </span>
-          </p>
+      <!-- Badges Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                  @click="sortByRfid"
+                >
+                  RFID
+                  <span v-if="sortBy === 'rfid'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                  @click="sortByEmail"
+                >
+                  Email
+                  <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                  @click="sortByStatus"
+                >
+                  Status
+                  <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ getUserName(badge) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="getStatusClass(badge.status)">
+                    {{ badge.status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    class="text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300"
+                    @click="showDetails(badge)"
+                  >
+                    View Details
+                  </button>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    class="text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 mr-3 transition-colors duration-300"
+                    @click="editBadge(badge)"
+                    :disabled="badge.status === 'lost'"
+                  >
+                    <font-awesome-icon icon="edit" />
+                  </button>
+                  <button
+                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
+                    @click="deleteBadge(badge)"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </Modal>
+      </div>
+
+      <!-- Modal components -->
+      <Overlay v-if="showImportModal">
+        <div class="modal-container" @click.stop>
+          <Modal :show="showImportModal" title="Import RFIDs" @close="showImportModal = false">
+            <ImportRfidsForm @import-success="handleImportSuccess" />
+          </Modal>
+        </div>
+      </Overlay>
+
+      <Overlay v-if="showEditModal">
+        <div class="modal-container" @click.stop>
+          <Modal :show="showEditModal" title="Edit Badge" @close="showEditModal = false">
+            <div v-if="selectedBadge && selectedBadge.status === 'lost'">
+              <p class="text-red-500 dark:text-red-400">No operation can be performed on this RFID, it is marked as lost.</p>
+            </div>
+            <MarkAsLostModal
+              v-else-if="selectedBadge && selectedBadge.status === 'assigned'"
+              :badge="selectedBadge"
+              @update-success="handleUpdateSuccess"
+            />
+            <AssignRfidModal
+              v-else-if="selectedBadge && selectedBadge.status === 'available'"
+              :key="eligibleUsersKey"
+              :badge="selectedBadge"
+              @update-success="handleUpdateSuccess"
+            />
+          </Modal>
+        </div>
+      </Overlay>
+
+      <Overlay v-if="showDetailsModal">
+        <div class="modal-container" @click.stop>
+          <Modal :show="showDetailsModal" title="Badge Details" @close="showDetailsModal = false">
+            <div v-if="selectedBadge" class="text-gray-700 dark:text-gray-300">
+              <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
+              <p class="mt-2"><strong>Editors:</strong></p>
+              <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0" class="list-disc list-inside">
+                <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
+              </ul>
+              <p v-else class="text-gray-500 dark:text-gray-400">No editors</p>
+              <p class="mt-2"><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
+              <p class="mt-2">
+                <strong>Updated At:</strong>
+                <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
+                  {{ formatDate(selectedBadge.updated_at) }} (No updates)
+                </span>
+                <span v-else>
+                  {{ formatDate(selectedBadge.updated_at) }}
+                </span>
+              </p>
+            </div>
+          </Modal>
+        </div>
+      </Overlay>
     </div>
   </div>
 </template>
@@ -242,13 +262,13 @@ export default {
     getStatusClass(status) {
       switch (status) {
         case 'assigned':
-          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200';
         case 'available':
-          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800';
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200';
         case 'lost':
-          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200';
         default:
-          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
+          return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
       }
     },
     showDetails(badge) {
@@ -257,12 +277,26 @@ export default {
     },
     formatDate(dateString) {
       const date = new Date(dateString);
-      return date.toLocaleString();
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     },
     isUpdatedAtSameAsCreatedAt(badge) {
       const createdAt = new Date(badge.created_at);
       const updatedAt = new Date(badge.updated_at);
       return createdAt.getTime() === updatedAt.getTime();
+    },
+    sortByRfid() {
+      if (this.sortBy === 'rfid') {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortBy = 'rfid';
+        this.sortDirection = 'asc';
+      }
     },
     sortByEmail() {
       if (this.sortBy === 'email') {
@@ -285,11 +319,36 @@ export default {
 </script>
 
 <style scoped>
+.modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .modal-overlay {
   z-index: 40;
 }
 
 .modal-content {
   z-index: 50;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-in-out;
 }
 </style>

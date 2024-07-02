@@ -1,149 +1,143 @@
 <template>
-  <div class="container mx-auto px-4">
-    <div class="mb-4">
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        @click="openCreateRoleModal"
-      >
-        Create Role
-      </button>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Name
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="role in roles" :key="role.id">
-            <td class="px-6 py-4 whitespace-nowrap">{{ role.name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
-              <button
-                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
-                @click="openEditRoleModal(role)"
-              >
-              <font-awesome-icon icon="edit" />
-              </button>
-              <button
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-                @click="deleteRole(role)"
-              >
-              <font-awesome-icon icon="trash" />
-              </button>
-              <button
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                @click="openManagePermissionsModal(role)"
-              >
-                Manage Permissions
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Create Role Modal -->
-    <Overlay v-if="showCreateRoleModal">
-      <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Create Role">
-        <RoleForm :role="{}" @update:role="createRole" />
-      </Modal>
-    </Overlay>
-
-    <!-- Edit Role Modal -->
-    <Overlay v-if="showEditRoleModal">
-      <Modal :show="showEditRoleModal" @close="closeEditRoleModal" title="Edit Role">
-        <RoleForm :role="selectedRole" @update:role="updateRole" />
-      </Modal>
-    </Overlay>
-
-    <!-- Manage Permissions Modal -->
-    <Overlay v-if="showManagePermissionsModal">
-      <Modal :show="showManagePermissionsModal" @close="closeManagePermissionsModal" title="Manage Permissions">
-        <RolePermissions :role="selectedRole" />
-      </Modal>
-    </Overlay>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
-      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+  <div class="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 dark:from-gray-900 dark:to-indigo-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      <!-- Descriptive Section -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">Role Orchestration Hub</h1>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Welcome to the nerve center of your system's access control. Here, you can sculpt the perfect balance of permissions and responsibilities, ensuring each role plays its part in harmony with your organization's needs.
+        </p>
+        <div class="flex items-center text-sm text-indigo-600 dark:text-indigo-400">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          Craft roles with precision, assign permissions with confidence
         </div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-headline"
+      </div>
+
+      <!-- Role Actions -->
+      <div class="mb-6 flex justify-between items-center">
+        <button
+          class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          @click="openCreateRoleModal"
         >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div
-                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-              >
-                <svg
-                  class="h-6 w-6 text-red-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
+          <span class="mr-2">+</span> Create New Role
+        </button>
+        <div class="text-gray-600 dark:text-gray-300">
+          Total Roles: <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ roles.length }}</span>
+        </div>
+      </div>
+
+      <!-- Role List -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="role in roles" :key="role.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ role.name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3 transition-colors duration-300"
+                  @click="openEditRoleModal(role)"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                  Delete Role
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    Are you sure you want to delete {{ roleToDelete.name }}? This action cannot be undone.
-                  </p>
+                  <font-awesome-icon icon="edit" />
+                </button>
+                <button
+                  class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 mr-3 transition-colors duration-300"
+                  @click="deleteRole(role)"
+                >
+                  <font-awesome-icon icon="trash" />
+                </button>
+                <button
+                  class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-300"
+                  @click="openManagePermissionsModal(role)"
+                >
+                  <font-awesome-icon icon="key" /> Permissions
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modals -->
+      <Overlay v-if="showCreateRoleModal">
+        <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Craft a New Role">
+          <RoleForm :role="{}" @update:role="createRole" />
+        </Modal>
+      </Overlay>
+
+      <Overlay v-if="showEditRoleModal">
+        <Modal :show="showEditRoleModal" @close="closeEditRoleModal" title="Refine Role Details">
+          <RoleForm :role="selectedRole" @update:role="updateRole" />
+        </Modal>
+      </Overlay>
+
+      <Overlay v-if="showManagePermissionsModal">
+        <Modal :show="showManagePermissionsModal" @close="closeManagePermissionsModal" title="Orchestrate Permissions">
+          <RolePermissions :role="selectedRole" />
+        </Modal>
+      </Overlay>
+
+      <!-- Delete Confirmation Modal -->
+      <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
+          </div>
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+          <div
+            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
+            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+                    Confirm Role Deletion
+                  </h3>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      Are you certain you want to remove the role "{{ roleToDelete.name }}"? This action is irreversible and may impact user permissions across the system.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="button"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-              @click="confirmDeleteRole"
-            >
-              Delete
-            </button>
-            <button
-              type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              @click="showDeleteConfirmation = false"
-            >
-              Cancel
-            </button>
+            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
+                @click="confirmDeleteRole"
+              >
+                Confirm Deletion
+              </button>
+              <button
+                type="button"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300"
+                @click="showDeleteConfirmation = false"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
   
   <script>
   import { mapGetters, mapActions } from 'vuex';

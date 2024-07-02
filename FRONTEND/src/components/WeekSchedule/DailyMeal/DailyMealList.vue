@@ -1,125 +1,158 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">Daily Meals</h2>
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        @click="openCreateModal"
-      >
-        Create Daily Meal
-      </button>
+  <div class="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200 dark:from-gray-900 dark:to-indigo-900 transition-all duration-500 ease-in-out">
+    <!-- Header Section -->
+    <div class="bg-white dark:bg-gray-800 shadow-lg transform -skew-y-2">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transform skew-y-2">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="mb-6 md:mb-0 text-center md:text-left">
+            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+              Daily Meals
+            </h1>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 font-medium">
+              Crafting your perfect day, one delicious meal at a time
+            </p>
+          </div>
+          <div class="flex items-center space-x-6">
+            <div class="meal-type-icon" title="Breakfast">
+              <span class="text-3xl">🍳</span>
+            </div>
+            <div class="meal-type-icon" title="Lunch">
+              <span class="text-3xl">🥗</span>
+            </div>
+            <div class="meal-type-icon" title="Dinner">
+              <span class="text-3xl">🍽️</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 flex justify-center md:justify-start">
+          <button
+            @click="openCreateModal"
+            class="group relative inline-flex items-center px-6 py-3 overflow-hidden text-lg font-medium text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white"
+          >
+            <span class="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
+            <span class="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            </span>
+            <span class="relative">Create Daily Meal</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <table class="w-full table-auto">
-        <thead>
-          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th class="py-3 px-6 text-left">Name</th>
-            <th class="py-3 px-6 text-left">Description</th>
-            <th class="py-3 px-6 text-center">Menus</th>
-            <th class="py-3 px-6 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-light">
-          <tr
-            v-for="dailyMeal in sortedDailyMeals"
-            :key="dailyMeal.id"
-            class="border-b border-gray-200 hover:bg-gray-100"
-          >
-            <td class="py-3 px-6 text-left whitespace-nowrap">
-              {{ dailyMeal.name }}
-            </td>
-            <td class="py-3 px-6 text-left">
-              {{ dailyMeal.description !== null ? dailyMeal.description : '-' }}
-            </td>
-            <td class="py-3 px-6 text-center">
+    <!-- Daily Meals List -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
+             class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
+          <div class="p-6">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ dailyMeal.name }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto">{{ dailyMeal.description !== null ? dailyMeal.description : 'No description' }}</p>
+            <div class="flex justify-between items-center">
               <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                 @click="openAssignMenuModal(dailyMeal)"
+                class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300"
               >
                 Assign Menus
               </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
-                @click="openEditModal(dailyMeal)"
-              >
-              <font-awesome-icon icon="edit" />
-              </button>
-              <button
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                @click="openDeleteConfirmation(dailyMeal)"
-              >
-              <font-awesome-icon icon="trash" />
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <div class="space-x-2">
+                <button
+                  @click="openEditModal(dailyMeal)"
+                  class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full transition-colors duration-300"
+                >
+                  <font-awesome-icon icon="edit" />
+                </button>
+                <button
+                  @click="openDeleteConfirmation(dailyMeal)"
+                  class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors duration-300"
+                >
+                  <font-awesome-icon icon="trash" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Create Daily Meal Modal -->
-    <overlay v-if="showCreateModal" @close="closeCreateModal">
-      <modal :show="showCreateModal" title="Create Daily Meal" @close="closeCreateModal">
-        <daily-meal-form
-          :dailyMeal="{ name: '', description: '' }"
-          @create="handleCreateDailyMeal"
-        />
-      </modal>
-    </overlay>
+    <!-- Modals -->
+    <Overlay v-if="showCreateModal">
+      <div class="modal-container" @click.stop>
+        <Modal :show="showCreateModal" title="Create Daily Meal" @close="closeCreateModal">
+          <daily-meal-form
+            :dailyMeal="{ name: '', description: '' }"
+            @create="handleCreateDailyMeal"
+          />
+        </Modal>
+      </div>
+    </Overlay>
 
-    <!-- Edit Daily Meal Modal -->
-    <overlay v-if="showEditModal" @close="closeEditModal">
-      <modal :show="showEditModal" title="Edit Daily Meal" @close="closeEditModal">
-        <daily-meal-form
-          :dailyMeal="selectedDailyMeal"
-          @update="handleUpdateDailyMeal"
-        />
-      </modal>
-    </overlay>
+    <Overlay v-if="showEditModal">
+      <div class="modal-container" @click.stop>
+        <Modal :show="showEditModal" title="Edit Daily Meal" @close="closeEditModal">
+          <daily-meal-form
+            :dailyMeal="selectedDailyMeal"
+            @update="handleUpdateDailyMeal"
+          />
+        </Modal>
+      </div>
+    </Overlay>
 
-    <!-- Assign Menu Modal -->
-    <overlay v-if="showAssignMenuModal" @close="closeAssignMenuModal">
-    <modal
-      :show="showAssignMenuModal"
-      :title="`Assign Menus for ${selectedDailyMeal.name}`"
-      @close="closeAssignMenuModal"
-    >
-      <daily-meal-menu-form
-        :dailyMealId="selectedDailyMeal.id"
-        :assignedMenus="selectedDailyMeal.menus"
-        @assign="handleAssignMenu"
-        @detach="handleDetachMenu"
-        @menuAssigned="updateAssignedMenus"
-        @menuDetached="updateAssignedMenus"
-      />
-    </modal>
-  </overlay>
-    <!-- Delete Confirmation Modal -->
-    <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
-      <modal
-        :show="showDeleteConfirmation"
-        title="Delete Daily Meal"
-        @close="closeDeleteConfirmation"
-      >
-        <p>Are you sure you want to delete this daily meal?</p>
-        <div class="flex justify-end mt-4">
-          <button
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-            @click="handleDeleteDailyMeal"
-          >
-            Delete
-          </button>
-          <button
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-            @click="closeDeleteConfirmation"
-          >
-            Cancel
-          </button>
+    <Overlay v-if="showAssignMenuModal">
+      <div class="modal-container" @click.stop>
+        <Modal :show="showAssignMenuModal" :title="`Assign Menus for ${selectedDailyMeal.name}`" @close="closeAssignMenuModal">
+          <daily-meal-menu-form
+            :dailyMealId="selectedDailyMeal.id"
+            :assignedMenus="selectedDailyMeal.menus"
+            @assign="handleAssignMenu"
+            @detach="handleDetachMenu"
+            @menuAssigned="updateAssignedMenus"
+            @menuDetached="updateAssignedMenus"
+          />
+        </Modal>
+      </div>
+    </Overlay>
+
+    <Overlay v-if="showDeleteConfirmation">
+      <div class="modal-container" @click.stop>
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+          <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-headline">
+                  Delete Daily Meal
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Are you sure you want to delete this daily meal? This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+              @click="handleDeleteDailyMeal"
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:border-gray-500"
+              @click="closeDeleteConfirmation"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </modal>
-    </overlay>
+      </div>
+    </Overlay>
   </div>
 </template>
 
@@ -225,23 +258,20 @@ export default {
         })
     },
     handleAssignMenu(menuId) {
-      const dailyMeals = this.dailyMeals; // Get the dailyMeals from the component
-      console.log( '229:',dailyMeals)
+      const dailyMeals = this.dailyMeals
       this.attachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId, dailyMeals })
         .then((updatedDailyMeal) => {
-          this.selectedDailyMeal.menus = updatedDailyMeal.menus;
-          this.fetchDailyMeals();
+          this.selectedDailyMeal.menus = updatedDailyMeal.menus
+          this.fetchDailyMeals()
         })
         .catch((error) => {
-          console.error('Error assigning menu:', error);
+          console.error('Error assigning menu:', error)
           // Handle error if needed
-        });
+        })
     },
-
     handleDetachMenu(menuId) {
       this.detachMenu({ dailyMealId: this.selectedDailyMeal.id, menuId })
         .then(() => {
-          // Update the assignedMenus array by removing the detached menu
           const updatedAssignedMenus = this.selectedDailyMeal.menus.filter(
             (menu) => menu.id !== menuId
           )
@@ -261,3 +291,62 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.meal-type-icon {
+  @apply flex items-center justify-center w-16 h-16 bg-white dark:bg-gray-700 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 cursor-pointer;
+}
+
+.modal-container {
+  @apply flex justify-center items-center h-full;
+}
+
+/* Add these styles for the floating animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.meal-type-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Add a staggered animation delay for each meal type icon */
+.meal-type-icon:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.meal-type-icon:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.meal-type-icon:nth-child(3) {
+  animation-delay: 1s;
+}
+
+/* Add a subtle hover effect for daily meal cards */
+.daily-meal-card {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.daily-meal-card:hover {
+  @apply transform -translate-y-2 shadow-xl;
+}
+
+/* Add a pulsing effect to the create button */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.create-button {
+  animation: pulse 2s infinite;
+}
+
+/* Add a transition for dark mode */
+.dark-mode-transition {
+  @apply transition-colors duration-300 ease-in-out;
+}
+</style>
