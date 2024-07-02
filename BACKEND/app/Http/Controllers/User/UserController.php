@@ -7,6 +7,8 @@ use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
 
 class UserController extends Controller
 {
@@ -16,80 +18,6 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-
-//    public function store(Request $request)
-//    {
-//        $validator = Validator::make($request->all(), [
-//            'category_id' => 'required|exists:user_category,id',
-//            'name' => 'required|max:255',
-//            'email' => 'required|email|unique:users',
-//            'phone_number' => 'nullable',
-//            'gender' => 'nullable|in:female,male',
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return response()->json(['errors' => $validator->errors()], 422);
-//        }
-//
-//        $currentUser = Auth::user();
-//
-//        $user = User::create([
-//            'category_id' => $request->category_id,
-//            'name' => $request->name,
-//            'email' => $request->email,
-//            'phone_number' => $request->phone_number,
-//            'gender' => $request->gender,
-//            'api_token' => str_replace('-', '', substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 20)),
-//            'creator' => $currentUser->email,
-//            'editors' => json_encode([$currentUser->email]),
-//            'affected_categories' => UserCategory::where('id', $request->category_id)->get()->name
-//        ]);
-//
-//        $user->load('category');
-//
-//        $status = "success";
-//        $response = ['user' => $user, 'status' => $status];
-//        return response()->json($response);
-//    }
-//
-//    public function update(Request $request, $id)
-//    {
-//        $validator = Validator::make($request->all(), [
-//            'category_id' => 'exists:user_category,id',
-//            'name' => 'string|max:255',
-//            'email' => 'email|unique:users,email,' . $id,
-//            'phone_number' => 'nullable',
-//            'gender' => 'nullable|in:female,male',
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return response()->json(['errors' => $validator->errors()], 422);
-//        }
-//
-//        $user = User::findOrFail($id);
-//        $currentUser = Auth::user();
-//
-//        $user->category_id = $request->has('category_id') ? $request->category_id : $user->category_id;
-//        $user->name = $request->has('name') ? $request->name : $user->name;
-//        $user->email = $request->has('email') ? $request->email : $user->email;
-//        $user->phone_number = $request->has('phone_number') ? $request->phone_number : $user->phone_number;
-//        $user->gender = $request->has('gender') ? $request->gender : $user->gender;
-//
-//        // Update editors
-//        $editors = json_decode($user->editors, true) ?: [];
-//        if (!in_array($currentUser->email, $editors)) {
-//            $editors[] = $currentUser->email;
-//            $user->editors = json_encode($editors);
-//        }
-//
-//        $user->save();
-//
-//        $user->load('category');
-//
-//        $status = "success";
-//        $response = ['user' => $user, 'status' => $status];
-//        return response()->json($response);
-//    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -190,5 +118,23 @@ class UserController extends Controller
     {
         $user = User::where('id', $id)->get()->first();
         return response()->json(['user' => $user], 200);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+            'category_id' => 'required|exists:user_category,id',
+        ]);
+
+        $file = $request->file('file');
+        $categoryId = $request->input('category_id');
+
+        try {
+            Excel::import(new UsersImport($categoryId), $file);
+            return response()->json(['message' => 'Users imported successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error importing users: ' . $e->getMessage()], 500);
+        }
     }
 }
