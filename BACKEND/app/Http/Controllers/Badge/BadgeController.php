@@ -95,69 +95,6 @@ class BadgeController extends Controller
         return response()->json(null, 204);
     }
 
-//    public function importRfids(Request $request)
-//    {
-//        $request->validate([
-//            'file' => 'required|file|mimes:xlsx,xls',
-//        ]);
-//
-//        $file = $request->file('file');
-//
-//        try {
-//            $rfids = Excel::toArray(new RfidImport, $file)[0];
-//            \Log::info('Imported RFIDs:', $rfids);
-//        } catch (\Exception $e) {
-//            \Log::error('Error reading RFIDs from file: ' . $e->getMessage());
-//            return response()->json(['error' => 'Error reading RFIDs from file'], 500);
-//        }
-//
-//        $usersWithoutBadge = User::whereDoesntHave('badge')->get()->pluck('id');
-//        $existingRfids = Badge::pluck('rfid')->toArray();
-//
-//        foreach ($rfids as $rfidData) {
-//            try {
-//                $rfid = $rfidData['rfid'];
-//
-//                // Check if the RFID already exists in the badges table
-//                if (in_array($rfid, $existingRfids)) {
-//                    \Log::info("RFID $rfid already exists, skipping.");
-//                    continue;
-//                }
-//
-//                if ($usersWithoutBadge->isNotEmpty()) {
-//                    $userId = $usersWithoutBadge->shift();
-//                    $context = [
-//                        'userId' => $userId,
-//                        'rfid' => $rfid,
-//                    ];
-//                    \Log::info('Creating badge with user ID and RFID', $context);
-//                    $badge = Badge::create([
-//                        'user_id' => $userId,
-//                        'rfid' => $rfid,
-//                        'status' => 'assigned',
-//
-//                    ]);
-//                    \Log::info('Created badge:', $badge->toArray());
-//                } else {
-//                    $context = [
-//                        'rfid' => $rfid,
-//                    ];
-//                    \Log::info('Creating badge with RFID', $context);
-//                    $badge = Badge::create([
-//                        'rfid' => $rfid,
-//                        'status' => 'available',
-//                    ]);
-//                    \Log::info('Created badge:', $badge->toArray());
-//                }
-//            } catch (\Exception $e) {
-//                \Log::error('Error creating badge: ' . $e->getMessage());
-//                return response()->json(['error' => 'Error creating badges'], 500);
-//            }
-//        }
-//
-//        return response()->json(['message' => 'RFIDs imported successfully']);
-//    }
-
     public function importRfids(Request $request)
     {
         $request->validate([
