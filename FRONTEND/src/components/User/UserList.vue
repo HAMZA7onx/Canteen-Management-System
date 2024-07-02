@@ -3,7 +3,6 @@
     <h2 class="text-2xl font-bold mb-4">Users</h2>
 
     <div class="mb-4 flex space-x-4 items-center">
-      <!-- Create User Button -->
       <button
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
         @click="openCreateUserModal"
@@ -11,28 +10,12 @@
         Create User
       </button>
 
-      <!-- Import Users Form -->
-      <form @submit.prevent="importUsers" class="flex items-center space-x-2">
-        <select v-model="importCategoryId" class="form-select rounded-md shadow-sm">
-          <option value="">Select Category</option>
-          <option v-for="category in userCategories" :key="category.id" :value="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-        <input 
-          type="file" 
-          ref="fileInput" 
-          @change="handleFileChange" 
-          class="form-input rounded-md shadow-sm" 
-          accept=".xlsx,.xls"
-        >
-        <button 
-          type="submit" 
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
-        >
-          Import Users
-        </button>
-      </form>
+      <button
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
+        @click="openImportUsersModal"
+      >
+        Import Users
+      </button>
     </div>
 
     <div class="overflow-x-auto">
@@ -107,6 +90,50 @@
       </Modal>
     </Overlay>
 
+    <!-- Import Users Modal -->
+    <Overlay v-if="showImportUsersModal">
+      <Modal
+        :show="showImportUsersModal"
+        @close="closeImportUsersModal"
+        title="Import Users"
+      >
+        <form @submit.prevent="importUsers" class="space-y-4">
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700">Select Category</label>
+            <select 
+              id="category"
+              v-model="importCategoryId" 
+              class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            >
+              <option value="">Select Category</option>
+              <option v-for="category in userCategories" :key="category.id" :value="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label for="file" class="block text-sm font-medium text-gray-700">Choose Excel File</label>
+            <input 
+              type="file" 
+              id="file"
+              ref="fileInput" 
+              @change="handleFileChange" 
+              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              accept=".xlsx,.xls"
+            >
+          </div>
+          <div>
+            <button 
+              type="submit" 
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm"
+            >
+              Import Users
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </Overlay>
+
     <!-- Delete Confirmation Modal -->
     <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -147,7 +174,7 @@
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500">
-                    Are you sure you want to delete {{ userToDelete.name }}? This action cannot be undone.
+                    Are you sure you want to delete {{ userToDelete?.name }}? This action cannot be undone.
                   </p>
                 </div>
               </div>
@@ -193,6 +220,7 @@ export default {
       showCreateUserModal: false,
       showEditUserModal: false,
       showDeleteConfirmation: false,
+      showImportUsersModal: false,
       selectedUser: null,
       userToDelete: null,
       importCategoryId: '',
@@ -252,6 +280,17 @@ export default {
           this.userToDelete = null;
         });
     },
+    openImportUsersModal() {
+      this.showImportUsersModal = true;
+    },
+    closeImportUsersModal() {
+      this.showImportUsersModal = false;
+      this.importCategoryId = '';
+      this.importFile = null;
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = '';
+      }
+    },
     handleFileChange(event) {
       this.importFile = event.target.files[0];
     },
@@ -268,10 +307,7 @@ export default {
       this.$store.dispatch('user/importUsers', formData)
         .then(() => {
           alert('Users imported successfully');
-          this.importFile = null;
-          this.importCategoryId = '';
-          this.$refs.fileInput.value = '';
-          // No need to call fetchUsers here as it's already done in the Vuex action
+          this.closeImportUsersModal();
         })
         .catch((error) => {
           console.error('Error importing users:', error);
