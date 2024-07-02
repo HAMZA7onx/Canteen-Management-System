@@ -1,126 +1,86 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl font-bold mb-4">Week Schedules</h2>
-
-    <div class="mb-4">
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        @click="openCreateModal"
-      >
-        Create Week Schedule
-      </button>
+  <div class="container mx-auto px-4 py-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-900 min-h-screen">
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-extrabold text-indigo-700 dark:text-indigo-300 mb-2">Week Schedules</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Efficiently manage and organize your weekly meal plans</p>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <table class="w-full table-auto">
-        <thead>
-          <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th class="py-3 px-6 text-left">Week Schedule</th>
-            <th class="py-3 px-6 text-center">Status</th>
-            <th class="py-3 px-6 text-center">Actions</th>
-            <th class="py-3 px-6 text-center">Monday</th>
-            <th class="py-3 px-6 text-center">Tuesday</th>
-            <th class="py-3 px-6 text-center">Wednesday</th>
-            <th class="py-3 px-6 text-center">Thursday</th>
-            <th class="py-3 px-6 text-center">Friday</th>
-            <th class="py-3 px-6 text-center">Saturday</th>
-            <th class="py-3 px-6 text-center">Sunday</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-light">
-          <tr
-            v-for="weekSchedule in weekSchedules"
-            :key="weekSchedule.id"
-            class="border-b border-gray-200 hover:bg-gray-100"
-          >
-            <td class="py-3 px-6 text-left whitespace-nowrap">
-              {{ weekSchedule.mode_name }}
-            </td>
-            <td class="py-3 px-6 text-center">
-              <span
-                :class="{
-                  'bg-green-100 text-green-800 px-2 py-1 rounded-full': weekSchedule.status === 'active',
-                  'bg-red-100 text-red-800 px-2 py-1 rounded-full': weekSchedule.status === 'inactive',
-                }"
-              >
-                {{ weekSchedule.status }}
-              </span>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <div class="flex justify-center space-x-2">
-                <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                  @click="openEditModal(weekSchedule)"
+    <div class="mb-6 flex justify-between items-center">
+      <button
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+        @click="openCreateModal"
+      >
+        <font-awesome-icon icon="plus-circle" class="mr-2" />
+        Create Week Schedule
+      </button>
+      <div class="text-gray-600 dark:text-gray-400 italic">
+        Total Schedules: {{ weekSchedules.length }}
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto">
+          <thead>
+            <tr class="bg-indigo-600 text-white text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Week Schedule</th>
+              <th class="py-3 px-6 text-center">Status</th>
+              <th class="py-3 px-6 text-center">Actions</th>
+              <th v-for="day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']" :key="day" class="py-3 px-6 text-center">
+                {{ day }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+            <tr
+              v-for="weekSchedule in weekSchedules"
+              :key="weekSchedule.id"
+              class="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition duration-300"
+            >
+              <td class="py-3 px-6 text-left whitespace-nowrap font-medium">
+                {{ weekSchedule.mode_name }}
+              </td>
+              <td class="py-3 px-6 text-center">
+                <span
+                  :class="{
+                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': weekSchedule.status === 'active',
+                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': weekSchedule.status === 'inactive',
+                  }"
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
                 >
-                <font-awesome-icon icon="edit" />
-                </button>
+                  {{ weekSchedule.status }}
+                </span>
+              </td>
+              <td class="py-3 px-6 text-center">
+                <div class="flex justify-center space-x-2">
+                  <button
+                    class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
+                    @click="openEditModal(weekSchedule)"
+                    title="Edit"
+                  >
+                    <font-awesome-icon icon="edit" />
+                  </button>
+                  <button
+                    class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
+                    @click="openDeleteConfirmation(weekSchedule)"
+                    title="Delete"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </div>
+              </td>
+              <td v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="py-3 px-6 text-center">
                 <button
-                  class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                  @click="openDeleteConfirmation(weekSchedule)"
+                  class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
+                  @click="openAssignModal(weekSchedule, day)"
                 >
-                <font-awesome-icon icon="trash" />
+                  Assign
                 </button>
-              </div>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'monday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'tuesday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'wednesday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'thursday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'friday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'saturday')"
-              >
-                Assign
-              </button>
-            </td>
-            <td class="py-3 px-6 text-center">
-              <button
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                @click="openAssignModal(weekSchedule, 'sunday')"
-              >
-                Assign
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Create Week Schedule Modal -->
@@ -169,70 +129,35 @@
     </overlay>
 
     <!-- Delete Confirmation Modal -->
-    <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
-      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-headline"
-        >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div
-                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-              >
-                <svg
-                  class="h-6 w-6 text-red-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                  Delete Week Schedule
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    Are you sure you want to delete {{ selectedWeekSchedule.mode_name }}? This action cannot be undone.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="button"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+    <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
+      <modal
+        :show="showDeleteConfirmation"
+        title="Delete Week Schedule"
+        @close="closeDeleteConfirmation"
+      >
+        <div class="text-center">
+          <font-awesome-icon icon="exclamation-triangle" class="text-5xl text-yellow-500 mb-4" />
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Confirm Deletion</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Are you sure you want to delete <span class="font-semibold">{{ selectedWeekSchedule?.mode_name }}</span>? This action cannot be undone.
+          </p>
+          <div class="flex justify-center space-x-4">
+            <button 
               @click="handleDeleteWeekSchedule"
+              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
             >
               Delete
             </button>
-            <button
-              type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            <button 
               @click="closeDeleteConfirmation"
+              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-300"
             >
               Cancel
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </modal>
+    </overlay>
   </div>
 </template>
 
@@ -317,6 +242,7 @@ export default {
       })
         .then(() => {
           this.fetchWeekSchedules()
+          this.closeAssignModal()
         })
         .catch((error) => {
           console.error('Error assigning daily meals:', error)
@@ -331,6 +257,7 @@ export default {
       })
         .then(() => {
           this.fetchWeekSchedules()
+          this.closeAssignModal()
         })
         .catch((error) => {
           console.error('Error detaching daily meal:', error)
@@ -351,3 +278,7 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+/* Add any additional styles here */
+</style>

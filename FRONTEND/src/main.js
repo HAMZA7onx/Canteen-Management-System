@@ -12,6 +12,13 @@ import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'; // Import t
 // Add icons to the library
 library.add(faTrash, faEdit);
 
+// Initialize dark mode
+if (localStorage.getItem('darkMode') === 'true' ||
+    (!('darkMode' in localStorage) && 
+     window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+}
+
 // Create and mount the app
 const app = createApp(App);
 

@@ -1,12 +1,15 @@
 <template>
-  <aside class="sidebar">
-    <div class="sidebar-content">
+  <aside class="sidebar bg-gray-800 dark:bg-gray-900 text-white h-screen w-64 fixed mt-16 transition-colors duration-300">
+    <div class="sidebar-content p-4">
       <nav>
         <ul>
           <li
             v-for="item in menuItems"
             :key="item.label"
-            :class="['sidebar-item', { 'active': activeItem === item }]"
+            :class="[
+              'flex items-center rounded-md transition-colors duration-200 mb-2 p-2 cursor-pointer',
+              { 'bg-gray-700 dark:bg-gray-800': activeItem === item }
+            ]"
             @click="setActiveItem(item)"
             @keydown.enter="setActiveItem(item)"
             tabindex="0"
@@ -14,7 +17,7 @@
             aria-current="page"
           >
             <svg
-              class="icon"
+              class="w-5 h-5 mr-2 text-gray-400"
               aria-hidden="true"
               fill="none"
               viewBox="0 0 24 24"
@@ -27,7 +30,7 @@
                 d="M9 5l7 7-7 7"
               />
             </svg>
-            <router-link :to="item.route" class="link">
+            <router-link :to="item.route" class="flex-grow text-sm font-medium hover:text-gray-200">
               <i :class="item.icon"></i> {{ item.label }}
             </router-link>
           </li>
@@ -64,53 +67,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.sidebar {
-  background-color: #2d3748; /* bg-gray-800 */
-  color: #fff;
-  height: 100vh;
-  width: 16rem; /* w-64 */
-  position: fixed;
-  margin-top: 4rem; /* mt-16 */
-}
-
-.sidebar-content {
-  padding: 1rem; /* p-4 */
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  border-radius: 0.375rem; /* rounded-md */
-  transition: background-color 0.2s;
-  margin-bottom: 0.5rem; /* mb-2 */
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.sidebar-item:focus {
-  outline: none;
-  background-color: #4a5568; /* bg-gray-700 */
-}
-
-.sidebar-item.active {
-  background-color: #4a5568; /* bg-gray-700 */
-  color: #fff;
-}
-
-.icon {
-  margin-right: 0.5rem; /* mr-2 */
-  color: #a0aec0; /* text-gray-400 */
-  height: 1.25rem; /* h-5 */
-  width: 1.25rem; /* w-5 */
-}
-
-.link {
-  flex-grow: 1;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  align-items: center;
-}
-</style>
