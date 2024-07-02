@@ -130,6 +130,17 @@
               Import Users
             </button>
           </div>
+          <div v-if="importResult" class="mt-4">
+            <p class="text-sm text-gray-600">{{ importResult.message }}</p>
+            <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
+              <p class="text-sm font-semibold text-gray-700">Skipped rows:</p>
+              <ul class="list-disc list-inside text-sm text-gray-600">
+                <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
+                  {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
+                </li>
+              </ul>
+            </div>
+          </div>
         </form>
       </Modal>
     </Overlay>
@@ -225,6 +236,7 @@ export default {
       userToDelete: null,
       importCategoryId: '',
       importFile: null,
+      importResult: null,
     };
   },
   computed: {
@@ -287,6 +299,7 @@ export default {
       this.showImportUsersModal = false;
       this.importCategoryId = '';
       this.importFile = null;
+      this.importResult = null;
       if (this.$refs.fileInput) {
         this.$refs.fileInput.value = '';
       }
@@ -305,13 +318,16 @@ export default {
       formData.append('category_id', this.importCategoryId);
 
       this.$store.dispatch('user/importUsers', formData)
-        .then(() => {
-          alert('Users imported successfully');
-          this.closeImportUsersModal();
+        .then((response) => {
+          this.importResult = response;
+          this.fetchUsers(); // Refresh the user list
         })
         .catch((error) => {
           console.error('Error importing users:', error);
-          alert('Error importing users: ' + error.message);
+          this.importResult = {
+            message: 'An error occurred while importing users. Please try again.',
+            skipped_rows: [],
+          };
         });
     },
   },
