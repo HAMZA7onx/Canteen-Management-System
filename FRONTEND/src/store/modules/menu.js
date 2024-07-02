@@ -5,8 +5,10 @@ const state = {
 }
 
 const getters = {
-  menus: state => state.menus
+  menus: state => state.menus,
+  getMenuById: (state) => (id) => state.menus.find(menu => menu.id === id)
 }
+
 
 const actions = {
   fetchMenus({ commit }) {
@@ -53,6 +55,21 @@ const actions = {
         console.error('Error deleting menu:', error)
         throw error
       })
+  },
+
+  attachFoodComposant({ commit }, { menuId, foodComposantId }) {
+    return MenuService.attachFoodComposant(menuId, foodComposantId)
+      .then(response => {
+        commit('UPDATE_MENU', response.data)
+        return response.data
+      })
+  },
+  detachFoodComposant({ commit }, { menuId, foodComposantId }) {
+    return MenuService.detachFoodComposant(menuId, foodComposantId)
+      .then(response => {
+        commit('UPDATE_MENU', response.data)
+        return response.data
+      })
   }
 }
 
@@ -64,7 +81,10 @@ const mutations = {
     state.menus.push(menu)
   },
   UPDATE_MENU(state, updatedMenu) {
-    state.menus = state.menus.map(menu => (menu.id === updatedMenu.id ? updatedMenu : menu))
+    const index = state.menus.findIndex(menu => menu.id === updatedMenu.id)
+    if (index !== -1) {
+      state.menus.splice(index, 1, updatedMenu)
+    }
   },
   DELETE_MENU(state, menuId) {
     state.menus = state.menus.filter(menu => menu.id !== menuId)

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Imports;
-
 use App\Models\Badge;
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;

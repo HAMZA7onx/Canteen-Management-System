@@ -23,7 +23,7 @@
         <div>
           <button
             class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-            @click="detachMenu(menu.id)"
+            @click="handleDetachMenu(menu.id)"
           >
             Detach
           </button>
@@ -32,13 +32,10 @@
     </ul>
 
     <div class="mt-4">
-      <label for="menuSelect" class="block text-sm font-medium text-gray-700"
-        >Select Menu</label
-      >
+      <label for="menuSelect" class="block text-sm font-medium text-gray-700">Select Menu</label>
       <select
         id="menuSelect"
         v-model="selectedMenuId"
-        @change="handleMenuSelect"
         class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
       >
         <option value="" disabled selected>Select a menu</option>
@@ -46,14 +43,14 @@
           v-for="menu in availableMenus"
           :key="menu.id"
           :value="menu.id"
-          >{{ menu.name }}</option
-        >
+        >{{ menu.name }}</option>
       </select>
     </div>
     <div class="mt-4 flex justify-end">
       <button
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         @click="assignMenu"
+        :disabled="!selectedMenuId"
       >
         Assign
       </button>
@@ -74,84 +71,49 @@ export default {
   data() {
     return {
       selectedMenuId: null,
-      dailyMeals: [], // Add a local data property to store the dailyMeals
     }
   },
   computed: {
     ...mapGetters('menu', ['menus']),
+    ...mapGetters('dailyMeal', ['dailyMeals']),
+    dailyMeal() {
+      return this.dailyMeals.find(meal => meal.id === this.dailyMealId)
+    },
     dailyMealName() {
-      const dailyMeal = this.dailyMeals.find(
-        (meal) => meal.id === this.dailyMealId
-      )
-      return dailyMeal ? dailyMeal.name : ''
+      return this.dailyMeal ? this.dailyMeal.name : ''
     },
     assignedMenus() {
-      const dailyMeal = this.dailyMeals.find(
-        (meal) => meal.id === this.dailyMealId
-      )
-      if (dailyMeal && dailyMeal.menus) {
-        return dailyMeal.menus.map(menu => ({
-          id: menu.id,
-          name: menu.name,
-          description: menu.description,
-        }))
-      }
-      return []
+      return this.dailyMeal && this.dailyMeal.menus ? this.dailyMeal.menus : []
     },
     availableMenus() {
-      const assignedMenuIds = this.assignedMenus.map((menu) => menu.id)
-      return this.menus.filter(
-        (menu) => !assignedMenuIds.includes(menu.id) && menu.id !== this.selectedMenuId
-      )
+      const assignedMenuIds = this.assignedMenus.map(menu => menu.id)
+      return this.menus.filter(menu => !assignedMenuIds.includes(menu.id))
     },
-  },
-  watch: {
-    assignedMenus: {
-      handler(newAssignedMenus) {
-        this.updateAvailableMenus(newAssignedMenus)
-      },
-      deep: true,
-    },
-  },
-  created() {
-    this.fetchDailyMeals().then(() => {
-      this.fetchMenus().then(() => {
-        this.updateAvailableMenus(this.assignedMenus);
-      });
-    });
   },
   methods: {
     ...mapActions('menu', ['fetchMenus']),
     ...mapActions('dailyMeal', ['fetchDailyMeals', 'attachMenu', 'detachMenu']),
-    updateAvailableMenus(assignedMenus) {
-      if (this.menus && this.menus.length > 0) {
-        const assignedMenuIds = assignedMenus.map((menu) => menu.id);
-        this.availableMenus = this.menus.filter(
-          (menu) => !assignedMenuIds.includes(menu.id)
-        );
-      } else {
-        this.availableMenus = [];
+    assignMenu() {
+      if (this.selectedMenuId) {
+        this.attachMenu({ dailyMealId: this.dailyMealId, menuId: this.selectedMenuId })
+          .then(() => {
+            this.selectedMenuId = null
+          })
+          .catch(error => {
+            console.error('Error assigning menu:', error)
+          })
       }
     },
-    assignMenu() {
-      const dailyMeals = this.dailyMeals; // Use the local dailyMeals data
-      this.attachMenu({ dailyMealId: this.dailyMealId, menuId: this.selectedMenuId, dailyMeals })
-        .then(() => {
-          this.selectedMenuId = null
-        })
-        .catch((error) => {
-          console.error('Error assigning menu:', error)
-        })
-    },
-    handleMenuSelect(event) {
-      this.selectedMenuId = event.target.value
-    },
-    detachMenu(menuId) {
+    handleDetachMenu(menuId) {
       this.detachMenu({ dailyMealId: this.dailyMealId, menuId })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error detaching menu:', error)
         })
     },
+  },
+  created() {
+    this.fetchMenus()
+    this.fetchDailyMeals()
   },
 }
 </script>

@@ -53,13 +53,33 @@ class DailyMealController extends Controller
 
     public function attachMenu(Request $request, DailyMeal $dailyMeal, $menuId)
     {
-        $dailyMeal->menus()->attach($menuId);
-        return response()->json(['message' => 'Menu attached to the daily meal']);
+        $menu = Menu::findOrFail($menuId);
+
+        if (!$dailyMeal->menus()->where('menu.id', $menuId)->exists()) {
+            $dailyMeal->menus()->attach($menuId);
+            return response()->json([
+                'message' => 'Menu attached to the daily meal successfully',
+                'daily_meal' => $dailyMeal->load('menus')
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Menu is already attached to this daily meal'
+        ], 422);
     }
 
     public function detachMenu(DailyMeal $dailyMeal, Menu $menu)
     {
-        $dailyMeal->menus()->detach($menu);
-        return response()->json(['message' => 'Menu detached from the daily meal ' . $dailyMeal->name]);
+        if ($dailyMeal->menus()->where('menu.id', $menu->id)->exists()) {
+            $dailyMeal->menus()->detach($menu->id);
+            return response()->json([
+                'message' => 'Menu detached from the daily meal successfully',
+                'daily_meal' => $dailyMeal->load('menus')
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Menu is not attached to this daily meal'
+        ], 422);
     }
 }
