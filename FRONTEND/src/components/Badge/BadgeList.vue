@@ -18,6 +18,7 @@
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
@@ -29,6 +30,14 @@
               <span :class="getStatusClass(badge.status)">
                 {{ badge.status }}
               </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
+                @click="showDetails(badge)"
+              >
+                Details
+              </button>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <button
@@ -77,6 +86,34 @@
         />
       </Modal>
     </div>
+
+    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay class="modal-overlay" />
+      <Modal :show="showDetailsModal" title="Badge Details" @close="showDetailsModal = false" class="modal-content">
+  <div v-if="selectedBadge">
+    <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
+
+    <p><strong>Editors:</strong></p>
+    <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0">
+      <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
+    </ul>
+    <p v-else class="text-gray-500">No editors</p>
+
+    <p><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
+
+    <p>
+      <strong>Updated At:</strong>
+      <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
+        {{ formatDate(selectedBadge.updated_at) }} (No updates)
+      </span>
+      <span v-else>
+        {{ formatDate(selectedBadge.updated_at) }}
+      </span>
+    </p>
+  </div>
+</Modal>
+
+    </div>
   </div>
 </template>
 
@@ -100,6 +137,7 @@ export default {
     return {
       showImportModal: false,
       showEditModal: false,
+      showDetailsModal: false,
       selectedBadge: null,
       eligibleUsersKey: 0,
     };
@@ -109,10 +147,10 @@ export default {
     getUserName() {
       return (badge) => {
         if (badge.user) {
-          return badge.user.name;
+          return badge.user.email;
         } else if (badge.userId) {
           const user = this.users.find(u => u.id === badge.userId);
-          return user ? user.name : 'Unassigned';
+          return user ? user.email : 'Unassigned';
         } else {
           return 'Unassigned';
         }
@@ -173,6 +211,19 @@ export default {
         default:
           return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
       }
+    },
+    showDetails(badge) {
+      this.selectedBadge = badge;
+      this.showDetailsModal = true;
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    },
+    isUpdatedAtSameAsCreatedAt(badge) {
+      const createdAt = new Date(badge.created_at);
+      const updatedAt = new Date(badge.updated_at);
+      return createdAt.getTime() === updatedAt.getTime();
     },
   },
 };
