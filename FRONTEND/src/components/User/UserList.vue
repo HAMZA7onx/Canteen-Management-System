@@ -1,62 +1,60 @@
 <template>
   <div class="container mx-auto px-4">
-    <!-- User List -->
+    <h2 class="text-2xl font-bold mb-4">Users</h2>
 
-<div class="mb-4 flex space-x-4 items-center">
-  <!-- Create User Button -->
-  <button
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
-    @click="openCreateUserModal"
-  >
-    Create User
-  </button>
+    <div class="mb-4 flex space-x-4 items-center">
+      <!-- Create User Button -->
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
+        @click="openCreateUserModal"
+      >
+        Create User
+      </button>
 
-  <!-- Import Users Input -->
-  <label class="relative cursor-pointer bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300">
-    Import Users
-    <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-  </label>
-</div>
-
+      <!-- Import Users Form -->
+      <form @submit.prevent="importUsers" class="flex items-center space-x-2">
+        <select v-model="importCategoryId" class="form-select rounded-md shadow-sm">
+          <option value="">Select Category</option>
+          <option v-for="category in userCategories" :key="category.id" :value="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <input 
+          type="file" 
+          ref="fileInput" 
+          @change="handleFileChange" 
+          class="form-input rounded-md shadow-sm" 
+          accept=".xlsx,.xls"
+        >
+        <button 
+          type="submit" 
+          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transform hover:scale-105 transition-transform duration-300"
+        >
+          Import Users
+        </button>
+      </form>
+    </div>
 
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Name
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Email
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Phone Number
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Gender
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Category
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -73,13 +71,13 @@
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditUserModal(user)"
               >
-              <font-awesome-icon icon="edit" />
+                <font-awesome-icon icon="edit" />
               </button>
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="deleteUser(user)"
               >
-              <font-awesome-icon icon="trash" />
+                <font-awesome-icon icon="trash" />
               </button>
             </td>
           </tr>
@@ -197,16 +195,22 @@ export default {
       showDeleteConfirmation: false,
       selectedUser: null,
       userToDelete: null,
+      importCategoryId: '',
+      importFile: null,
     };
   },
   computed: {
     ...mapGetters('user', ['users']),
+    ...mapGetters('userCategory', ['userCategories']),
   },
   created() {
     this.fetchUsers();
+    this.fetchUserCategories();
   },
   methods: {
-    ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser']),
+    ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser', 'importUsers']),
+    ...mapActions('userCategory', ['fetchUserCategories']),
+    
     openCreateUserModal() {
       this.showCreateUserModal = true;
     },
@@ -246,6 +250,32 @@ export default {
           console.error('Error deleting user:', error);
           this.showDeleteConfirmation = false;
           this.userToDelete = null;
+        });
+    },
+    handleFileChange(event) {
+      this.importFile = event.target.files[0];
+    },
+    importUsers() {
+      if (!this.importFile || !this.importCategoryId) {
+        alert('Please select a file and a category');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', this.importFile);
+      formData.append('category_id', this.importCategoryId);
+
+      this.$store.dispatch('user/importUsers', formData)
+        .then(() => {
+          alert('Users imported successfully');
+          this.importFile = null;
+          this.importCategoryId = '';
+          this.$refs.fileInput.value = '';
+          // No need to call fetchUsers here as it's already done in the Vuex action
+        })
+        .catch((error) => {
+          console.error('Error importing users:', error);
+          alert('Error importing users: ' + error.message);
         });
     },
   },

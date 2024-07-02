@@ -22,6 +22,14 @@ class UserService {
   deleteUser(id) {
     return request.delete(`${API_URL}/users/${id}`);
   }
+
+  importUsers(formData) {
+    return request.post(`${API_URL}/users/import`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
 }
 
 export default new UserService();

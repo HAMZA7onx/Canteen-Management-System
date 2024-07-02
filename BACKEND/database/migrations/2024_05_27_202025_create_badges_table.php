@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('badges', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users', 'id');
+            $table->foreignId('user_id')->nullable()->constrained('users', 'id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('rfid');
             $table->enum('status', ['available', 'assigned', 'lost'])->default('available');
             $table->string('creator');

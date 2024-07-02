@@ -55,6 +55,17 @@ const actions = {
         throw error;
       });
   },
+  importUsers({ dispatch }, formData) {
+    return UserService.importUsers(formData)
+      .then((response) => {
+        // You might want to fetch users again after import
+        return dispatch('fetchUsers');
+      })
+      .catch((error) => {
+        console.error('Error importing users:', error);
+        throw error;
+      });
+  },
 };
 
 const mutations = {
