@@ -38,6 +38,9 @@
               Category
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Details
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
@@ -49,6 +52,14 @@
             <td class="px-6 py-4 whitespace-nowrap">{{ user.phone_number }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ user.gender }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ user.category.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
+                @click="openDetailsPopup(user)"
+              >
+                Details
+              </button>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
               <button
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
@@ -100,9 +111,9 @@
         <form @submit.prevent="importUsers" class="space-y-4">
           <div>
             <label for="category" class="block text-sm font-medium text-gray-700">Select Category</label>
-            <select 
+            <select
               id="category"
-              v-model="importCategoryId" 
+              v-model="importCategoryId"
               class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             >
               <option value="">Select Category</option>
@@ -113,18 +124,18 @@
           </div>
           <div>
             <label for="file" class="block text-sm font-medium text-gray-700">Choose Excel File</label>
-            <input 
-              type="file" 
+            <input
+              type="file"
               id="file"
-              ref="fileInput" 
-              @change="handleFileChange" 
+              ref="fileInput"
+              @change="handleFileChange"
               class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               accept=".xlsx,.xls"
             >
           </div>
           <div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm"
             >
               Import Users
@@ -210,6 +221,71 @@
         </div>
       </div>
     </div>
+
+    <!-- Details Popup -->
+<div v-if="showDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center">
+  <Overlay />
+  <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+      <div class="sm:flex sm:items-start">
+        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+          <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+            User Details
+          </h3>
+          <div class="mt-2">
+            <p class="text-sm text-gray-500">
+              <strong>Name:</strong> {{ selectedUser.name }}
+            </p>
+            <p class="text-sm text-gray-500">
+              <strong>Email:</strong> {{ selectedUser.email }}
+            </p>
+            <p class="text-sm text-gray-500">
+              <strong>Phone Number:</strong> {{ selectedUser.phone_number }}
+            </p>
+            <p class="text-sm text-gray-500">
+              <strong>Gender:</strong> {{ selectedUser.gender }}
+            </p>
+            <p class="text-sm text-gray-500">
+              <strong>Category:</strong> {{ selectedUser.category.name }}
+            </p>
+            <p class="text-sm text-gray-500">
+              <strong>Creator:</strong> {{ selectedUser.creator }}
+            </p>
+            <div class="text-sm text-gray-500 mt-2">
+              <strong>Editors:</strong>
+              <ul v-if="parsedEditors.length > 0" class="list-disc list-inside ml-2">
+                <li v-for="editor in parsedEditors" :key="editor">{{ editor }}</li>
+              </ul>
+              <p v-else class="ml-2">No editors</p>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">
+              <strong>Created At:</strong> {{ formatDate(selectedUser.created_at) }}
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+              <strong>Updated At:</strong>
+              <span v-if="isUpdatedAtSameAsCreatedAt(selectedUser)">
+                {{ formatDate(selectedUser.updated_at) }} (No updates)
+              </span>
+              <span v-else>
+                {{ formatDate(selectedUser.updated_at) }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+      <button
+        type="button"
+        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+        @click="closeDetailsPopup"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -232,6 +308,7 @@ export default {
       showEditUserModal: false,
       showDeleteConfirmation: false,
       showImportUsersModal: false,
+      showDetailsPopup: false,
       selectedUser: null,
       userToDelete: null,
       importCategoryId: '',
@@ -242,6 +319,18 @@ export default {
   computed: {
     ...mapGetters('user', ['users']),
     ...mapGetters('userCategory', ['userCategories']),
+    parsedEditors() {
+      if (this.selectedUser && this.selectedUser.editors) {
+        try {
+          const editorsArray = JSON.parse(this.selectedUser.editors);
+          return Array.isArray(editorsArray) ? editorsArray : [];
+        } catch (error) {
+          console.error('Error parsing editors:', error);
+          return [];
+        }
+      }
+      return [];
+    }
   },
   created() {
     this.fetchUsers();
@@ -250,7 +339,7 @@ export default {
   methods: {
     ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser', 'importUsers']),
     ...mapActions('userCategory', ['fetchUserCategories']),
-    
+   
     openCreateUserModal() {
       this.showCreateUserModal = true;
     },
@@ -329,6 +418,20 @@ export default {
             skipped_rows: [],
           };
         });
+    },
+    openDetailsPopup(user) {
+      this.selectedUser = { ...user };
+      this.showDetailsPopup = true;
+    },
+    closeDetailsPopup() {
+      this.showDetailsPopup = false;
+      this.selectedUser = null;
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleString();
+    },
+    isUpdatedAtSameAsCreatedAt(user) {
+      return new Date(user.created_at).getTime() === new Date(user.updated_at).getTime();
     },
   },
 };
