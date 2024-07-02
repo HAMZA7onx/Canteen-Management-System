@@ -22,14 +22,6 @@ class FoodComposantService {
   deleteFoodComposant(id) {
     return request.delete(`${API_URL}/${id}`)
   }
-
-  attachToMenu(foodComposantId, menuId) {
-    return request.post(`${API_URL}/${foodComposantId}/menus`, { menu_id: menuId })
-  }
-
-  detachFromMenu(foodComposantId, menuId) {
-    return request.delete(`${API_URL}/${foodComposantId}/menus/${menuId}`)
-  }
 }
 
 export default new FoodComposantService()

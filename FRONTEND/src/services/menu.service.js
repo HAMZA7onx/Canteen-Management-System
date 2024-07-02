@@ -23,12 +23,12 @@ class MenuService {
     return request.delete(`${API_URL}/${id}`)
   }
 
-  attachToDailyMeal(menuId, dailyMealId) {
-    return request.post(`${API_URL}/${menuId}/daily-meals`, { daily_meal_id: dailyMealId })
+  attachFoodComposant(menuId, foodComposantId) {
+    return request.post(`${API_URL}/${menuId}/food-composants/${foodComposantId}`)
   }
 
-  detachFromDailyMeal(menuId, dailyMealId) {
-    return request.delete(`${API_URL}/${menuId}/daily-meals/${dailyMealId}`)
+  detachFoodComposant(menuId, foodComposantId) {
+    return request.delete(`${API_URL}/${menuId}/food-composants/${foodComposantId}`)
   }
 }
 

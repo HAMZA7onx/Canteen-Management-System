@@ -55,28 +55,6 @@ const actions = {
       })
   },
   
-
-  attachToMenu({ commit }, { foodComposantId, menuId }) {
-    return FoodComposantService.attachToMenu(foodComposantId, menuId)
-      .then(response => {
-        // Optionally commit a mutation to update the state
-      })
-      .catch(error => {
-        console.error('Error attaching food composant to menu:', error)
-        throw error
-      })
-  },
-
-  detachFromMenu({ commit }, { foodComposantId, menuId }) {
-    return FoodComposantService.detachFromMenu(foodComposantId, menuId)
-      .then(response => {
-        // Optionally commit a mutation to update the state
-      })
-      .catch(error => {
-        console.error('Error detaching food composant from menu:', error)
-        throw error
-      })
-  }
 }
 
 const mutations = {

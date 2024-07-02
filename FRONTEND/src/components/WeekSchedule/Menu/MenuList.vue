@@ -16,6 +16,7 @@
           <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
             <th class="py-3 px-6 text-left">Name</th>
             <th class="py-3 px-6 text-left">Description</th>
+            <th class="py-3 px-6 text-center">Food Composants</th>
             <th class="py-3 px-6 text-center">Actions</th>
           </tr>
         </thead>
@@ -33,16 +34,24 @@
             </td>
             <td class="py-3 px-6 text-center">
               <button
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                @click="openFoodComposantModal(menu)"
+              >
+                Manage
+              </button>
+            </td>
+            <td class="py-3 px-6 text-center">
+              <button
                 class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
                 @click="openEditModal(menu)"
               >
-              <font-awesome-icon icon="edit" />
+                <font-awesome-icon icon="edit" />
               </button>
               <button
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                 @click="openDeleteConfirmation(menu)"
               >
-              <font-awesome-icon icon="trash" />
+                <font-awesome-icon icon="trash" />
               </button>
             </td>
           </tr>
@@ -66,6 +75,15 @@
         <menu-form
           :menu="selectedMenu"
           @update="handleUpdateMenu"
+        />
+      </modal>
+    </overlay>
+
+    <!-- Food Composant Modal -->
+    <overlay v-if="showFoodComposantModal" @close="closeFoodComposantModal">
+      <modal :show="showFoodComposantModal" title="Manage Food Composants" @close="closeFoodComposantModal">
+        <menu-food-composant-form
+          :menuId="selectedMenu ? selectedMenu.id : null"
         />
       </modal>
     </overlay>
@@ -141,12 +159,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import MenuForm from './MenuForm.vue'
+import MenuFoodComposantForm from './MenuFoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 
 export default {
   components: {
     MenuForm,
+    MenuFoodComposantForm,
     Modal,
     Overlay
   },
@@ -155,6 +175,7 @@ export default {
       showCreateModal: false,
       showEditModal: false,
       showDeleteConfirmation: false,
+      showFoodComposantModal: false,
       selectedMenu: null
     }
   },
@@ -222,6 +243,14 @@ export default {
           console.error('Error deleting menu:', error)
           // Handle error if needed
         })
+    },
+    openFoodComposantModal(menu) {
+      this.selectedMenu = { ...menu }
+      this.showFoodComposantModal = true
+    },
+    closeFoodComposantModal() {
+      this.showFoodComposantModal = false
+      this.selectedMenu = null
     }
   }
 }
