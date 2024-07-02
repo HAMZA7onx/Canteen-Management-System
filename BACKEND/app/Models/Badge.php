@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\DB;
 class Badge extends Model
 {
     protected $table = 'badges';
-    protected $fillable = ['user_id', 'rfid', 'status'];
+    protected $casts = [
+        'editors' => 'json',
+    ];
+    protected $fillable = ['user_id', 'rfid', 'status', 'creator', 'editors'];
 
     public function user()
     {

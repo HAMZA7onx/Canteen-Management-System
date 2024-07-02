@@ -34,6 +34,7 @@
               <button
                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-2 transition duration-300 ease-in-out"
                 @click="editBadge(badge)"
+                :disabled="badge.status === 'lost'"
               >
                 <font-awesome-icon icon="edit" />
               </button>
@@ -60,8 +61,11 @@
     <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <Overlay class="modal-overlay" />
       <Modal :show="showEditModal" title="Edit Badge" @close="showEditModal = false" class="modal-content">
+        <div v-if="selectedBadge && selectedBadge.status === 'lost'">
+          <p class="text-red-500">No operation can be performed on this RFID, it is marked as lost.</p>
+        </div>
         <MarkAsLostModal
-          v-if="selectedBadge && selectedBadge.status === 'assigned'"
+          v-else-if="selectedBadge && selectedBadge.status === 'assigned'"
           :badge="selectedBadge"
           @update-success="handleUpdateSuccess"
         />
