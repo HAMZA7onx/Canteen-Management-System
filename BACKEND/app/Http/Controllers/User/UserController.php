@@ -131,10 +131,29 @@ class UserController extends Controller
         $categoryId = $request->input('category_id');
 
         try {
-            Excel::import(new UsersImport($categoryId), $file);
-            return response()->json(['message' => 'Users imported successfully'], 200);
+            $import = new UsersImport($categoryId);
+            Excel::import($import, $file);
+
+            $skippedCount = count($import->skippedRows);
+            $importedCount = $import->importedCount;
+            $updatedCount = $import->updatedCount;
+
+            $message = "$importedCount users were imported successfully.";
+            if ($updatedCount > 0) {
+                $message .= " $updatedCount previously deleted users were restored.";
+            }
+            if ($skippedCount > 0) {
+                $message .= " $skippedCount users were skipped due to existing emails.";
+            }
+
+            return response()->json([
+                'message' => $message,
+                'skipped_rows' => $import->skippedRows,
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error importing users: ' . $e->getMessage()], 500);
+            Log::error('Error importing users: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while importing users.'], 500);
         }
     }
+
 }

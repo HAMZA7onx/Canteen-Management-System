@@ -58,8 +58,8 @@ const actions = {
   importUsers({ dispatch }, formData) {
     return UserService.importUsers(formData)
       .then((response) => {
-        // You might want to fetch users again after import
-        return dispatch('fetchUsers');
+        dispatch('fetchUsers');
+        return response.data;
       })
       .catch((error) => {
         console.error('Error importing users:', error);
