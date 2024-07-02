@@ -16,14 +16,26 @@
         <thead class="bg-gray-100">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByEmail"
+            >
+              Email
+              <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByStatus"
+            >
+              Status
+              <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="badge in badges" :key="badge.id" class="hover:bg-gray-50">
+          <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">{{ badge.rfid }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ getUserName(badge) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
@@ -90,29 +102,28 @@
     <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center">
       <Overlay class="modal-overlay" />
       <Modal :show="showDetailsModal" title="Badge Details" @close="showDetailsModal = false" class="modal-content">
-  <div v-if="selectedBadge">
-    <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
+        <div v-if="selectedBadge">
+          <p><strong>Creator:</strong> {{ selectedBadge.creator }}</p>
 
-    <p><strong>Editors:</strong></p>
-    <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0">
-      <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
-    </ul>
-    <p v-else class="text-gray-500">No editors</p>
+          <p><strong>Editors:</strong></p>
+          <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0">
+            <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
+          </ul>
+          <p v-else class="text-gray-500">No editors</p>
 
-    <p><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
+          <p><strong>Created At:</strong> {{ formatDate(selectedBadge.created_at) }}</p>
 
-    <p>
-      <strong>Updated At:</strong>
-      <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
-        {{ formatDate(selectedBadge.updated_at) }} (No updates)
-      </span>
-      <span v-else>
-        {{ formatDate(selectedBadge.updated_at) }}
-      </span>
-    </p>
-  </div>
-</Modal>
-
+          <p>
+            <strong>Updated At:</strong>
+            <span v-if="isUpdatedAtSameAsCreatedAt(selectedBadge)">
+              {{ formatDate(selectedBadge.updated_at) }} (No updates)
+            </span>
+            <span v-else>
+              {{ formatDate(selectedBadge.updated_at) }}
+            </span>
+          </p>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -140,6 +151,8 @@ export default {
       showDetailsModal: false,
       selectedBadge: null,
       eligibleUsersKey: 0,
+      sortBy: null,
+      sortDirection: 'asc',
     };
   },
   computed: {
@@ -155,6 +168,25 @@ export default {
           return 'Unassigned';
         }
       };
+    },
+    sortedBadges() {
+      let sortedBadges = [...this.badges];
+
+      if (this.sortBy === 'email') {
+        sortedBadges.sort((a, b) => {
+          const emailA = this.getUserName(a).toLowerCase();
+          const emailB = this.getUserName(b).toLowerCase();
+          return this.sortDirection === 'asc' ? emailA.localeCompare(emailB) : emailB.localeCompare(emailA);
+        });
+      } else if (this.sortBy === 'status') {
+        sortedBadges.sort((a, b) => {
+          const statusA = a.status.toLowerCase();
+          const statusB = b.status.toLowerCase();
+          return this.sortDirection === 'asc' ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
+        });
+      }
+
+      return sortedBadges;
     },
   },
   created() {
@@ -224,6 +256,22 @@ export default {
       const createdAt = new Date(badge.created_at);
       const updatedAt = new Date(badge.updated_at);
       return createdAt.getTime() === updatedAt.getTime();
+    },
+    sortByEmail() {
+      if (this.sortBy === 'email') {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortBy = 'email';
+        this.sortDirection = 'asc';
+      }
+    },
+    sortByStatus() {
+      if (this.sortBy === 'status') {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortBy = 'status';
+        this.sortDirection = 'asc';
+      }
     },
   },
 };
