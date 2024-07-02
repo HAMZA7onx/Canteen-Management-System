@@ -53,46 +53,24 @@ const actions = {
       })
   },
 
-  attachMenu({ commit, rootGetters }, { dailyMealId, menuId, dailyMeals }) {
+  attachMenu({ commit }, { dailyMealId, menuId }) {
     return DailyMealService.attachMenu(dailyMealId, menuId)
-      .then(() => {
-        const dailyMeal = dailyMeals.find(meal => meal.id === dailyMealId);
-  
-        if (dailyMeal) {
-          const updatedDailyMeal = { ...dailyMeal };
-          if (!updatedDailyMeal.menus) {
-            updatedDailyMeal.menus = [];
-          }
-  
-          // Find the full menu object from the rootGetters
-          const menuToAttach = rootGetters['menu/menus'].find(menu => menu.id === menuId);
-  
-          // Create a new menus array with the attached menu
-          updatedDailyMeal.menus = [...updatedDailyMeal.menus, menuToAttach];
-  
-          // Update the dailyMeals array with the updated daily meal
-          const updatedDailyMeals = dailyMeals.map(meal =>
-            meal.id === dailyMealId ? updatedDailyMeal : meal
-          );
-  
-          // Commit the SET_DAILY_MEALS mutation with the updated dailyMeals array
-          commit('SET_DAILY_MEALS', updatedDailyMeals);
-  
-          return updatedDailyMeal;
-        }
+      .then(response => {
+        commit('UPDATE_DAILY_MEAL', response.data.daily_meal)
+        return response.data.daily_meal
       })
-      .catch((error) => {
-        console.error('Error attaching menu:', error);
-        throw error;
-      });
-  }
-  
-  ,
+      .catch(error => {
+        console.error('Error attaching menu:', error)
+        throw error
+      })
+  },
 
-  detachMenu({ commit }, { dailyMealId, menuId }) {
+  detachMenu({ commit, state }, { dailyMealId, menuId }) {
     return DailyMealService.detachMenu(dailyMealId, menuId)
-      .then(() => {
-        commit('DETACH_MENU', { dailyMealId, menuId })
+      .then(response => {
+        const updatedDailyMeal = response.data.daily_meal
+        commit('UPDATE_DAILY_MEAL', updatedDailyMeal)
+        return updatedDailyMeal
       })
       .catch(error => {
         console.error('Error detaching menu:', error)
@@ -111,12 +89,10 @@ const mutations = {
   },
 
   UPDATE_DAILY_MEAL(state, updatedDailyMeal) {
-    const index = state.dailyMeals.findIndex(dailyMeal => dailyMeal.id === updatedDailyMeal.id);
-
+    const index = state.dailyMeals.findIndex(meal => meal.id === updatedDailyMeal.id)
     if (index !== -1) {
-      state.dailyMeals.splice(index, 1, updatedDailyMeal);
-    } else {
-      state.dailyMeals.push(updatedDailyMeal);
+      // Use Vue.set or this.$set in Vue 2, or direct assignment in Vue 3
+      state.dailyMeals[index] = updatedDailyMeal
     }
   },
 
