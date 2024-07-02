@@ -30,6 +30,12 @@
             scope="col"
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
           >
+         Details
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
             Actions
           </th>
         </tr>
@@ -38,6 +44,15 @@
         <tr v-for="category in userCategories" :key="category.id">
           <td class="px-6 py-4 whitespace-nowrap">{{ category.name }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ category.description }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button
+              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out"
+              @click="openDetailsPopup(category)"
+            >
+              Details
+            </button>
+          
+          </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex">
             <button
               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2"
@@ -132,9 +147,57 @@
         </div>
       </div>
     </div>
+
+    <!-- Details Popup -->
+    <div v-if="showDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center">
+      <Overlay />
+      <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                Category Details
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  <strong>Creator:</strong> {{ selectedCategory.creator }}
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                  <strong>Editors:</strong>
+                </p>
+                <ul v-if="selectedCategory.editors && selectedCategory.editors.length > 0" class="list-disc list-inside text-sm text-gray-500 ml-2">
+                  <li v-for="editor in selectedCategory.editors" :key="editor">{{ editor }}</li>
+                </ul>
+                <p v-else class="text-sm text-gray-500 ml-2">No editors</p>
+                <p class="text-sm text-gray-500 mt-2">
+                  <strong>Created At:</strong> {{ formatDate(selectedCategory.created_at) }}
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                  <strong>Updated At:</strong>
+                  <span v-if="isUpdatedAtSameAsCreatedAt(selectedCategory)">
+                    {{ formatDate(selectedCategory.updated_at) }} (No updates)
+                  </span>
+                  <span v-else>
+                    {{ formatDate(selectedCategory.updated_at) }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button
+            type="button"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+            @click="closeDetailsPopup"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -152,6 +215,7 @@ export default {
     return {
       showModal: false,
       showDeleteConfirmation: false,
+      showDetailsPopup: false,
       selectedCategory: null,
       categoryToDelete: null,
       isEditMode: false,
@@ -221,6 +285,20 @@ export default {
           console.error('Error deleting user category:', error);
           this.closeDeleteConfirmation();
         });
+    },
+    openDetailsPopup(category) {
+      this.selectedCategory = { ...category };
+      this.showDetailsPopup = true;
+    },
+    closeDetailsPopup() {
+      this.showDetailsPopup = false;
+      this.selectedCategory = null;
+    },
+    formatDate(date) {
+      return new Date(date).toLocaleString();
+    },
+    isUpdatedAtSameAsCreatedAt(category) {
+      return new Date(category.created_at).getTime() === new Date(category.updated_at).getTime();
     },
   },
 };
