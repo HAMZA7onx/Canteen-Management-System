@@ -4,7 +4,7 @@ const API_URL = 'http://127.0.0.1:8000/api/user-categories';
 
 class UserCategoryService {
   getUserCategories() {
-    return request.get(`${API_URL}`);
+    return request.get(`${API_URL}`); 
   }
 
   createUserCategory(category) {

@@ -15,7 +15,14 @@
       <table class="w-full table-auto">
         <thead class="bg-gray-100">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th>
+            <th
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+              @click="sortByRfid"
+            >
+              RFID
+              <span v-if="sortBy === 'rfid'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+            </th>
+            <!-- <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">RFID</th> -->
             <th
               class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
               @click="sortByEmail"
@@ -27,7 +34,7 @@
               class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
               @click="sortByStatus"
             >
-              Status
+              Status 
               <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
             </th>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Details</th>
