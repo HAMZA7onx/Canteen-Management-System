@@ -30,7 +30,12 @@
 
       <!-- Role List -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <loading-wheel v-if="isLoading" />
+        <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
+          {{ error }}
+          <button @click="loadRoles" class="ml-2 underline">Retry</button>
+        </div>
+        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -138,90 +143,107 @@
     </div>
   </div>
 </template>
-  
-  <script>
-  import { mapGetters, mapActions } from 'vuex';
-  import RoleForm from '@/components/Role/RoleForm.vue';
-  import RolePermissions from '@/components/Role/RolePermissions.vue';
-  import Modal from '@/components/shared/Modal.vue';
-  import Overlay from '@/components/shared/Overlay.vue';
-  
-  export default {
-    name: 'RoleList',
-    components: {
-      RoleForm,
-      RolePermissions,
-      Modal,
-      Overlay,
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+import RoleForm from '@/components/Role/RoleForm.vue';
+import RolePermissions from '@/components/Role/RolePermissions.vue';
+import Modal from '@/components/shared/Modal.vue';
+import Overlay from '@/components/shared/Overlay.vue';
+import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+
+export default {
+  name: 'RoleList',
+  components: {
+    RoleForm,
+    RolePermissions,
+    Modal,
+    Overlay,
+    LoadingWheel,
+  },
+  data() {
+    return {
+      showCreateRoleModal: false,
+      showEditRoleModal: false,
+      showManagePermissionsModal: false,
+      showDeleteConfirmation: false,
+      selectedRole: null,
+      roleToDelete: null,
+      isLoading: true,
+      error: null,
+    };
+  },
+  computed: {
+    ...mapGetters('role', ['roles']),
+  },
+  created() {
+    this.loadRoles();
+  },
+  methods: {
+    ...mapActions('role', ['fetchRoles', 'createRole', 'deleteRole']),
+    async loadRoles() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await this.fetchRoles();
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        this.error = 'Failed to load roles. Please try again.';
+      } finally {
+        this.isLoading = false;
+      }
     },
-    data() {
-      return {
-        showCreateRoleModal: false,
-        showEditRoleModal: false,
-        showManagePermissionsModal: false,
-        showDeleteConfirmation: false,
-        selectedRole: null,
-        roleToDelete: null,
-      };
+    openCreateRoleModal() {
+      this.showCreateRoleModal = true;
     },
-    computed: {
-      ...mapGetters('role', ['roles']),
+    closeCreateRoleModal() {
+      this.showCreateRoleModal = false;
     },
-    created() {
-      this.fetchRoles();
+    openEditRoleModal(role) {
+      this.selectedRole = { ...role };
+      this.showEditRoleModal = true;
     },
-    methods: {
-      ...mapActions('role', ['fetchRoles', 'createRole', 'deleteRole']),
-      openCreateRoleModal() {
-        this.showCreateRoleModal = true;
-      },
-      closeCreateRoleModal() {
-        this.showCreateRoleModal = false;
-      },
-      openEditRoleModal(role) {
-        this.selectedRole = { ...role };
-        this.showEditRoleModal = true;
-      },
-      closeEditRoleModal() {
-        this.showEditRoleModal = false;
-        this.selectedRole = null;
-      },
-      updateRole(updatedRole) {
-        this.$store
-          .dispatch('role/updateRole', updatedRole)
-          .then(() => {
-            this.closeEditRoleModal();
-          })
-          .catch((error) => {
-            console.error('Error updating role:', error);
-          });
-      },
-      deleteRole(role) {
-        this.roleToDelete = role;
-        this.showDeleteConfirmation = true;
-      },
-      confirmDeleteRole() {
-        this.$store
-          .dispatch('role/deleteRole', this.roleToDelete.id)
-          .then(() => {
-            this.showDeleteConfirmation = false;
-            this.roleToDelete = null;
-          })
-          .catch((error) => {
-            console.error('Error deleting role:', error);
-            this.showDeleteConfirmation = false;
-            this.roleToDelete = null;
-          });
-      },
-      openManagePermissionsModal(role) {
-        this.selectedRole = { ...role };
-        this.showManagePermissionsModal = true;
-      },
-      closeManagePermissionsModal() {
-        this.showManagePermissionsModal = false;
-        this.selectedRole = null;
-      },
+    closeEditRoleModal() {
+      this.showEditRoleModal = false;
+      this.selectedRole = null;
     },
-  };
-  </script>
-  
+    updateRole(updatedRole) {
+      this.$store
+        .dispatch('role/updateRole', updatedRole)
+        .then(() => {
+          this.closeEditRoleModal();
+          this.loadRoles(); // Refresh the role list after update
+        })
+        .catch((error) => {
+          console.error('Error updating role:', error);
+        });
+    },
+    deleteRole(role) {
+      this.roleToDelete = role;
+      this.showDeleteConfirmation = true;
+    },
+    confirmDeleteRole() {
+      this.$store
+        .dispatch('role/deleteRole', this.roleToDelete.id)
+        .then(() => {
+          this.showDeleteConfirmation = false;
+          this.roleToDelete = null;
+          this.loadRoles(); // Refresh the role list after deletion
+        })
+        .catch((error) => {
+          console.error('Error deleting role:', error);
+          this.showDeleteConfirmation = false;
+          this.roleToDelete = null;
+        });
+    },
+    openManagePermissionsModal(role) {
+      this.selectedRole = { ...role };
+      this.showManagePermissionsModal = true;
+    },
+    closeManagePermissionsModal() {
+      this.showManagePermissionsModal = false;
+      this.selectedRole = null;
+    },
+  },
+};
+</script>

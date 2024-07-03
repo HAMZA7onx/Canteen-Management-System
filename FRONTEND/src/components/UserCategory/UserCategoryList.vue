@@ -28,7 +28,8 @@
       <!-- Categories Table -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <loading-wheel v-if="isLoading" />
+          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -196,12 +197,14 @@ import { mapGetters, mapActions } from 'vuex';
 import UserCategoryForm from '@/components/UserCategory/UserCategoryForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
+import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
   components: {
     UserCategoryForm,
     Modal,
     Overlay,
+    LoadingWheel,
   },
   data() {
     return {
@@ -211,13 +214,14 @@ export default {
       selectedCategory: null,
       categoryToDelete: null,
       isEditMode: false,
+      isLoading: true,
     };
   },
   computed: {
     ...mapGetters('userCategory', ['userCategories']),
   },
   created() {
-    this.fetchUserCategories();
+    this.loadUserCategories();
   },
   methods: {
     ...mapActions('userCategory', [
@@ -226,6 +230,16 @@ export default {
       'updateUserCategory',
       'deleteUserCategory',
     ]),
+    async loadUserCategories() {
+      this.isLoading = true;
+      try {
+        await this.fetchUserCategories();
+      } catch (error) {
+        console.error('Error fetching user categories:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     openCreateModal() {
       this.selectedCategory = {};
       this.isEditMode = false;
@@ -242,23 +256,15 @@ export default {
       this.isEditMode = false;
     },
     handleSubmit(category) {
-      if (this.isEditMode) {
-        this.updateUserCategory(category)
-          .then(() => {
-            this.closeModal();
-          })
-          .catch((error) => {
-            console.error('Error updating user category:', error);
-          });
-      } else {
-        this.createUserCategory(category)
-          .then(() => {
-            this.closeModal();
-          })
-          .catch((error) => {
-            console.error('Error creating user category:', error);
-          });
-      }
+      const action = this.isEditMode ? this.updateUserCategory : this.createUserCategory;
+      action(category)
+        .then(() => {
+          this.closeModal();
+          this.loadUserCategories(); // Refresh the list
+        })
+        .catch((error) => {
+          console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} user category:`, error);
+        });
     },
     deleteCategory(category) {
       this.categoryToDelete = category;
@@ -272,6 +278,7 @@ export default {
       this.deleteUserCategory(this.categoryToDelete.id)
         .then(() => {
           this.closeDeleteConfirmation();
+          this.loadUserCategories(); // Refresh the list
         })
         .catch((error) => {
           console.error('Error deleting user category:', error);
@@ -301,12 +308,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>
