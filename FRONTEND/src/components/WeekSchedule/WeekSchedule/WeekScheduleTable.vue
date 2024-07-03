@@ -20,7 +20,8 @@
 
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full table-auto">
+        <loading-wheel v-if="isLoading" />
+        <table v-else class="w-full table-auto">
           <thead>
             <tr class="bg-indigo-600 text-white text-sm leading-normal">
               <th class="py-3 px-6 text-left">Week Schedule</th>
@@ -168,6 +169,8 @@ import CreateWeekScheduleForm from './CreateWeekScheduleForm.vue'
 import EditWeekScheduleForm from './EditWeekScheduleForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
+import LoadingWheel from '@/components/shared/LoadingWheel.vue'
+
 
 export default {
   components: {
@@ -176,6 +179,7 @@ export default {
     EditWeekScheduleForm,
     Modal,
     Overlay,
+    LoadingWheel
   },
   data() {
     return {
@@ -185,13 +189,15 @@ export default {
       showDeleteConfirmation: false,
       selectedWeekSchedule: null,
       selectedDay: null,
+      isLoading: true
     }
   },
   computed: {
     ...mapGetters('weekSchedule', ['weekSchedules']),
   },
   created() {
-    this.fetchWeekSchedules()
+    this.fetchWeekSchedules(),
+    this.loadWeekSchedules()
   },
   methods: {
     ...mapActions('weekSchedule', [
@@ -269,11 +275,22 @@ export default {
         .then(() => {
           this.fetchWeekSchedules()
           this.closeDeleteConfirmation()
+          // this.loadWeekSchedules()
         })
         .catch((error) => {
           console.error('Error deleting week schedule:', error)
           // Handle error if needed
         })
+    },
+    async loadWeekSchedules() {
+      this.isLoading = true
+      try {
+        await this.fetchWeekSchedules()
+      } catch (error) {
+        console.error('Error fetching week schedules:', error)
+      } finally {
+        this.isLoading = false
+      }
     },
   },
 }

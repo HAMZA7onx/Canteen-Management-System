@@ -28,7 +28,8 @@
       <!-- Badges Table -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <loading-wheel v-if="isLoading" />
+          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th
@@ -162,6 +163,7 @@ import Overlay from '@/components/shared/Overlay.vue';
 import ImportRfidsForm from '@/components/Badge/ImportRfidsForm.vue';
 import MarkAsLostModal from '@/components/Badge/MarkAsLostModal.vue';
 import AssignRfidModal from '@/components/Badge/AssignRfidModal.vue';
+import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
   components: {
@@ -170,6 +172,7 @@ export default {
     ImportRfidsForm,
     MarkAsLostModal,
     AssignRfidModal,
+    LoadingWheel,
   },
   data() {
     return {
@@ -180,6 +183,7 @@ export default {
       eligibleUsersKey: 0,
       sortBy: null,
       sortDirection: 'asc',
+      isLoading: true,
     };
   },
   computed: {
@@ -219,6 +223,7 @@ export default {
   created() {
     this.fetchBadges();
     this.fetchEligibleUsers();
+    this.loadBadges();
   },
   methods: {
     ...mapActions('badge', ['fetchBadges', 'deleteBadge', 'updateBadge']),
@@ -230,6 +235,7 @@ export default {
       this.deleteBadge(badge.id)
         .then(() => {
           console.log('Badge deleted successfully');
+          this.loadBadges(); // Refresh the list
         })
         .catch((error) => {
           console.error('Error deleting badge:', error);
@@ -238,10 +244,12 @@ export default {
     handleImportSuccess() {
       this.showImportModal = false;
       this.fetchBadges();
+      this.loadBadges(); // Refresh the list
     },
     handleUpdateSuccess(updatedBadge) {
       this.showEditModal = false;
       this.selectedBadge = null;
+      this.loadBadges(); // Refresh the list
 
       if (updatedBadge) {
         const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
@@ -312,6 +320,17 @@ export default {
       } else {
         this.sortBy = 'status';
         this.sortDirection = 'asc';
+      }
+    },
+    async loadBadges() {
+      this.isLoading = true;
+      try {
+        await this.fetchBadges();
+        await this.fetchEligibleUsers();
+      } catch (error) {
+        console.error('Error fetching badges:', error);
+      } finally {
+        this.isLoading = false;
       }
     },
   },

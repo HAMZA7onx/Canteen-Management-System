@@ -17,7 +17,8 @@
 
       <!-- Food Components List -->
       <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
-        <table class="w-full table-auto">
+        <loading-wheel v-if="isLoading" />
+        <table v-else class="w-full table-auto">
           <thead class="bg-gray-100 dark:bg-gray-700">
             <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
               <th class="py-3 px-6 text-left">Name</th>
@@ -132,26 +133,30 @@ import { mapGetters, mapActions } from 'vuex'
 import FoodComposantForm from './FoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
+import LoadingWheel from '@/components/shared/LoadingWheel.vue'
 
 export default {
   components: {
     FoodComposantForm,
     Modal,
-    Overlay
+    Overlay,
+    LoadingWheel
   },
   data() {
     return {
       showCreateModal: false,
       showEditModal: false,
       showDeleteConfirmation: false,
-      selectedFoodComposant: null
+      selectedFoodComposant: null,
+      isLoading: true
     }
   },
   computed: {
     ...mapGetters('foodComposant', ['foodComposants'])
   },
   created() {
-    this.fetchFoodComposants()
+    this.fetchFoodComposants(),
+    this.loadFoodComposants()
   },
   watch: {
     foodComposants(newValue) {
@@ -192,13 +197,24 @@ export default {
     handleDeleteFoodComposant() {
       this.deleteFoodComposant(this.selectedFoodComposant)
         .then(() => {
-          this.closeDeleteConfirmation()
+          this.closeDeleteConfirmation(),
+          this.loadFoodComposants()
         })
         .catch(error => {
           console.error('Error deleting food composant:', error)
           // Handle error if needed
         })
-    }
+    },
+    async loadFoodComposants() {
+      this.isLoading = true
+      try {
+        await this.fetchFoodComposants()
+      } catch (error) {
+        console.error('Error fetching food composants:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
   }
 }
 </script>
