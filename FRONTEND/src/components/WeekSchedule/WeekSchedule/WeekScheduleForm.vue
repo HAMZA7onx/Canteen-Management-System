@@ -4,6 +4,10 @@
       Assigned Daily Meals for {{ day }}
     </h2>
 
+    <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      {{ errorMessage }}
+    </div>
+
     <div class="mb-6">
       <div v-if="assignedDailyMeals.length === 0">
         <p class="text-sm text-gray-500 dark:text-gray-400">No daily meals assigned.</p>
@@ -24,7 +28,7 @@
                   {{ getDailyMealDescription(dailyMealData.daily_meal_id) }}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }} 
+                  {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }}
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }}$)</span>
                 </p>
               </div>
@@ -127,6 +131,7 @@ export default {
       startTime: '',
       endTime: '',
       price: '',
+      errorMessage: '',
     }
   },
   computed: {
@@ -147,7 +152,11 @@ export default {
   },
   methods: {
     ...mapActions('dailyMeal', ['fetchDailyMeals']),
-    ...mapActions('weekSchedule', ['assignDailyMeals', 'detachDailyMeal']),
+    ...mapActions('weekSchedule', {
+      assignDailyMealAction: 'assignDailyMeals',
+      detachDailyMealAction: 'detachDailyMeal',
+      fetchWeekSchedulesAction: 'fetchWeekSchedules'
+    }),
     getDailyMealName(dailyMealId) {
       const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
       return dailyMeal ? dailyMeal.name : ''
@@ -157,20 +166,66 @@ export default {
       return dailyMeal ? dailyMeal.description : ''
     },
     assignDailyMeals() {
-      const dailyMealData = {
-        daily_meal_id: this.selectedDailyMealId,
-        start_time: this.startTime,
-        end_time: this.endTime,
-        price: this.price,
+  const dailyMealData = {
+    daily_meal_id: this.selectedDailyMealId,
+    start_time: this.startTime,
+    end_time: this.endTime,
+    price: this.price,
+  }
+
+  this.assignDailyMealAction({
+    weekScheduleId: this.weekScheduleId,
+    day: this.day,
+    dailyMealData,
+  })
+  .then(() => {
+    this.selectedDailyMealId = null
+    this.startTime = ''
+    this.endTime = ''
+    this.price = ''
+    this.errorMessage = ''
+    this.fetchWeekSchedulesAction() // Refresh the data
+  })
+  .catch((error) => {
+    console.error('Full error object:', error);
+    console.error('Error response:', error.response);
+    console.error('Error response data:', error.response?.data);
+
+    if (error.response && error.response.data) {
+      if (typeof error.response.data === 'string') {
+        this.errorMessage = error.response.data;
+      } else if (error.response.data.error) {
+        if (error.response.data.error.includes('overlaps')) {
+          this.errorMessage = `The specified duration overlaps with an existing daily meal for ${this.day}`;
+        } else if (error.response.data.error.includes('after:start_time') || error.response.data.error.includes('end_time')) {
+          this.errorMessage = 'Start time of the meal must be before end time';
+        } else {
+          this.errorMessage = error.response.data.error;
+        }
+      } else if (error.response.data.message) {
+        this.errorMessage = error.response.data.message;
+      } else {
+        this.errorMessage = 'An unexpected error occurred. Please check the console for more details.';
       }
-      this.$emit('assign', dailyMealData)
-      this.selectedDailyMealId = null
-      this.startTime = ''
-      this.endTime = ''
-      this.price = ''
-    },
+    } else {
+      this.errorMessage = 'An error occurred while assigning the daily meal. Please check the console for more details.';
+    }
+  })
+},
+
     detachDailyMeal(dailyMealId) {
-      this.$emit('detach', dailyMealId)
+      this.detachDailyMealAction({
+        weekScheduleId: this.weekScheduleId,
+        day: this.day,
+        dailyMealId,
+      })
+      .then(() => {
+        this.fetchWeekSchedulesAction() // Refresh the data
+      })
+      .catch((error) => {
+        console.error('Error detaching daily meal:', error)
+        this.errorMessage = 'An error occurred while detaching the daily meal.'
+      })
     },
     handleDailyMealSelect(event) {
       this.selectedDailyMealId = event.target.value
@@ -178,7 +233,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-/* Add any additional styles here */
-</style>
