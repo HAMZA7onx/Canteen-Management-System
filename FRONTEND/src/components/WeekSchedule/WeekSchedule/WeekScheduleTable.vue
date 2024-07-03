@@ -242,7 +242,7 @@ export default {
       })
         .then(() => {
           this.fetchWeekSchedules()
-          this.closeAssignModal()
+          // this.closeAssignModal()
         })
         .catch((error) => {
           console.error('Error assigning daily meals:', error)
@@ -257,7 +257,7 @@ export default {
       })
         .then(() => {
           this.fetchWeekSchedules()
-          this.closeAssignModal()
+          // this.closeAssignModal()
         })
         .catch((error) => {
           console.error('Error detaching daily meal:', error)
