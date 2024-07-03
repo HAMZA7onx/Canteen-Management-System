@@ -27,7 +27,13 @@
 
       <!-- Admin List -->
       <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-x-auto transition-colors duration-300">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <loading-wheel v-if="isLoading" />
+        <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
+          {{ error }}
+          <button @click="loadAdmins" class="ml-2 underline">Retry</button>
+        </div>
+        <!-- table  -->
+        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -158,6 +164,7 @@ import AdminForm from '@/components/Admin/AdminForm.vue';
 import AdminRolesPermissions from '@/components/Admin/AdminRolesPermissions.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
+import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
   name: 'AdminList',
@@ -166,6 +173,7 @@ export default {
     AdminRolesPermissions,
     Modal,
     Overlay,
+    LoadingWheel,
   },
   data() {
     return {
@@ -175,16 +183,30 @@ export default {
       showDeleteConfirmation: false,
       selectedAdmin: null,
       adminToDelete: null,
+      isLoading: true,
+      error: null,
     };
   },
   computed: {
     ...mapGetters('admin', ['admins']),
   },
   created() {
-    this.fetchAdmins();
+    this.loadAdmins();
   },
   methods: {
     ...mapActions('admin', ['fetchAdmins', 'createAdmin', 'deleteAdmin']),
+    async loadAdmins() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await this.fetchAdmins();
+      } catch (error) {
+        console.error('Error fetching admins:', error);
+        this.error = 'Failed to load admins. Please try again.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
     openCreateAdminModal() {
       this.showCreateAdminModal = true;
     },
@@ -204,6 +226,7 @@ export default {
         .dispatch('admin/updateAdmin', updatedAdmin)
         .then(() => {
           this.closeEditAdminModal();
+          this.loadAdmins(); // Refresh the admin list after update
         })
         .catch((error) => {
           console.error('Error updating admin:', error);
@@ -219,6 +242,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.adminToDelete = null;
+          this.loadAdmins(); // Refresh the admin list after deletion
         })
         .catch((error) => {
           console.error('Error deleting admin:', error);

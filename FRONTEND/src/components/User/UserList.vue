@@ -39,7 +39,12 @@
       <!-- User List -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
   <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <loading-wheel v-if="isLoading" />
+    <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
+      {{ error }}
+      <button @click="loadUsers" class="ml-2 underline">Retry</button>
+    </div>
+    <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <thead class="bg-gray-50 dark:bg-gray-700">
         <tr>
           <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -285,6 +290,7 @@ import { mapGetters, mapActions } from 'vuex';
 import UserForm from '@/components/User/UserForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
+import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
   name: 'UserList',
@@ -292,6 +298,7 @@ export default {
     UserForm,
     Modal,
     Overlay,
+    LoadingWheel,
   },
   data() {
     return {
@@ -305,6 +312,8 @@ export default {
       importCategoryId: '',
       importFile: null,
       importResult: null,
+      isLoading: true,
+      error: null,
     };
   },
   computed: {
@@ -324,13 +333,25 @@ export default {
     }
   },
   created() {
-    this.fetchUsers();
+    this.loadUsers();
     this.fetchUserCategories();
   },
   methods: {
     ...mapActions('user', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser', 'importUsers']),
     ...mapActions('userCategory', ['fetchUserCategories']),
-   
+    
+    async loadUsers() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await this.fetchUsers();
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        this.error = 'Failed to load users. Please try again.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
     openCreateUserModal() {
       this.showCreateUserModal = true;
     },
@@ -350,6 +371,7 @@ export default {
         .dispatch('user/updateUser', updatedUser)
         .then(() => {
           this.closeEditUserModal();
+          this.loadUsers(); // Refresh the user list after update
         })
         .catch((error) => {
           console.error('Error updating user:', error);
@@ -365,6 +387,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.userToDelete = null;
+          this.loadUsers(); // Refresh the user list after deletion
         })
         .catch((error) => {
           console.error('Error deleting user:', error);
@@ -400,7 +423,7 @@ export default {
       this.$store.dispatch('user/importUsers', formData)
         .then((response) => {
           this.importResult = response;
-          this.fetchUsers(); // Refresh the user list
+          this.loadUsers(); // Refresh the user list after import
         })
         .catch((error) => {
           console.error('Error importing users:', error);
