@@ -89,7 +89,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['darkMode'])
+    ...mapGetters('weekSchedule', ['activeWeekSchedule']),
+    hasActiveSchedule() {
+      return this.activeWeekSchedule && this.activeWeekSchedule.id !== this.weekSchedule?.id
+    }
   },
   methods: {
     ...mapActions('weekSchedule', ['createWeekSchedule']),

@@ -7,6 +7,8 @@ use App\Models\WeekSchedule;
 use App\Models\DailyMeal;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class WeekScheduleController extends Controller
 {
@@ -52,9 +54,16 @@ class WeekScheduleController extends Controller
         $validatedData['creator'] = auth()->user()->email;
         $validatedData['editors'] = []; // Initialize the editors array as empty
 
-        $weekSchedule = WeekSchedule::create($validatedData);
+        $weekSchedule = DB::transaction(function () use ($validatedData) {
+            if ($validatedData['status'] === 'active') {
+                WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
+            }
+            return WeekSchedule::create($validatedData);
+        });
+
         return response()->json($weekSchedule, 201);
     }
+
     public function update(Request $request, WeekSchedule $weekSchedule)
     {
         $validatedData = $request->validate([
@@ -65,10 +74,8 @@ class WeekScheduleController extends Controller
 
         // Get the existing editors array
         $editors = $weekSchedule->editors;
-
         // Get the authenticated user's email
         $authUserEmail = auth()->user()->email;
-
         // Check if the authenticated user's email already exists in the editors array
         if (!in_array($authUserEmail, $editors)) {
             // If not, add it to the editors array
@@ -78,11 +85,15 @@ class WeekScheduleController extends Controller
         // Update the editors array in the validated data
         $validatedData['editors'] = $editors;
 
-        $weekSchedule->update($validatedData);
+        DB::transaction(function () use ($weekSchedule, $validatedData) {
+            if ($validatedData['status'] === 'active' && $weekSchedule->status !== 'active') {
+                WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
+            }
+            $weekSchedule->update($validatedData);
+        });
+
         return response()->json($weekSchedule);
     }
-
-
 
     public function destroy(WeekSchedule $weekSchedule)
     {

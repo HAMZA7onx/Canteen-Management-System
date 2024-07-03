@@ -60,6 +60,7 @@
       </select>
     </div>
 
+
     <div class="mb-4">
       <h3 :class="[
         'text-md font-medium leading-6',
@@ -134,7 +135,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['darkMode'])
+    ...mapGetters('weekSchedule', ['activeWeekSchedule']),
+    hasActiveSchedule() {
+      return this.activeWeekSchedule && this.activeWeekSchedule.id !== this.weekSchedule?.id
+    }
   },
   created() {
     console.log('creatorEmail:', this.creatorEmail)
