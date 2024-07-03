@@ -1,37 +1,39 @@
 <template>
-  <div>
-    <p class="text-sm text-gray-500 mb-4">
-      Assigned Daily Meals for {{ day }}:
-    </p>
-    <div class="mt-2">
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+      Assigned Daily Meals for {{ day }}
+    </h2>
+
+    <div class="mb-6">
       <div v-if="assignedDailyMeals.length === 0">
-        <p class="text-sm text-gray-500">No daily meals assigned.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">No daily meals assigned.</p>
       </div>
       <div v-else>
-        <ul role="list" class="divide-y divide-gray-200">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
           <li
             v-for="dailyMealData in assignedDailyMeals"
             :key="dailyMealData.daily_meal_id"
             class="py-4"
           >
-            <div class="flex items-center space-x-4">
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0 pr-4">
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
                   {{ getDailyMealName(dailyMealData.daily_meal_id) }}
                 </p>
-                <p class="text-sm text-gray-500 truncate">
+                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {{ getDailyMealDescription(dailyMealData.daily_meal_id) }}
                 </p>
-                <p class="text-sm text-gray-500">
-                  {{ dailyMealData.start_time }} -
-                  {{ dailyMealData.end_time }} ({{ dailyMealData.price }}$)
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }} 
+                  <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }}$)</span>
                 </p>
               </div>
               <div>
                 <button
-                  class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
                   @click="detachDailyMeal(dailyMealData.daily_meal_id)"
                 >
+                  <font-awesome-icon icon="unlink" class="mr-2" />
                   Detach
                 </button>
               </div>
@@ -40,63 +42,65 @@
         </ul>
       </div>
     </div>
-    <div class="mt-4">
-      <label for="dailyMealSelect" class="block text-sm font-medium text-gray-700">Select Daily Meals</label>
-      <select
-        id="dailyMealSelect"
-        @change="handleDailyMealSelect"
-        :value="selectedDailyMealId"
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      >
-        <option value="" disabled>Select a daily meal</option>
-        <option v-for="dailyMeal in availableDailyMeals" :key="dailyMeal.id" :value="dailyMeal.id">
-          {{ dailyMeal.name }}
-        </option>
-      </select>
+
+    <div class="space-y-4">
+      <div>
+        <label for="dailyMealSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Daily Meals</label>
+        <select
+          id="dailyMealSelect"
+          @change="handleDailyMealSelect"
+          :value="selectedDailyMealId"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+        >
+          <option value="" disabled>Select a daily meal</option>
+          <option v-for="dailyMeal in availableDailyMeals" :key="dailyMeal.id" :value="dailyMeal.id">
+            {{ dailyMeal.name }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label for="startTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Time</label>
+        <input
+          id="startTime"
+          v-model="startTime"
+          type="time"
+          required
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+        />
+      </div>
+
+      <div>
+        <label for="endTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Time</label>
+        <input
+          id="endTime"
+          v-model="endTime"
+          type="time"
+          required
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+        />
+      </div>
+
+      <div>
+        <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Price (DH)</label>
+        <input
+          id="price"
+          v-model="price"
+          type="number"
+          step="0.01"
+          required
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+        />
+      </div>
     </div>
-    <div class="mt-4">
-      <label for="startTime" class="block text-sm font-medium text-gray-700"
-        >Start Time</label
-      >
-      <input
-        id="startTime"
-        v-model="startTime"
-        type="time"
-        required
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-    </div>
-    <div class="mt-4">
-      <label for="endTime" class="block text-sm font-medium text-gray-700"
-        >End Time</label
-      >
-      <input
-        id="endTime"
-        v-model="endTime"
-        type="time"
-        required
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-    </div>
-    <div class="mt-4">
-      <label for="price" class="block text-sm font-medium text-gray-700"
-        >Price (DH)</label
-      >
-      <input
-        id="price"
-        v-model="price"
-        type="number"
-        step="0.01"
-        required
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-    </div>
-    <div class="mt-4 flex justify-end">
+
+    <div class="mt-6 flex justify-end">
       <button
         type="button"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
         @click="assignDailyMeals"
       >
+        <font-awesome-icon icon="plus" class="mr-2" />
         Assign
       </button>
     </div>
@@ -160,7 +164,10 @@ export default {
         price: this.price,
       }
       this.$emit('assign', dailyMealData)
-      this.selectedDailyMealId = null // Reset selectedDailyMealId after assignment
+      this.selectedDailyMealId = null
+      this.startTime = ''
+      this.endTime = ''
+      this.price = ''
     },
     detachDailyMeal(dailyMealId) {
       this.$emit('detach', dailyMealId)
@@ -171,3 +178,7 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+/* Add any additional styles here */
+</style>
