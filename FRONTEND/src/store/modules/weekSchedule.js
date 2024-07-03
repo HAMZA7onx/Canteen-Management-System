@@ -18,6 +18,7 @@ const getters = {
     console.log(`Assigned daily meals for weekScheduleId ${weekScheduleId} and day ${day}:`, assignedDailyMeals)
     return assignedDailyMeals
   },
+  activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
 }
 
 const actions = {
@@ -32,26 +33,41 @@ const actions = {
       })
   },
 
-  createWeekSchedule({ commit }, weekScheduleData) {
+  createWeekSchedule({ commit, dispatch }, weekScheduleData) {
     console.log('weekScheduleData', weekScheduleData)
     return WeekScheduleService.createWeekSchedule(weekScheduleData)
       .then((response) => {
         commit('ADD_WEEK_SCHEDULE', response.data)
+        if (response.data.status === 'active') {
+          dispatch('updateOtherSchedulesStatus', response.data.id)
+        }
       })
       .catch((error) => {
         console.error('Error creating week schedule:', error)
         throw error
       })
   },
-  updateWeekSchedule({ commit }, { id, data }) {
+
+  updateWeekSchedule({ commit, dispatch }, { id, data }) {
     return WeekScheduleService.updateWeekSchedule(id, data)
       .then((response) => {
         commit('UPDATE_WEEK_SCHEDULE', response.data)
+        if (response.data.status === 'active') {
+          dispatch('updateOtherSchedulesStatus', id)
+        }
       })
       .catch((error) => {
         console.error('Error updating week schedule:', error)
         throw error
       })
+  },
+
+  updateOtherSchedulesStatus({ state, commit }, activeId) {
+    state.weekSchedules.forEach(schedule => {
+      if (schedule.id !== activeId && schedule.status === 'active') {
+        commit('UPDATE_WEEK_SCHEDULE', { ...schedule, status: 'inactive' })
+      }
+    })
   },
 
   deleteWeekSchedule({ commit }, id) {
@@ -99,9 +115,10 @@ const mutations = {
   },
 
   UPDATE_WEEK_SCHEDULE(state, updatedWeekSchedule) {
-    state.weekSchedules = state.weekSchedules.map((weekSchedule) =>
-      weekSchedule.id === updatedWeekSchedule.id ? updatedWeekSchedule : weekSchedule
-    )
+    const index = state.weekSchedules.findIndex(ws => ws.id === updatedWeekSchedule.id)
+    if (index !== -1) {
+      state.weekSchedules.splice(index, 1, updatedWeekSchedule)
+    }
   },
 
   DELETE_WEEK_SCHEDULE(state, id) {
