@@ -108,8 +108,6 @@ class WeekScheduleController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'price' => 'required|numeric',
-            'discounts' => 'array',
-            'discounts.*' => 'numeric|min:0|max:100',
         ]);
 
         $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
@@ -129,6 +127,7 @@ class WeekScheduleController extends Controller
             $existingEndTime = Carbon::parse($existingDailyMeal->pivot->end_time);
             $newStartTime = Carbon::parse($validatedData['start_time']);
             $newEndTime = Carbon::parse($validatedData['end_time']);
+
             if (
                 ($newStartTime->between($existingStartTime, $existingEndTime) || $newEndTime->between($existingStartTime, $existingEndTime)) ||
                 ($existingStartTime->between($newStartTime, $newEndTime) || $existingEndTime->between($newStartTime, $newEndTime))
@@ -137,42 +136,13 @@ class WeekScheduleController extends Controller
             }
         }
 
-        $pivotData = [
+        $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, [
             'start_time' => $validatedData['start_time'],
             'end_time' => $validatedData['end_time'],
             'price' => $validatedData['price'],
-        ];
-
-        $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, $pivotData);
-
-        // Save discounts
-        if (isset($validatedData['discounts'])) {
-            $discountModel = $this->getDiscountModel($day);
-            foreach ($validatedData['discounts'] as $categoryId => $discountValue) {
-                $discountModel::create([
-                    'meal_id' => $dailyMeal->id,
-                    'category_id' => $categoryId,
-                    'discount' => $discountValue,
-                ]);
-            }
-        }
+        ]);
 
         return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
-    }
-
-    private function getDiscountModel($day)
-    {
-        $models = [
-            'monday' => \App\Models\Discounts\MondayDiscount::class,
-            'tuesday' => \App\Models\Discounts\TuesdayDiscount::class,
-            'wednesday' => \App\Models\Discounts\WednesdayDiscount::class,
-            'thursday' => \App\Models\Discounts\ThursdayDiscount::class,
-            'friday' => \App\Models\Discounts\FridayDiscount::class,
-            'saturday' => \App\Models\Discounts\SaturdayDiscount::class,
-            'sunday' => \App\Models\Discounts\SundayDiscount::class,
-        ];
-
-        return $models[strtolower($day)];
     }
 
     public function detachDailyMeal(WeekSchedule $weekSchedule, DailyMeal $dailyMeal, $day)

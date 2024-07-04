@@ -133,6 +133,7 @@ const mutations = {
     }
   },
   
+
   DETACH_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
     if (weekSchedule) {
