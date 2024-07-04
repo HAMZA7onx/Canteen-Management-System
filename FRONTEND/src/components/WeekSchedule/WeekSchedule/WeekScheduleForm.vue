@@ -32,13 +32,18 @@
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }}$)</span>
                 </p>
                 <div v-if="dailyMealData.discounts">
+                  {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData.discounts) }}
                   <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
                   <ul class="list-disc list-inside">
                     <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
-                      {{ getCategoryName(categoryId) }}: {{ discount }}%
+                      {{ getCategoryName(categoryId) }}: {{ discount.discount }}%
                     </li>
                   </ul>
                 </div>
+                <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
+                  {{ console.log('Rendering Load discounts button for meal:', dailyMealData.daily_meal_id) }}
+                  Load discounts
+                </button>
               </div>
               <div>
                 <button
@@ -138,7 +143,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   props: {
@@ -151,76 +157,71 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      selectedDailyMealId: null,
-      startTime: '',
-      endTime: '',
-      price: '',
-      errorMessage: '',
-      discounts: {},
-    }
-  },
-  computed: {
-    ...mapGetters('dailyMeal', ['dailyMeals']),
-    ...mapGetters('weekSchedule', ['getAssignedDailyMealsForDay']),
-    ...mapGetters('userCategory', ['userCategories']),
-    assignedDailyMeals() {
-      return this.getAssignedDailyMealsForDay(this.weekScheduleId, this.day) || []
-    },
-    availableDailyMeals() {
-      const assignedDailyMealIds = this.assignedDailyMeals.map((dailyMealData) => dailyMealData.daily_meal_id)
-      return this.dailyMeals.filter(
-        (dailyMeal) => !assignedDailyMealIds.includes(dailyMeal.id) && dailyMeal.id !== this.selectedDailyMealId
+  setup(props) {
+    const store = useStore()
+
+    const selectedDailyMealId = ref(null)
+    const startTime = ref('')
+    const endTime = ref('')
+    const price = ref('')
+    const errorMessage = ref('')
+    const discounts = ref({})
+
+    const dailyMeals = computed(() => store.getters['dailyMeal/dailyMeals'])
+    const userCategories = computed(() => store.getters['userCategory/userCategories'])
+    const assignedDailyMeals = computed(() => 
+      store.getters['weekSchedule/getAssignedDailyMealsForDay'](props.weekScheduleId, props.day) || []
+    )
+
+    const availableDailyMeals = computed(() => {
+      const assignedDailyMealIds = assignedDailyMeals.value.map((dailyMealData) => dailyMealData.daily_meal_id)
+      return dailyMeals.value.filter(
+        (dailyMeal) => !assignedDailyMealIds.includes(dailyMeal.id) && dailyMeal.id !== selectedDailyMealId.value
       )
-    },
-  },
-  created() {
-    this.fetchDailyMeals()
-    this.fetchUserCategories()
-  },
-  methods: {
-    ...mapActions('dailyMeal', ['fetchDailyMeals']),
-    ...mapActions('weekSchedule', {
-      assignDailyMealAction: 'assignDailyMeals',
-      detachDailyMealAction: 'detachDailyMeal',
-      fetchWeekSchedulesAction: 'fetchWeekSchedules'
-    }),
-    ...mapActions('userCategory', ['fetchUserCategories']),
-    getDailyMealName(dailyMealId) {
-      const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
+    })
+
+    onMounted(() => {
+      store.dispatch('dailyMeal/fetchDailyMeals')
+      store.dispatch('userCategory/fetchUserCategories')
+    })
+
+    const getDailyMealName = (dailyMealId) => {
+      const dailyMeal = dailyMeals.value.find((meal) => meal.id === dailyMealId)
       return dailyMeal ? dailyMeal.name : ''
-    },
-    getDailyMealDescription(dailyMealId) {
-      const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
+    }
+
+    const getDailyMealDescription = (dailyMealId) => {
+      const dailyMeal = dailyMeals.value.find((meal) => meal.id === dailyMealId)
       return dailyMeal ? dailyMeal.description : ''
-    },
-    getCategoryName(categoryId) {
-      const category = this.userCategories.find((cat) => cat.id === parseInt(categoryId))
+    }
+
+    const getCategoryName = (categoryId) => {
+      const category = userCategories.value.find((cat) => cat.id === parseInt(categoryId))
       return category ? category.name : ''
-    },
-    assignDailyMeals() {
+    }
+
+    const assignDailyMeals = () => {
       const dailyMealData = {
-        daily_meal_id: this.selectedDailyMealId,
-        start_time: this.startTime,
-        end_time: this.endTime,
-        price: this.price,
-        discounts: this.discounts,
+        daily_meal_id: selectedDailyMealId.value,
+        start_time: startTime.value,
+        end_time: endTime.value,
+        price: price.value,
+        discounts: discounts.value,
       }
 
-      this.assignDailyMealAction({
-        weekScheduleId: this.weekScheduleId,
-        day: this.day,
+      store.dispatch('weekSchedule/assignDailyMeals', {
+        weekScheduleId: props.weekScheduleId,
+        day: props.day,
         dailyMealData,
       })
       .then(() => {
-        this.selectedDailyMealId = null
-        this.startTime = ''
-        this.endTime = ''
-        this.price = ''
-        this.discounts = {}
-        this.errorMessage = ''
-        this.fetchWeekSchedulesAction() // Refresh the data
+        selectedDailyMealId.value = null
+        startTime.value = ''
+        endTime.value = ''
+        price.value = ''
+        discounts.value = {}
+        errorMessage.value = ''
+        store.dispatch('weekSchedule/fetchWeekSchedules')
       })
       .catch((error) => {
         console.error('Full error object:', error);
@@ -229,42 +230,79 @@ export default {
 
         if (error.response && error.response.data) {
           if (typeof error.response.data === 'string') {
-            this.errorMessage = error.response.data;
+            errorMessage.value = error.response.data;
           } else if (error.response.data.error) {
             if (error.response.data.error.includes('overlaps')) {
-              this.errorMessage = `The specified duration overlaps with an existing daily meal for ${this.day}`;
+              errorMessage.value = `The specified duration overlaps with an existing daily meal for ${props.day}`;
             } else if (error.response.data.error.includes('after:start_time') || error.response.data.error.includes('end_time')) {
-              this.errorMessage = 'Start time of the meal must be before end time';
+              errorMessage.value = 'Start time of the meal must be before end time';
             } else {
-              this.errorMessage = error.response.data.error;
+              errorMessage.value = error.response.data.error;
             }
           } else if (error.response.data.message) {
-            this.errorMessage = error.response.data.message;
+            errorMessage.value = error.response.data.message;
           } else {
-            this.errorMessage = 'An unexpected error occurred. Please check the console for more details.';
+            errorMessage.value = 'An unexpected error occurred. Please check the console for more details.';
           }
         } else {
-          this.errorMessage = 'An error occurred while assigning the daily meal. Please check the console for more details.';
+          errorMessage.value = 'An error occurred while assigning the daily meal. Please check the console for more details.';
         }
       })
-    },
-    detachDailyMeal(dailyMealId) {
-      this.detachDailyMealAction({
-        weekScheduleId: this.weekScheduleId,
-        day: this.day,
+    }
+
+    const detachDailyMeal = (dailyMealId) => {
+      store.dispatch('weekSchedule/detachDailyMeal', {
+        weekScheduleId: props.weekScheduleId,
+        day: props.day,
         dailyMealId,
       })
       .then(() => {
-        this.fetchWeekSchedulesAction() // Refresh the data
+        store.dispatch('weekSchedule/fetchWeekSchedules')
       })
       .catch((error) => {
         console.error('Error detaching daily meal:', error)
-        this.errorMessage = 'An error occurred while detaching the daily meal.'
+        errorMessage.value = 'An error occurred while detaching the daily meal.'
       })
-    },
-    handleDailyMealSelect(event) {
-      this.selectedDailyMealId = event.target.value
-    },
-  },
+    }
+
+    const handleDailyMealSelect = (event) => {
+      selectedDailyMealId.value = event.target.value
+    }
+
+    const fetchDiscounts = (dailyMealId) => {
+      console.log('Fetching discounts for daily meal:', dailyMealId)
+      store.dispatch('weekSchedule/fetchDiscountsForDailyMeal', {
+        weekScheduleId: props.weekScheduleId,
+        day: props.day,
+        dailyMealId
+      }).then((discounts) => {
+        console.log('Discounts fetched successfully. Discounts data:', discounts)
+        // Don't do anything else here for now
+      }).catch(error => {
+        console.error('Error fetching discounts:', error)
+        errorMessage.value = 'An error occurred while fetching discounts.'
+      })
+    }
+
+    return {
+      selectedDailyMealId,
+      startTime,
+      endTime,
+      price,
+      errorMessage,
+      discounts,
+      dailyMeals,
+      userCategories,
+      assignedDailyMeals,
+      availableDailyMeals,
+      getDailyMealName,
+      getDailyMealDescription,
+      getCategoryName,
+      assignDailyMeals,
+      detachDailyMeal,
+      handleDailyMealSelect,
+      fetchDiscounts
+    }
+  }
 }
 </script>

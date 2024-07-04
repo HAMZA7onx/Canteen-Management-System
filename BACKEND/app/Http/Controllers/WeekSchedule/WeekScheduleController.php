@@ -174,4 +174,34 @@ class WeekScheduleController extends Controller
         $weekSchedule->{"${day}DailyMeals"}()->detach($dailyMeal);
         return response()->json(['message' => 'Daily meal detached from the week schedule for ' . $day]);
     }
+
+    public function getDailyMealDiscounts(WeekSchedule $weekSchedule, $day, DailyMeal $dailyMeal)
+    {
+        $pivotTable = "{$day}_daily_meal";
+        $discountTable = "{$day}_discounts";
+
+        $pivotId = DB::table($pivotTable)
+            ->where('week_schedule_id', $weekSchedule->id)
+            ->where('daily_meal_id', $dailyMeal->id)
+            ->value('id');
+
+        if (!$pivotId) {
+            return response()->json(['error' => 'Daily meal not found in the specified day'], 404);
+        }
+
+        $discounts = DB::table($discountTable)
+            ->where('meal_id', $pivotId)
+            ->join('user_category', 'user_category.id', '=', "{$discountTable}.category_id")
+            ->select("{$discountTable}.category_id", "{$discountTable}.discount", 'user_category.name as category_name')
+            ->get();
+
+        $formattedDiscounts = $discounts->mapWithKeys(function ($item) {
+            return [$item->category_id => [
+                'discount' => $item->discount,
+                'category_name' => $item->category_name
+            ]];
+        });
+
+        return response()->json($formattedDiscounts);
+    }
 }

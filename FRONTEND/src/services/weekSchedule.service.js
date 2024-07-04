@@ -26,6 +26,10 @@ class WeekScheduleService {
   detachDailyMeal(weekScheduleId, day, dailyMealId) {
     return request.delete(`${API_URL}/${weekScheduleId}/daily-meals/${dailyMealId}/${day}`)
   }
+
+  getDailyMealDiscounts(weekScheduleId, day, dailyMealId) {
+    return request.get(`${API_URL}/${weekScheduleId}/daily-meals/${day}/${dailyMealId}/discounts`)
+  }
 }
 
 export default new WeekScheduleService()
