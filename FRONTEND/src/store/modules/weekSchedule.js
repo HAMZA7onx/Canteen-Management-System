@@ -103,6 +103,19 @@ const actions = {
         throw error
       })
   },
+
+  fetchDiscountsForDailyMeal({ commit }, { weekScheduleId, day, dailyMealId }) {
+    return new Promise((resolve, reject) => {
+      WeekScheduleService.getDailyMealDiscounts(weekScheduleId, day, dailyMealId)
+        .then(response => {
+          commit('SET_DISCOUNTS_FOR_DAILY_MEAL', { weekScheduleId, day, dailyMealId, discounts: response.data })
+          resolve(response.data)
+        })
+        .catch(error => {
+          reject(error)
+        })
+    })
+  }  
 }
 
 const mutations = {
@@ -145,6 +158,30 @@ const mutations = {
       }
     }
   },
+
+  SET_DISCOUNTS_FOR_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId, discounts }) {
+    const weekSchedule = state.weekSchedules.find(ws => ws.id === weekScheduleId)
+    if (weekSchedule) {
+      const dailyMeals = weekSchedule[`${day}_daily_meals`]
+      if (dailyMeals) {
+        const dailyMeal = dailyMeals.find(dm => dm.id === dailyMealId)
+        if (dailyMeal) {
+          dailyMeal.discounts = discounts
+          // Trigger reactivity
+          state.weekSchedules = [...state.weekSchedules]
+        } else {
+          console.warn(`Daily meal with id ${dailyMealId} not found for ${day}`)
+        }
+      } else {
+        console.warn(`No daily meals found for ${day}`)
+      }
+    } else {
+      console.warn(`Week schedule with id ${weekScheduleId} not found`)
+    }
+  }
+  
+  
+  
 }
 
 export default {
