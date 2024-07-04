@@ -9,15 +9,14 @@ const getters = {
   getAssignedDailyMealsForDay: (state) => (weekScheduleId, day) => {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
     const assignedDailyMealsData = weekSchedule ? weekSchedule[`${day}_daily_meals`] : []
-    const assignedDailyMeals = assignedDailyMealsData.map((dailyMealData) => ({
+    return assignedDailyMealsData.map((dailyMealData) => ({
       daily_meal_id: dailyMealData.id,
       start_time: dailyMealData.pivot.start_time,
       end_time: dailyMealData.pivot.end_time,
       price: dailyMealData.pivot.price,
+      discounts: dailyMealData.discounts // Make sure this is included
     }))
-    console.log(`Assigned daily meals for weekScheduleId ${weekScheduleId} and day ${day}:`, assignedDailyMeals)
-    return assignedDailyMeals
-  },
+  },  
   activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
 }
 
@@ -108,14 +107,18 @@ const actions = {
     return new Promise((resolve, reject) => {
       WeekScheduleService.getDailyMealDiscounts(weekScheduleId, day, dailyMealId)
         .then(response => {
-          commit('SET_DISCOUNTS_FOR_DAILY_MEAL', { weekScheduleId, day, dailyMealId, discounts: response.data })
-          resolve(response.data)
+          const discounts = response.data
+          console.log('Discounts received from API:', discounts)
+          commit('SET_DISCOUNTS_FOR_DAILY_MEAL', { weekScheduleId, day, dailyMealId, discounts })
+          resolve(discounts)
         })
         .catch(error => {
+          console.error('Error in fetchDiscountsForDailyMeal:', error)
           reject(error)
         })
     })
-  }  
+  }
+  
 }
 
 const mutations = {
@@ -179,8 +182,6 @@ const mutations = {
       console.warn(`Week schedule with id ${weekScheduleId} not found`)
     }
   }
-  
-  
   
 }
 
