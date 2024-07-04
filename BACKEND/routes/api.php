@@ -140,3 +140,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
     });
 });
+
+
