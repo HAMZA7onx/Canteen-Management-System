@@ -31,6 +31,14 @@
                   {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }}
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }}$)</span>
                 </p>
+                <div v-if="dailyMealData.discounts">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
+                  <ul class="list-disc list-inside">
+                    <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ getCategoryName(categoryId) }}: {{ discount }}%
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div>
                 <button
@@ -96,6 +104,24 @@
           class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
         />
       </div>
+
+      <div v-if="userCategories.length > 0">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Discounts</h3>
+        <div v-for="category in userCategories" :key="category.id" class="mb-2">
+          <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ category.name }} Discount (%)
+          </label>
+          <input
+            :id="`discount-${category.id}`"
+            v-model="discounts[category.id]"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="mt-6 flex justify-end">
@@ -132,11 +158,13 @@ export default {
       endTime: '',
       price: '',
       errorMessage: '',
+      discounts: {},
     }
   },
   computed: {
     ...mapGetters('dailyMeal', ['dailyMeals']),
     ...mapGetters('weekSchedule', ['getAssignedDailyMealsForDay']),
+    ...mapGetters('userCategory', ['userCategories']),
     assignedDailyMeals() {
       return this.getAssignedDailyMealsForDay(this.weekScheduleId, this.day) || []
     },
@@ -149,6 +177,7 @@ export default {
   },
   created() {
     this.fetchDailyMeals()
+    this.fetchUserCategories()
   },
   methods: {
     ...mapActions('dailyMeal', ['fetchDailyMeals']),
@@ -157,6 +186,7 @@ export default {
       detachDailyMealAction: 'detachDailyMeal',
       fetchWeekSchedulesAction: 'fetchWeekSchedules'
     }),
+    ...mapActions('userCategory', ['fetchUserCategories']),
     getDailyMealName(dailyMealId) {
       const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
       return dailyMeal ? dailyMeal.name : ''
@@ -165,54 +195,59 @@ export default {
       const dailyMeal = this.dailyMeals.find((meal) => meal.id === dailyMealId)
       return dailyMeal ? dailyMeal.description : ''
     },
+    getCategoryName(categoryId) {
+      const category = this.userCategories.find((cat) => cat.id === parseInt(categoryId))
+      return category ? category.name : ''
+    },
     assignDailyMeals() {
-  const dailyMealData = {
-    daily_meal_id: this.selectedDailyMealId,
-    start_time: this.startTime,
-    end_time: this.endTime,
-    price: this.price,
-  }
-
-  this.assignDailyMealAction({
-    weekScheduleId: this.weekScheduleId,
-    day: this.day,
-    dailyMealData,
-  })
-  .then(() => {
-    this.selectedDailyMealId = null
-    this.startTime = ''
-    this.endTime = ''
-    this.price = ''
-    this.errorMessage = ''
-    this.fetchWeekSchedulesAction() // Refresh the data
-  })
-  .catch((error) => {
-    console.error('Full error object:', error);
-    console.error('Error response:', error.response);
-    console.error('Error response data:', error.response?.data);
-
-    if (error.response && error.response.data) {
-      if (typeof error.response.data === 'string') {
-        this.errorMessage = error.response.data;
-      } else if (error.response.data.error) {
-        if (error.response.data.error.includes('overlaps')) {
-          this.errorMessage = `The specified duration overlaps with an existing daily meal for ${this.day}`;
-        } else if (error.response.data.error.includes('after:start_time') || error.response.data.error.includes('end_time')) {
-          this.errorMessage = 'Start time of the meal must be before end time';
-        } else {
-          this.errorMessage = error.response.data.error;
-        }
-      } else if (error.response.data.message) {
-        this.errorMessage = error.response.data.message;
-      } else {
-        this.errorMessage = 'An unexpected error occurred. Please check the console for more details.';
+      const dailyMealData = {
+        daily_meal_id: this.selectedDailyMealId,
+        start_time: this.startTime,
+        end_time: this.endTime,
+        price: this.price,
+        discounts: this.discounts,
       }
-    } else {
-      this.errorMessage = 'An error occurred while assigning the daily meal. Please check the console for more details.';
-    }
-  })
-},
 
+      this.assignDailyMealAction({
+        weekScheduleId: this.weekScheduleId,
+        day: this.day,
+        dailyMealData,
+      })
+      .then(() => {
+        this.selectedDailyMealId = null
+        this.startTime = ''
+        this.endTime = ''
+        this.price = ''
+        this.discounts = {}
+        this.errorMessage = ''
+        this.fetchWeekSchedulesAction() // Refresh the data
+      })
+      .catch((error) => {
+        console.error('Full error object:', error);
+        console.error('Error response:', error.response);
+        console.error('Error response data:', error.response?.data);
+
+        if (error.response && error.response.data) {
+          if (typeof error.response.data === 'string') {
+            this.errorMessage = error.response.data;
+          } else if (error.response.data.error) {
+            if (error.response.data.error.includes('overlaps')) {
+              this.errorMessage = `The specified duration overlaps with an existing daily meal for ${this.day}`;
+            } else if (error.response.data.error.includes('after:start_time') || error.response.data.error.includes('end_time')) {
+              this.errorMessage = 'Start time of the meal must be before end time';
+            } else {
+              this.errorMessage = error.response.data.error;
+            }
+          } else if (error.response.data.message) {
+            this.errorMessage = error.response.data.message;
+          } else {
+            this.errorMessage = 'An unexpected error occurred. Please check the console for more details.';
+          }
+        } else {
+          this.errorMessage = 'An error occurred while assigning the daily meal. Please check the console for more details.';
+        }
+      })
+    },
     detachDailyMeal(dailyMealId) {
       this.detachDailyMealAction({
         weekScheduleId: this.weekScheduleId,

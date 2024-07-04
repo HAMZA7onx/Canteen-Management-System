@@ -108,6 +108,8 @@ class WeekScheduleController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'price' => 'required|numeric',
+            'discounts' => 'required|array',
+            'discounts.*' => 'numeric|min:0|max:100',
         ]);
 
         $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
@@ -127,7 +129,6 @@ class WeekScheduleController extends Controller
             $existingEndTime = Carbon::parse($existingDailyMeal->pivot->end_time);
             $newStartTime = Carbon::parse($validatedData['start_time']);
             $newEndTime = Carbon::parse($validatedData['end_time']);
-
             if (
                 ($newStartTime->between($existingStartTime, $existingEndTime) || $newEndTime->between($existingStartTime, $existingEndTime)) ||
                 ($existingStartTime->between($newStartTime, $newEndTime) || $existingEndTime->between($newStartTime, $newEndTime))
@@ -136,13 +137,36 @@ class WeekScheduleController extends Controller
             }
         }
 
-        $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, [
-            'start_time' => $validatedData['start_time'],
-            'end_time' => $validatedData['end_time'],
-            'price' => $validatedData['price'],
-        ]);
+        DB::beginTransaction();
 
-        return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
+        try {
+            $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, [
+                'start_time' => $validatedData['start_time'],
+                'end_time' => $validatedData['end_time'],
+                'price' => $validatedData['price'],
+            ]);
+
+            $pivotId = DB::table("{$day}_daily_meal")
+                ->where('week_schedule_id', $weekSchedule->id)
+                ->where('daily_meal_id', $dailyMeal->id)
+                ->value('id');
+
+            foreach ($validatedData['discounts'] as $categoryId => $discount) {
+                DB::table("{$day}_discounts")->insert([
+                    'meal_id' => $pivotId,
+                    'category_id' => $categoryId,
+                    'discount' => $discount,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Failed to attach daily meal: ' . $e->getMessage()], 500);
+        }
     }
 
     public function detachDailyMeal(WeekSchedule $weekSchedule, DailyMeal $dailyMeal, $day)
