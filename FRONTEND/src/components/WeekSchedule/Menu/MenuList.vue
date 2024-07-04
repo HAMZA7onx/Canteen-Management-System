@@ -30,7 +30,8 @@
       <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transition-colors duration-300">
         <div class="px-4 py-5 sm:p-6">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Menu List</h2>
-          <table class="w-full table-auto">
+          <loading-wheel v-if="isLoading" />
+          <table v-else class="w-full table-auto">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
@@ -156,13 +157,16 @@ import MenuForm from './MenuForm.vue'
 import MenuFoodComposantForm from './MenuFoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
+import LoadingWheel from '@/components/shared/LoadingWheel.vue'
+
 
 export default {
   components: {
     MenuForm,
     MenuFoodComposantForm,
     Modal,
-    Overlay
+    Overlay,
+    LoadingWheel
   },
   data() {
     return {
@@ -170,14 +174,16 @@ export default {
       showEditModal: false,
       showDeleteConfirmation: false,
       showFoodComposantModal: false,
-      selectedMenu: null
+      selectedMenu: null,
+      isLoading: true
     }
   },
   computed: {
     ...mapGetters('menu', ['menus'])
   },
   created() {
-    this.fetchMenus()
+    this.fetchMenus(),
+    this.loadMenus()
   },
   methods: {
     ...mapActions('menu', [
@@ -196,6 +202,7 @@ export default {
       this.createMenu(menuData)
         .then(() => {
           this.closeCreateModal()
+          this.loadMenus()
         })
         .catch(error => {
           console.error('Error creating menu:', error)
@@ -214,6 +221,7 @@ export default {
       this.updateMenu(menuData)
         .then(() => {
           this.closeEditModal()
+          this.loadMenus()
         })
         .catch(error => {
           console.error('Error updating menu:', error)
@@ -232,6 +240,7 @@ export default {
       this.deleteMenu(this.selectedMenu)
         .then(() => {
           this.closeDeleteConfirmation()
+          this.loadMenus()
         })
         .catch(error => {
           console.error('Error deleting menu:', error)
@@ -245,7 +254,17 @@ export default {
     closeFoodComposantModal() {
       this.showFoodComposantModal = false
       this.selectedMenu = null
-    }
+    },
+    async loadMenus() {
+      this.isLoading = true
+      try {
+        await this.fetchMenus()
+      } catch (error) {
+        console.error('Error fetching menus:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
   }
 }
 </script>
