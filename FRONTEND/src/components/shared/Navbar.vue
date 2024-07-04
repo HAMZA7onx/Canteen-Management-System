@@ -52,6 +52,10 @@ export default {
     },
   },
 };
+
+/*
+navbar design
+*/
 </script>
 
 <style scoped>
