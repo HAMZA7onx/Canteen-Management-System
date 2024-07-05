@@ -17,18 +17,4 @@ class Badge extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function setActiveRfid()
-    {
-        DB::transaction(function () {
-            // Update all other RFIDs associated with the same user to 'inactive'
-            Badge::where('user_id', $this->user_id)
-                ->where('id', '!=', $this->id)
-                ->update(['status' => 'inactive']);
-
-            // Set the current RFID's status to 'active'
-            $this->status = 'active';
-            $this->save();
-        });
-    }
 }

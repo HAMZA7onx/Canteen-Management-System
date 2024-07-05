@@ -13,6 +13,7 @@ use App\Http\Controllers\WeekSchedule\WeekScheduleController;
 use App\Http\Controllers\WeekSchedule\DailyMealController;
 use App\Http\Controllers\WeekSchedule\MenuController;
 use App\Http\Controllers\WeekSchedule\FoodComposantsController;
+use App\Http\Controllers\Records\DailyRecordController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -140,6 +141,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{foodComposant}', [FoodComposantsController::class, 'show']);
         Route::put('/{foodComposant}', [FoodComposantsController::class, 'update']);
         Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
+    });
+
+    Route::prefix('badging')->group(function () {
+        Route::get('/{day}', [DailyRecordController::class, 'index']);
+        Route::post('/{day}', [DailyRecordController::class, 'store']);
+        Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);
     });
 });
 
