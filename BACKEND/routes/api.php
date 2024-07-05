@@ -143,11 +143,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
     });
 
-    Route::prefix('records')->group(function () {
+    Route::prefix('badging')->group(function () {
         Route::get('/{day}', [DailyRecordController::class, 'index']);
         Route::post('/{day}', [DailyRecordController::class, 'store']);
         Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);
-        Route::delete('/{day}/{id}', [DailyRecordController::class, 'destroy']);
     });
 });
 
