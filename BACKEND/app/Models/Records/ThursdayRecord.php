@@ -15,11 +15,11 @@ class ThursdayRecord extends Model
 
     public function thursdayDailyMeal()
     {
-        return $this->belongsTo(\App\Models\ThursdayDailyMeal::class, 'thursday_daily_meal_id');
+        return $this->belongsTo(ThursdayDailyMeal::class, 'thursday_daily_meal_id');
     }
 
     public function badge()
     {
-        return $this->belongsTo(\App\Models\Badge::class);
+        return $this->belongsTo(Badge::class);
     }
 }
