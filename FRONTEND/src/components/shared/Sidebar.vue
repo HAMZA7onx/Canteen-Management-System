@@ -54,7 +54,7 @@ export default {
         { label: 'Les menus', icon: 'clipboard-list', route: '/menus' },
         { label: 'Gestion des repats', icon: 'utensils', route: '/daily' },
         { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules' },
-        { label: 'Records', icon: 'chart-bar', route: '/meal-records' },
+        { label: 'Records', icon: 'chart-bar', route: '/records' },
       ],
     };
   },

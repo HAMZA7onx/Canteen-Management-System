@@ -11,6 +11,7 @@ import foodComposant from './modules/foodComposant';
 import menu from './modules/menu';
 import dailyMeal from './modules/dailyMeal';
 import weekSchedule from './modules/weekSchedule';
+import record from './modules/record';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -29,6 +30,7 @@ const store = createStore({
     menu,
     dailyMeal, 
     weekSchedule,
+    record
   },
   plugins: [vuexLocal.plugin]
 });
