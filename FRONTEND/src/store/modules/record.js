@@ -8,6 +8,7 @@ const state = {
   selectedYear: null,
   selectedMonth: null,
   selectedDay: null,
+   monthlyTotals: [],
 };
 
 const getters = {
@@ -18,6 +19,7 @@ const getters = {
   selectedYear: (state) => state.selectedYear,
   selectedMonth: (state) => state.selectedMonth,
   selectedDay: (state) => state.selectedDay,
+  monthlyTotals: (state) => state.monthlyTotals,
 };
 
 const actions = {
@@ -58,7 +60,7 @@ const actions = {
     try {
       const response = await RecordService.getDayRecords(state.selectedYear, state.selectedMonth, state.selectedDay);
       console.log('response:', response);
-      commit('SET_RECORDS', response.data);
+      commit('SET_RECORDS_AND_TOTALS', response.data);
     } catch (error) {
       console.error('Error fetching day records:', error);
       throw error;
@@ -99,6 +101,10 @@ const mutations = {
   },
   SET_SELECTED_DAY(state, day) {
     state.selectedDay = day;
+  },
+  SET_RECORDS_AND_TOTALS(state, { records, monthlyTotals }) {
+    state.records = records;
+    state.monthlyTotals = monthlyTotals;
   },
 };
 
