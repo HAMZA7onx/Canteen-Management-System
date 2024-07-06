@@ -63,33 +63,103 @@
     <!-- Day Records Modal -->
     <Transition name="modal">
       <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" id="my-modal">
-        <div class="relative bg-white dark:bg-gray-800 w-full max-w-4xl mx-auto rounded-lg shadow-xl">
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl">
           <div class="p-6">
-            <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">Records for {{ expandedYear }}-{{ monthName(expandedMonth) }}-{{ expandedDay }}</h3>
+            <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Records for {{ expandedYear }}-{{ monthName(expandedMonth) }}-{{ expandedDay }}
+            </h3>
             <div class="mt-4">
               <div v-if="loading" class="flex justify-center items-center h-64">
                 <div class="spinner"></div>
               </div>
-              <div v-else-if="records.length" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="(record, index) in records" :key="index" class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md p-6 transition-all duration-300 ease-in-out hover:shadow-lg">
-                  <h2 class="text-xl font-semibold mb-4 text-indigo-600 dark:text-indigo-400">{{ record.week_schedule_name }}</h2>
-                  <p class="mb-2"><strong class="text-gray-700 dark:text-gray-300">Meal:</strong> <span class="text-gray-800 dark:text-gray-200">{{ record.meal_name }}</span></p>
-                  <p class="mb-2"><strong class="text-gray-700 dark:text-gray-300">Time:</strong> <span class="text-gray-800 dark:text-gray-200">{{ record.start_time }} - {{ record.end_time }}</span></p>
-                  <p class="mb-2"><strong class="text-gray-700 dark:text-gray-300">Price:</strong> <span class="text-gray-800 dark:text-gray-200">${{ record.price }}</span></p>
-                  <p class="mb-2"><strong class="text-gray-700 dark:text-gray-300">Badge Count:</strong> <span class="text-gray-800 dark:text-gray-200">{{ record.badge_count }}</span></p>
-                  <div class="mt-4">
+              <div v-else-if="records.length" class="space-y-6">
+                <div v-for="(record, index) in records" :key="index" 
+                     class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out hover:shadow-lg">
+                  <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                      <h2 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
+                        {{ record.week_schedule_name }}
+                      </h2>
+                      <span class="px-3 py-1 text-sm font-semibold text-indigo-600 bg-indigo-100 rounded-full dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ record.meal_name }}
+                      </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Time</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
+                          {{ record.start_time }} - {{ record.end_time }}
+                        </p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Price</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">${{ record.price }}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Badge Count</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">{{ record.badge_count }}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
+                          {{ record.users.length }}
+                        </p>
+                      </div>
+                    </div>
+                    <button @click="toggleUserList(index)" 
+                            class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
+                      {{ record.showUsers ? 'Hide Users' : 'Show Users' }}
+                    </button>
+                  </div>
+                  <div v-if="record.showUsers" class="px-6 py-4 bg-gray-100 dark:bg-gray-600">
                     <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-300">Users:</h3>
-                    <ul class="list-disc pl-5 text-gray-800 dark:text-gray-200">
-                      <li v-for="user in record.users.split(', ')" :key="user">{{ user }}</li>
-                    </ul>
+                    <div class="max-h-60 overflow-y-auto">
+                      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                          <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Email
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Badge ID
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Category Discount
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              User Category
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                          <tr v-for="(user, userIndex) in record.users" :key="userIndex" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {{ user.email }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {{ user.badge_id }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {{ user.category_discount }}%
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {{ user.user_category_name }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p v-else class="text-center text-gray-500 dark:text-gray-400 mt-6">No records found for the selected date.</p>
+              <p v-else class="text-center text-gray-500 dark:text-gray-400 mt-6">
+                No records found for the selected date.
+              </p>
             </div>
           </div>
           <div class="bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
-            <button @click="closeModal" class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
+            <button @click="closeModal" 
+                    class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
               Close
             </button>
           </div>
@@ -100,12 +170,14 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-import { ref, computed } from 'vue';
+import { ref, reactive, computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'RecordsDashboard',
   setup() {
+    const store = useStore();
+
     const expandedYear = ref(null);
     const expandedMonth = ref(null);
     const expandedDay = ref(null);
@@ -116,6 +188,60 @@ export default {
       return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
     };
 
+    const years = computed(() => store.state.record.years);
+    const months = computed(() => store.state.record.months);
+    const days = computed(() => store.state.record.days);
+    const records = ref([]);
+
+    const expandYear = async (year) => {
+      if (expandedYear.value === year) {
+        expandedYear.value = null;
+        expandedMonth.value = null;
+        expandedDay.value = null;
+      } else {
+        expandedYear.value = year;
+        store.dispatch('record/setSelectedYear', year);
+        await store.dispatch('record/fetchMonths');
+      }
+    };
+
+    const expandMonth = async (month) => {
+      if (expandedMonth.value === month) {
+        expandedMonth.value = null;
+        expandedDay.value = null;
+      } else {
+        expandedMonth.value = month;
+        store.dispatch('record/setSelectedMonth', month);
+        await store.dispatch('record/fetchDays');
+      }
+    };
+
+    const showDayRecords = async (day) => {
+      expandedDay.value = day;
+      store.dispatch('record/setSelectedDay', day);
+      showModal.value = true;
+      loading.value = true;
+      try {
+        await store.dispatch('record/fetchDayRecords');
+        records.value = store.state.record.records.map(record => ({
+          ...record,
+          showUsers: false,
+          users: JSON.parse(record.users) // Parse the JSON string to an array of objects
+        }));
+      } finally {
+        loading.value = false;
+      }
+    };
+
+
+    const toggleUserList = (index) => {
+      records.value[index].showUsers = !records.value[index].showUsers;
+    };
+
+    const closeModal = () => {
+      showModal.value = false;
+    };
+
     return {
       expandedYear,
       expandedMonth,
@@ -123,59 +249,19 @@ export default {
       showModal,
       loading,
       monthName,
+      years,
+      months,
+      days,
+      records,
+      expandYear,
+      expandMonth,
+      showDayRecords,
+      toggleUserList,
+      closeModal
     };
   },
-  computed: {
-    ...mapState('record', ['years', 'months', 'days', 'records']),
-  },
-  methods: {
-    ...mapActions('record', [
-      'fetchYears',
-      'fetchMonths',
-      'fetchDays',
-      'fetchDayRecords',
-      'setSelectedYear',
-      'setSelectedMonth',
-      'setSelectedDay',
-    ]),
-    async expandYear(year) {
-      if (this.expandedYear === year) {
-        this.expandedYear = null;
-        this.expandedMonth = null;
-        this.expandedDay = null;
-      } else {
-        this.expandedYear = year;
-        this.setSelectedYear(year);
-        await this.fetchMonths();
-      }
-    },
-    async expandMonth(month) {
-      if (this.expandedMonth === month) {
-        this.expandedMonth = null;
-        this.expandedDay = null;
-      } else {
-        this.expandedMonth = month;
-        this.setSelectedMonth(month);
-        await this.fetchDays();
-      }
-    },
-    async showDayRecords(day) {
-      this.expandedDay = day;
-      this.setSelectedDay(day);
-      this.showModal = true;
-      this.loading = true;
-      try {
-        await this.fetchDayRecords();
-      } finally {
-        this.loading = false;
-      }
-    },
-    closeModal() {
-      this.showModal = false;
-    },
-  },
   mounted() {
-    this.fetchYears();
+    this.$store.dispatch('record/fetchYears');
   },
 };
 </script>
@@ -223,11 +309,49 @@ export default {
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
-  100% {
-    transform: rotate(360deg);
+
+  .max-h-60 {
+    max-height: 15rem;
   }
-}
+
+  .max-h-60::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .max-h-60::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .max-h-60::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .max-h-60::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* New styles for the table */
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  th, td {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
 </style>

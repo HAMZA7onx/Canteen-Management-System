@@ -68,6 +68,11 @@ class RecordsDashboardController extends Controller
                 ->join('daily_meals', 'daily_meals.id', '=', "{$dayOfWeek}_daily_meal.daily_meal_id")
                 ->join('badges', 'badges.id', '=', "{$dayOfWeek}_records.badge_id")
                 ->join('users', 'users.id', '=', 'badges.user_id')
+                ->join('user_category', 'user_category.id', '=', 'users.category_id')
+                ->leftJoin("{$dayOfWeek}_discounts", function($join) use ($dayOfWeek) {
+                    $join->on("{$dayOfWeek}_discounts.meal_id", "=", "{$dayOfWeek}_daily_meal.id")
+                        ->on("{$dayOfWeek}_discounts.category_id", "=", "user_category.id");
+                })
                 ->whereRaw('EXTRACT(YEAR FROM '.$dayOfWeek.'_records.created_at) = ?', [$year])
                 ->whereRaw('EXTRACT(MONTH FROM '.$dayOfWeek.'_records.created_at) = ?', [$month])
                 ->whereRaw('EXTRACT(DAY FROM '.$dayOfWeek.'_records.created_at) = ?', [$day])
@@ -78,7 +83,14 @@ class RecordsDashboardController extends Controller
                     "{$dayOfWeek}_daily_meal.end_time",
                     "{$dayOfWeek}_daily_meal.price",
                     DB::raw('COUNT(DISTINCT badges.id) as badge_count'),
-                    DB::raw('STRING_AGG(DISTINCT CONCAT(users.name, \' (\', badges.rfid, \')\'), \', \') as users')
+                    DB::raw('JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        \'email\', users.email,
+                        \'badge_id\', badges.rfid,
+                        \'category_discount\', COALESCE('.$dayOfWeek.'_discounts.discount, 0),
+                        \'user_category_name\', user_category.name
+                    )
+                ) as users')
                 )
                 ->groupBy(
                     'week_schedule.mode_name',
@@ -93,6 +105,4 @@ class RecordsDashboardController extends Controller
 
         return response()->json($records);
     }
-
-
 }
