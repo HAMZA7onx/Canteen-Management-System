@@ -96,16 +96,15 @@ class DailyRecordController extends Controller
             return response()->json(['error' => 'Invalid meal id'], 400);
         }
 
-        // Check for existing record
+        // Check for existing record for this badge and meal (regardless of date)
         $existingRecord = DB::table($recordTable)
             ->where($day . '_daily_meal_id', $currentMeal->pivot_id)
             ->where('badge_id', $validatedData['badge_id'])
-            ->whereDate('created_at', $currentTime->toDateString())
             ->first();
 
         if ($existingRecord) {
             \Log::info("Existing record found for badge {$validatedData['badge_id']} and meal {$currentMeal->pivot_id}");
-            return response()->json(['error' => 'A record for this badge and meal already exists today.'], 400);
+            return response()->json(['error' => 'A record for this badge and meal already exists.'], 400);
         }
 
         // Create the record
@@ -127,5 +126,6 @@ class DailyRecordController extends Controller
             return response()->json(['error' => 'Failed to create record', 'message' => $e->getMessage()], 500);
         }
     }
+
 
 }
