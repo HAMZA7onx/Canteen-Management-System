@@ -113,6 +113,17 @@
                   </div>
                   <div v-if="record.showUsers" class="px-6 py-4 bg-gray-100 dark:bg-gray-600">
                     <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-300">Users:</h3>
+                    
+                    <!-- Search bar -->
+                    <div class="mb-4">
+                      <input 
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search by email"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                      />
+                    </div>
+
                     <div class="max-h-60 overflow-y-auto">
                       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-800">
@@ -132,7 +143,7 @@
                           </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                          <tr v-for="(user, userIndex) in record.users" :key="userIndex" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <tr v-for="(user, userIndex) in filteredUsers" :key="userIndex" class="hover:bg-gray-50 dark:hover:bg-gray-600">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.email }}
                             </td>
@@ -183,6 +194,7 @@ export default {
     const expandedDay = ref(null);
     const showModal = ref(false);
     const loading = ref(false);
+    const searchQuery = ref('');
 
     const monthName = (month) => {
       return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
@@ -192,6 +204,16 @@ export default {
     const months = computed(() => store.state.record.months);
     const days = computed(() => store.state.record.days);
     const records = ref([]);
+
+    const filteredUsers = computed(() => {
+      if (!records.value.length) return [];
+      const activeRecord = records.value.find(r => r.showUsers);
+      if (!activeRecord) return [];
+      
+      return activeRecord.users.filter(user => 
+        user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+      );
+    });
 
     const expandYear = async (year) => {
       if (expandedYear.value === year) {
@@ -233,9 +255,11 @@ export default {
       }
     };
 
-
     const toggleUserList = (index) => {
-      records.value[index].showUsers = !records.value[index].showUsers;
+      records.value.forEach((record, i) => {
+        record.showUsers = i === index ? !record.showUsers : false;
+      });
+      searchQuery.value = ''; // Reset search query when toggling
     };
 
     const closeModal = () => {
@@ -248,11 +272,13 @@ export default {
       expandedDay,
       showModal,
       loading,
+      searchQuery,
       monthName,
       years,
       months,
       days,
       records,
+      filteredUsers,
       expandYear,
       expandMonth,
       showDayRecords,
