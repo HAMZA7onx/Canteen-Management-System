@@ -72,7 +72,7 @@ class RecordsDashboardController extends Controller
                 ->whereRaw('EXTRACT(MONTH FROM '.$dayOfWeek.'_records.created_at) = ?', [$month])
                 ->whereRaw('EXTRACT(DAY FROM '.$dayOfWeek.'_records.created_at) = ?', [$day])
                 ->select(
-                    'week_schedule.mode_name',
+                    'week_schedule.mode_name as week_schedule_name',
                     'daily_meals.name as meal_name',
                     "{$dayOfWeek}_daily_meal.start_time",
                     "{$dayOfWeek}_daily_meal.end_time",
@@ -80,11 +80,19 @@ class RecordsDashboardController extends Controller
                     DB::raw('COUNT(DISTINCT badges.id) as badge_count'),
                     DB::raw('STRING_AGG(DISTINCT CONCAT(users.name, \' (\', badges.rfid, \')\'), \', \') as users')
                 )
-                ->groupBy('week_schedule.mode_name', 'daily_meals.name', "{$dayOfWeek}_daily_meal.start_time", "{$dayOfWeek}_daily_meal.end_time", "{$dayOfWeek}_daily_meal.price")
+                ->groupBy(
+                    'week_schedule.mode_name',
+                    'daily_meals.name',
+                    "{$dayOfWeek}_daily_meal.start_time",
+                    "{$dayOfWeek}_daily_meal.end_time",
+                    "{$dayOfWeek}_daily_meal.price"
+                )
                 ->get();
             $records = array_merge($records, $dayRecords->toArray());
         }
 
         return response()->json($records);
     }
+
+
 }
