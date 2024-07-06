@@ -118,20 +118,32 @@
                         <thead class="bg-gray-50 dark:bg-gray-800">
                           <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                              Name
+                              Email
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Badge ID
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Category Discount
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              User Category
                             </th>
                           </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                           <tr v-for="(user, userIndex) in record.users" :key="userIndex" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {{ user.email }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {{ user.name }}
+                              {{ user.badge_id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                              {{ user.badge_id }}
+                              {{ user.category_discount }}%
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {{ user.user_category_name }}
                             </td>
                           </tr>
                         </tbody>
@@ -214,15 +226,13 @@ export default {
         records.value = store.state.record.records.map(record => ({
           ...record,
           showUsers: false,
-          users: record.users.split(', ').map(user => {
-            const [name, badge_id] = user.split(' - ');
-            return { name, badge_id };
-          })
+          users: JSON.parse(record.users) // Parse the JSON string to an array of objects
         }));
       } finally {
         loading.value = false;
       }
     };
+
 
     const toggleUserList = (index) => {
       records.value[index].showUsers = !records.value[index].showUsers;

@@ -57,6 +57,7 @@ const actions = {
     if (!state.selectedYear || !state.selectedMonth || !state.selectedDay) return;
     try {
       const response = await RecordService.getDayRecords(state.selectedYear, state.selectedMonth, state.selectedDay);
+      console.log('response:', response);
       commit('SET_RECORDS', response.data);
     } catch (error) {
       console.error('Error fetching day records:', error);
