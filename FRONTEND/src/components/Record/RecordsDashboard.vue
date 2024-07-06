@@ -21,7 +21,7 @@
   
       <div v-if="records.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="(record, index) in records" :key="index" class="bg-white shadow rounded-lg p-6">
-          <h2 class="text-xl font-semibold mb-4">{{ record.mode_name }}</h2>
+          <h2 class="text-xl font-semibold mb-4">{{ record.week_schedule_name }}</h2>
           <p class="mb-2"><strong>Meal:</strong> {{ record.meal_name }}</p>
           <p class="mb-2"><strong>Time:</strong> {{ record.start_time }} - {{ record.end_time }}</p>
           <p class="mb-2"><strong>Price:</strong> ${{ record.price }}</p>
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-  
+      
       <p v-else-if="selectedDay" class="text-center text-gray-500 mt-6">No records found for the selected date.</p>
     </div>
   </template>
