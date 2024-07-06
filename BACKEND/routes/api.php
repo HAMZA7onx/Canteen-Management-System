@@ -14,6 +14,7 @@ use App\Http\Controllers\WeekSchedule\DailyMealController;
 use App\Http\Controllers\WeekSchedule\MenuController;
 use App\Http\Controllers\WeekSchedule\FoodComposantsController;
 use App\Http\Controllers\Records\DailyRecordController;
+use App\Http\Controllers\RecordsDashboardController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -148,6 +149,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{day}', [DailyRecordController::class, 'store']);
         Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);
     });
+
+    Route::prefix('records')->group(function () {
+        Route::get('/years', [RecordsDashboardController::class, 'getYears']);
+        Route::get('/{year}/months', [RecordsDashboardController::class, 'getMonths']);
+        Route::get('/{year}/{month}/days', [RecordsDashboardController::class, 'getDays']);
+        Route::get('/{year}/{month}/{day}', [RecordsDashboardController::class, 'getDayRecords']);
+    });
 });
-
-
