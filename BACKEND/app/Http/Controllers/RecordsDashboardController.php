@@ -61,6 +61,8 @@ class RecordsDashboardController extends Controller
     public function getDayRecords($year, $month, $day)
     {
         $records = [];
+        $monthlyTotals = [];
+
         foreach ($this->days as $dayOfWeek) {
             $dayRecords = DB::table("{$dayOfWeek}_records")
                 ->join("{$dayOfWeek}_daily_meal", "{$dayOfWeek}_daily_meal.id", "=", "{$dayOfWeek}_records.{$dayOfWeek}_daily_meal_id")
@@ -100,9 +102,51 @@ class RecordsDashboardController extends Controller
                     "{$dayOfWeek}_daily_meal.price"
                 )
                 ->get();
+
             $records = array_merge($records, $dayRecords->toArray());
+
+            // Calculate monthly totals
+            $dayTotals = DB::table("{$dayOfWeek}_records")
+                ->join("{$dayOfWeek}_daily_meal", "{$dayOfWeek}_daily_meal.id", "=", "{$dayOfWeek}_records.{$dayOfWeek}_daily_meal_id")
+                ->join('badges', 'badges.id', '=', "{$dayOfWeek}_records.badge_id")
+                ->join('users', 'users.id', '=', 'badges.user_id')
+                ->join('user_category', 'user_category.id', '=', 'users.category_id')
+                ->leftJoin("{$dayOfWeek}_discounts", function($join) use ($dayOfWeek) {
+                    $join->on("{$dayOfWeek}_discounts.meal_id", "=", "{$dayOfWeek}_daily_meal.id")
+                        ->on("{$dayOfWeek}_discounts.category_id", "=", "user_category.id");
+                })
+                ->whereRaw('EXTRACT(YEAR FROM '.$dayOfWeek.'_records.created_at) = ?', [$year])
+                ->whereRaw('EXTRACT(MONTH FROM '.$dayOfWeek.'_records.created_at) = ?', [$month])
+                ->groupBy('users.id', 'users.email')
+                ->select(
+                    'users.id',
+                    'users.email',
+                    DB::raw('SUM('.$dayOfWeek.'_daily_meal.price) as total_without_discount'),
+                    DB::raw('SUM('.$dayOfWeek.'_daily_meal.price - COALESCE('.$dayOfWeek.'_discounts.discount, 0)) as total_with_discount')
+                )
+                ->get();
+
+            foreach ($dayTotals as $total) {
+                $userId = $total->id;
+                if (!isset($monthlyTotals[$userId])) {
+                    $monthlyTotals[$userId] = [
+                        'id' => $userId,
+                        'email' => $total->email,
+                        'total_without_discount' => 0,
+                        'total_with_discount' => 0
+                    ];
+                }
+                $monthlyTotals[$userId]['total_without_discount'] += $total->total_without_discount;
+                $monthlyTotals[$userId]['total_with_discount'] += $total->total_with_discount;
+            }
         }
 
-        return response()->json($records);
+        // Convert associative array to indexed array
+        $monthlyTotals = array_values($monthlyTotals);
+
+        return response()->json([
+            'records' => $records,
+            'monthlyTotals' => $monthlyTotals
+        ]);
     }
 }

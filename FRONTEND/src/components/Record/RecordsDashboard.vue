@@ -54,11 +54,35 @@
                   </button>
                 </div>
               </div>
+
+                  <!-- Monthly Totals Section -->
+    <div v-if="monthlyTotals.length" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Totals</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Without Discount</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total With Discount</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                  <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_without_discount.toFixed(2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_with_discount.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
 
     <!-- Day Records Modal -->
     <Transition name="modal">
@@ -168,6 +192,7 @@
               </p>
             </div>
           </div>
+          
           <div class="bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
             <button @click="closeModal" 
                     class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
@@ -204,6 +229,8 @@ export default {
     const months = computed(() => store.state.record.months);
     const days = computed(() => store.state.record.days);
     const records = ref([]);
+
+    const monthlyTotals = computed(() => store.state.record.monthlyTotals);
 
     const filteredUsers = computed(() => {
       if (!records.value.length) return [];
@@ -283,7 +310,8 @@ export default {
       expandMonth,
       showDayRecords,
       toggleUserList,
-      closeModal
+      closeModal,
+      monthlyTotals,
     };
   },
   mounted() {
