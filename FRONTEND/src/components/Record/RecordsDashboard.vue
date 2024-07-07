@@ -70,8 +70,8 @@
                     <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                       <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_without_discount.toFixed(2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_with_discount.toFixed(2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_without_discount.toFixed(2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_with_discount.toFixed(2) }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -116,7 +116,7 @@
                       </div>
                       <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Price</p>
-                        <p class="font-medium text-gray-800 dark:text-gray-200">${{ record.price }}</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">DH {{ record.price }}</p>
                       </div>
                       <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Badge Count</p>
@@ -174,7 +174,7 @@
                               {{ user.badge_id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                              {{ user.category_discount }}%
+                              {{ user.category_discount }} DH
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.user_category_name }}
