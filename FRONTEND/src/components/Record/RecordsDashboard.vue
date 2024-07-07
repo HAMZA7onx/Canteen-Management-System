@@ -85,9 +85,9 @@
 
     <!-- Day Records Modal -->
     <Transition name="modal">
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" id="my-modal">
-        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl">
-          <div class="p-6">
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-start justify-center p-4 z-50" id="my-modal">
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl mt-10 mb-10">
+          <div class="p-6 max-h-[80vh] overflow-y-auto modal-content">
             <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">
               Records for {{ expandedYear }}-{{ monthName(expandedMonth) }}-{{ expandedDay }}
             </h3>
@@ -192,9 +192,9 @@
             </div>
           </div>
           
-          <div class="bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
+          <div class="w-full flex justify-center bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg sticky bottom-0">
             <button @click="closeModal" 
-                    class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
+                    class=" px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
               Close
             </button>
           </div>
@@ -203,6 +203,7 @@
     </Transition>
   </div>
 </template>
+
 
 <script>
 import { ref, computed } from 'vue';
@@ -331,6 +332,10 @@ export default {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+.modal-content {
+  scroll-behavior: smooth;
 }
 
 .records-dashboard {
