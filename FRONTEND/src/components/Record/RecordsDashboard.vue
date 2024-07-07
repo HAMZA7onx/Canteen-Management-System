@@ -70,8 +70,8 @@
                     <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                       <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_without_discount.toFixed(2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_with_discount.toFixed(2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_without_discount.toFixed(2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_with_discount.toFixed(2) }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -85,9 +85,9 @@
 
     <!-- Day Records Modal -->
     <Transition name="modal">
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4 z-50" id="my-modal">
-        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl">
-          <div class="p-6">
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-start justify-center p-4 z-50" id="my-modal">
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl mt-10 mb-10">
+          <div class="p-6 max-h-[80vh] overflow-y-auto modal-content">
             <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">
               Records for {{ expandedYear }}-{{ monthName(expandedMonth) }}-{{ expandedDay }}
             </h3>
@@ -116,7 +116,7 @@
                       </div>
                       <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Price</p>
-                        <p class="font-medium text-gray-800 dark:text-gray-200">${{ record.price }}</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-200">DH {{ record.price }}</p>
                       </div>
                       <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Badge Count</p>
@@ -174,7 +174,7 @@
                               {{ user.badge_id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                              {{ user.category_discount }}%
+                              {{ user.category_discount }} DH
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.user_category_name }}
@@ -192,9 +192,9 @@
             </div>
           </div>
           
-          <div class="bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
+          <div class="w-full flex justify-center bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg sticky bottom-0">
             <button @click="closeModal" 
-                    class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
+                    class=" px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
               Close
             </button>
           </div>
@@ -203,6 +203,7 @@
     </Transition>
   </div>
 </template>
+
 
 <script>
 import { ref, computed } from 'vue';
@@ -331,6 +332,10 @@ export default {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+.modal-content {
+  scroll-behavior: smooth;
 }
 
 .records-dashboard {
