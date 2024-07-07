@@ -105,7 +105,7 @@ const mutations = {
   SET_RECORDS_AND_TOTALS(state, { records, monthlyTotals }) {
     state.records = records;
     state.monthlyTotals = monthlyTotals;
-  },
+  },  
 };
 
 export default {
