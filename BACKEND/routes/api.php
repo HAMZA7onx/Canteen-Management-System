@@ -153,7 +153,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('records')->group(function () {
         Route::get('/years', [RecordsDashboardController::class, 'getYears']);
         Route::get('/{year}/months', [RecordsDashboardController::class, 'getMonths']);
+        Route::get('/{year}/{month}/monthly-totals', [RecordsDashboardController::class, 'getMonthlyTotals']);
         Route::get('/{year}/{month}/days', [RecordsDashboardController::class, 'getDays']);
         Route::get('/{year}/{month}/{day}', [RecordsDashboardController::class, 'getDayRecords']);
     });
+
 });

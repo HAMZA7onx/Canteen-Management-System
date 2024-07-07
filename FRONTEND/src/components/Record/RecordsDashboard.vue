@@ -55,34 +55,33 @@
                 </div>
               </div>
 
-                  <!-- Monthly Totals Section -->
-    <div v-if="monthlyTotals.length" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Totals</h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Without Discount</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total With Discount</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                  <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_without_discount.toFixed(2) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_with_discount.toFixed(2) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+              <!-- Monthly Totals Section -->
+              <div v-if="expandedMonth && monthlyTotals.length" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Totals</h3>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Without Discount</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total With Discount</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                      <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_without_discount.toFixed(2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{ total.total_with_discount.toFixed(2) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
 
     <!-- Day Records Modal -->
     <Transition name="modal">
@@ -132,10 +131,10 @@
                     </div>
                     <button @click="toggleUserList(index)" 
                             class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
-                      {{ record.showUsers ? 'Hide Users' : 'Show Users' }}
+                      {{ showUsersMap[index] ? 'Hide Users' : 'Show Users' }}
                     </button>
                   </div>
-                  <div v-if="record.showUsers" class="px-6 py-4 bg-gray-100 dark:bg-gray-600">
+                  <div v-if="showUsersMap[index]" class="px-6 py-4 bg-gray-100 dark:bg-gray-600">
                     <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-300">Users:</h3>
                     
                     <!-- Search bar -->
@@ -206,7 +205,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
@@ -220,21 +219,27 @@ export default {
     const showModal = ref(false);
     const loading = ref(false);
     const searchQuery = ref('');
+    const showUsersMap = ref({});
 
     const monthName = (month) => {
       return new Date(2000, month - 1, 1).toLocaleString('default', { month: 'long' });
     };
 
-    const years = computed(() => store.state.record.years);
-    const months = computed(() => store.state.record.months);
-    const days = computed(() => store.state.record.days);
-    const records = ref([]);
+    const years = computed(() => store.getters['record/years']);
+    const months = computed(() => store.getters['record/months']);
+    const days = computed(() => store.getters['record/days']);
+    const monthlyTotals = computed(() => store.getters['record/monthlyTotals']);
 
-    const monthlyTotals = computed(() => store.state.record.monthlyTotals);
+    const records = computed(() => 
+      store.getters['record/records'].map(record => ({
+        ...record,
+        users: JSON.parse(record.users)
+      }))
+    );
 
     const filteredUsers = computed(() => {
       if (!records.value.length) return [];
-      const activeRecord = records.value.find(r => r.showUsers);
+      const activeRecord = records.value.find((_, index) => showUsersMap.value[index]);
       if (!activeRecord) return [];
       
       return activeRecord.users.filter(user => 
@@ -249,7 +254,7 @@ export default {
         expandedDay.value = null;
       } else {
         expandedYear.value = year;
-        store.dispatch('record/setSelectedYear', year);
+        await store.dispatch('record/setSelectedYear', year);
         await store.dispatch('record/fetchMonths');
       }
     };
@@ -260,35 +265,32 @@ export default {
         expandedDay.value = null;
       } else {
         expandedMonth.value = month;
-        store.dispatch('record/setSelectedMonth', month);
-        await store.dispatch('record/fetchDays');
-        
-        // Fetch monthly totals when expanding a month
-        await store.dispatch('record/fetchDayRecords', { day: 1 });
+        await store.dispatch('record/setSelectedMonth', month);
+        await Promise.all([
+          store.dispatch('record/fetchDays'),
+          store.dispatch('record/fetchMonthlyTotals')
+        ]);
       }
     };
 
     const showDayRecords = async (day) => {
       expandedDay.value = day;
-      store.dispatch('record/setSelectedDay', day);
+      await store.dispatch('record/setSelectedDay', day);
       showModal.value = true;
       loading.value = true;
       try {
         await store.dispatch('record/fetchDayRecords');
-        records.value = store.state.record.records.map(record => ({
-          ...record,
-          showUsers: false,
-          users: JSON.parse(record.users) // Parse the JSON string to an array of objects
-        }));
+        showUsersMap.value = {}; // Reset showUsers map
       } finally {
         loading.value = false;
       }
     };
 
     const toggleUserList = (index) => {
-      records.value.forEach((record, i) => {
-        record.showUsers = i === index ? !record.showUsers : false;
-      });
+      showUsersMap.value = {
+        ...showUsersMap.value,
+        [index]: !showUsersMap.value[index]
+      };
       searchQuery.value = ''; // Reset search query when toggling
     };
 
@@ -315,6 +317,7 @@ export default {
       toggleUserList,
       closeModal,
       monthlyTotals,
+      showUsersMap,
     };
   },
   mounted() {
