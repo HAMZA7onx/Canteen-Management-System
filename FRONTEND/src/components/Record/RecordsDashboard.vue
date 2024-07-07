@@ -262,6 +262,9 @@ export default {
         expandedMonth.value = month;
         store.dispatch('record/setSelectedMonth', month);
         await store.dispatch('record/fetchDays');
+        
+        // Fetch monthly totals when expanding a month
+        await store.dispatch('record/fetchDayRecords', { day: 1 });
       }
     };
 
