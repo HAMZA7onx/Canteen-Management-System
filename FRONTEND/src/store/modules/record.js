@@ -8,7 +8,7 @@ const state = {
   selectedYear: null,
   selectedMonth: null,
   selectedDay: null,
-   monthlyTotals: [],
+  monthlyTotals: [],
 };
 
 const getters = {
@@ -78,6 +78,18 @@ const actions = {
   setSelectedDay({ commit }, day) {
     commit('SET_SELECTED_DAY', day);
   },
+
+  async fetchMonthlyTotals({ commit, state }) {
+    if (!state.selectedYear || !state.selectedMonth) return;
+    try {
+      const response = await RecordService.getMonthlyTotals(state.selectedYear, state.selectedMonth);
+      commit('SET_MONTHLY_TOTALS', response.data.monthlyTotals);
+    } catch (error) {
+      console.error('Error fetching monthly totals:', error);
+      throw error;
+    }
+  },
+  
 };
 
 const mutations = {
@@ -105,7 +117,10 @@ const mutations = {
   SET_RECORDS_AND_TOTALS(state, { records, monthlyTotals }) {
     state.records = records;
     state.monthlyTotals = monthlyTotals;
-  },  
+  },
+  SET_MONTHLY_TOTALS(state, monthlyTotals) {
+    state.monthlyTotals = monthlyTotals;
+  },
 };
 
 export default {

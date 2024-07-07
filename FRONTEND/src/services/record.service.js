@@ -18,6 +18,11 @@ class RecordService {
   getDayRecords(year, month, day) {
     return request.get(`${API_URL}/records/${year}/${month}/${day}`);
   }
+
+  getMonthlyTotals(year, month) {
+    return request.get(`${API_URL}/records/${year}/${month}/monthly-totals`);
+  }
+  
 }
 
 export default new RecordService();
