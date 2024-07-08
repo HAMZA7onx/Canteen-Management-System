@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             Seeder4_UserCategories::class,
             Seeder5_Users::class,
-
+            Seeder6_RecordsDashboard::class,
+            Seeder7_WeekSchedule::class,
         ]);
     }
 }
