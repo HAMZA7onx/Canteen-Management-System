@@ -106,55 +106,66 @@
       </Overlay>
 
       <Overlay v-if="showImportUsersModal">
-        <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Bulk Import Users">
-          <form @submit.prevent="importUsers" class="space-y-4">
-            <div>
-              <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Category</label>
-              <select
-                id="category"
-                v-model="importCategoryId"
-                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="">Select Category</option>
-                <option v-for="category in userCategories" :key="category.id" :value="category.id">
-                  {{ category.name }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose Excel File</label>
-              <input
-                type="file"
-                id="file"
-                ref="fileInput"
-                @change="handleFileChange"
-                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                accept=".xlsx,.xls"
-              >
-            </div>
-            <div>
-              <button
-                type="submit"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
-              >
-                Import Users
-              </button>
-            </div>
-            <div v-if="importResult" class="mt-4">
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
-              <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
-                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Skipped rows:</p>
-                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-                  <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
-                    {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </form>
-        </Modal>
-      </Overlay>
+    <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Bulk Import Users">
+      <form @submit.prevent="importUsers" class="space-y-4">
+        <!-- New section for downloading template -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Download Template</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Download the Excel template, fill it with user data, then import.</p>
+          <button
+            @click.prevent="downloadTemplate"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Download Excel Template
+          </button>
+        </div>
 
+        <div>
+          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Category</label>
+          <select
+            id="category"
+            v-model="importCategoryId"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option value="">Select Category</option>
+            <option v-for="category in userCategories" :key="category.id" :value="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose Excel File</label>
+          <input
+            type="file"
+            id="file"
+            ref="fileInput"
+            @change="handleFileChange"
+            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            accept=".xlsx,.xls"
+          >
+        </div>
+        <div>
+          <button
+            type="submit"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
+          >
+            Import Users
+          </button>
+        </div>
+        <div v-if="importResult" class="mt-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
+          <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Skipped rows:</p>
+            <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
+              <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
+                {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </form>
+    </Modal>
+  </Overlay>
       <!-- Delete Confirmation Modal -->
       <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -291,6 +302,8 @@ import UserForm from '@/components/User/UserForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 
 export default {
   name: 'UserList',
@@ -446,6 +459,15 @@ export default {
     },
     isUpdatedAtSameAsCreatedAt(user) {
       return new Date(user.created_at).getTime() === new Date(user.updated_at).getTime();
+    },
+    downloadTemplate() {
+      const headers = ['name', 'email', 'phone_number', 'age', 'gender'];
+      const ws = XLSX.utils.aoa_to_sheet([headers]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Users');
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+      FileSaver.saveAs(data, 'user_import_template.xlsx');
     },
   },
 };
