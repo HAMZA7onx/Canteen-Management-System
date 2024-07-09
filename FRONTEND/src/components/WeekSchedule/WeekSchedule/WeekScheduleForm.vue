@@ -29,14 +29,14 @@
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }}
-                  <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }}$)</span>
+                  <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }} DH)</span>
                 </p>
                 <div v-if="dailyMealData.discounts">
                   {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData.discounts) }}
                   <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
                   <ul class="list-disc list-inside">
                     <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
-                      {{ getCategoryName(categoryId) }}: {{ discount.discount }}%
+                      {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
                     </li>
                   </ul>
                 </div>
@@ -114,7 +114,7 @@
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Discounts</h3>
         <div v-for="category in userCategories" :key="category.id" class="mb-2">
           <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ category.name }} Discount (%)
+            {{ category.name }} Discount (DH)
           </label>
           <input
             :id="`discount-${category.id}`"

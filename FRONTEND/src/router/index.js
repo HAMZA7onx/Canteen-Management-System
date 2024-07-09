@@ -13,6 +13,7 @@ import MenuList from '@/components/WeekSchedule/Menu/MenuList.vue'
 import DailyMealList from '@/components/WeekSchedule/DailyMeal/DailyMealList.vue'
 import WeekScheduleList from '@/components/WeekSchedule/WeekSchedule/WeekScheduleTable.vue'
 import RecordsDashboard from '@/components/Record/RecordsDashboard.vue'
+import BadgingInterface from '@/components/Badging/BadgingInterface.vue'
  
 const routes = [
   { path: '/', component: AdminListView },
@@ -27,6 +28,7 @@ const routes = [
   { path: '/daily', component: DailyMealList },
   { path: '/week-schedules', component: WeekScheduleList },
   { path: '/records', component: RecordsDashboard },
+  { path: '/badging', component: BadgingInterface },
 ];
 
 

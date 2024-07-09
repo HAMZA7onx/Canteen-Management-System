@@ -126,6 +126,4 @@ class DailyRecordController extends Controller
             return response()->json(['error' => 'Failed to create record', 'message' => $e->getMessage()], 500);
         }
     }
-
-
 }
