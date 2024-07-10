@@ -11,8 +11,10 @@ class UserCategory extends Model
         'editors' => 'json',
     ];
     protected $fillable = ['name', 'description', 'creator', 'editors'];
+
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'category_id');
     }
+
 }

@@ -58,11 +58,16 @@
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
-                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
-                    @click="deleteCategory(category)"
-                  >
-                    <font-awesome-icon icon="trash" />
-                  </button>
+  :class="[
+    'transition-colors duration-300',
+    category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
+  ]"
+  @click="deleteCategory(category)"
+  :disabled="category.is_assigned"
+>
+  <font-awesome-icon icon="trash" />
+</button>
+
                 </td>
               </tr>
             </tbody>
@@ -267,8 +272,10 @@ export default {
         });
     },
     deleteCategory(category) {
-      this.categoryToDelete = category;
-      this.showDeleteConfirmation = true;
+      if (!category.is_assigned) {
+        this.categoryToDelete = category;
+        this.showDeleteConfirmation = true;
+      }
     },
     closeDeleteConfirmation() {
       this.showDeleteConfirmation = false;

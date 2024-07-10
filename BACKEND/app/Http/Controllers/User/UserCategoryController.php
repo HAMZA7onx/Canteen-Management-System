@@ -12,6 +12,15 @@ class UserCategoryController extends Controller
     public function index()
     {
         $userCategories = UserCategory::all();
+
+        $userCategories = $userCategories->map(function ($category) {
+            // Check if this category is associated with any users
+            $isAssigned = $category->users()->exists();
+
+            $category->is_assigned = $isAssigned;
+            return $category;
+        });
+
         return response()->json($userCategories);
     }
 
