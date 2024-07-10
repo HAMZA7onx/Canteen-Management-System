@@ -40,13 +40,39 @@ export default {
       if (badgeId) {
         try {
           const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-          await store.dispatch('badging/verifyAndScanBadge', { rfid: badgeId, day: currentDay });
-          setMessage('Badge scanned successfully', 'success');
+          const result = await store.dispatch('badging/verifyAndScanBadge', { rfid: badgeId, day: currentDay });
+          setMessage(result.message, 'success');
           lastScannedBadge.value = badgeId;
         } catch (error) {
-          setMessage(error.message || 'An error occurred while scanning the badge', 'error');
+          handleError(error);
         }
         badgeId = ''; // Clear the badgeId for the next scan
+      }
+    };
+
+    const handleError = (error) => {
+      if (error.response) {
+        const { status, data } = error.response;
+        switch (status) {
+          case 400:
+            if (data.error === 'A record for this badge and meal already exists.') {
+              setMessage('You have already badged for this meal.', 'warning');
+            } else if (data.error.includes('There is no meal available at this time')) {
+              setMessage('No meal is currently available.', 'warning');
+            } else if (data.error === 'No active week schedule found') {
+              setMessage('No active meal schedule found.', 'error');
+            } else {
+              setMessage(data.error, 'error');
+            }
+            break;
+          case 404:
+            setMessage('Badge not found in the system.', 'error');
+            break;
+          default:
+            setMessage('An error occurred while processing your badge.', 'error');
+        }
+      } else {
+        setMessage('An error occurred while processing your badge.', 'error');
       }
     };
 
@@ -66,7 +92,9 @@ export default {
 
     const setMessage = (text, type) => {
       message.value = text;
-      messageClass.value = type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      messageClass.value = type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 
+                           type === 'warning' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                           'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
     };
 
     onMounted(() => {
