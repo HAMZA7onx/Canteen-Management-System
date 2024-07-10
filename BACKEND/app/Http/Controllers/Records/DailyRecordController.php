@@ -96,7 +96,7 @@ class DailyRecordController extends Controller
 
         if (!$currentMeal) {
             \Log::info("No active meal found for day: $day, time: $currentTimeString in active schedule");
-            return response()->json(['error' => "There is no meal available at this time ($currentTimeString) for $day in the active schedule."], 400);
+            return response()->json(['error' => "There is no meal available at this time in the active schedule."], 400);
         }
 
         \Log::info("Current meal found: " . json_encode($currentMeal));
