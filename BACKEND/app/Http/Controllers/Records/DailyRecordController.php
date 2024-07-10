@@ -12,6 +12,7 @@ use App\Models\Records\FridayRecord;
 use App\Models\Records\SaturdayRecord;
 use App\Models\Records\SundayRecord;
 use App\Models\WeekSchedule;
+use App\Models\Badge;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -49,6 +50,17 @@ class DailyRecordController extends Controller
         }
         return $this->models[$day];
     }
+
+    public function verifyBadge($rfid)
+    {
+        $badge = Badge::where('rfid', $rfid)->first();
+        return response()->json([
+            'exists' => $badge !== null,
+            'message' => $badge ? 'Badge found' : 'Badge not found',
+            'badge_id' => $badge ? $badge->id : null,
+        ]);
+    }
+
 
     public function store(Request $request, $day)
     {

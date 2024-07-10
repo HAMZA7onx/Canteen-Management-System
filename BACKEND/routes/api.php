@@ -143,10 +143,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('badging')->group(function () {
+        Route::get('/verify/{rfid}', [DailyRecordController::class, 'verifyBadge']);
         Route::get('/{day}', [DailyRecordController::class, 'index']);
-        Route::post('/{day}', [DailyRecordController::class, 'store']);
         Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);
+        Route::post('/{day}', [DailyRecordController::class, 'store']);
     });
+
 
     Route::prefix('records')->group(function () {
         Route::get('/years', [RecordsDashboardController::class, 'getYears']);

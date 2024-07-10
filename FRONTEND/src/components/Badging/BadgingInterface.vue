@@ -1,29 +1,19 @@
-<!-- src/components/Badging/BadgingInterface.vue -->
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md transition-colors duration-300">
-      <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">Badge Scanner</h2>
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Badge Scanning Interface</h2>
       
       <div class="mb-6 text-center">
-        <div 
-          :class="[
-            'w-48 h-48 mx-auto rounded-full flex items-center justify-center text-4xl',
-            isScanning ? 'bg-green-500 animate-pulse' : 'bg-gray-300 dark:bg-gray-600'
-          ]"
-        >
-          <i class="fas fa-wifi" :class="{ 'text-white': isScanning, 'text-gray-500 dark:text-gray-400': !isScanning }"></i>
-        </div>
-        <p class="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">
-          {{ isScanning ? 'Scanning...' : 'Ready to Scan' }}
+        <p class="text-lg text-gray-700 dark:text-gray-300">
+          Scan your badge to begin
         </p>
       </div>
       
-      <button
-        @click="toggleScanner"
-        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-300"
-      >
-        {{ isScanning ? 'Stop Scanning' : 'Start Scanning' }}
-      </button>
+      <div v-if="lastScannedBadge" class="mb-6 text-center">
+        <p class="text-md text-gray-600 dark:text-gray-400">
+          Last scanned badge: {{ lastScannedBadge }}
+        </p>
+      </div>
       
       <div v-if="message" :class="['mt-4 p-3 rounded', messageClass]">
         {{ message }}
@@ -33,69 +23,65 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'BadgingInterface',
   setup() {
-    const store = useStore()
-    const isScanning = ref(false)
-    const message = ref('')
-    const messageType = ref('')
+    const store = useStore();
+    const message = ref('');
+    const messageClass = ref('');
+    const lastScannedBadge = ref('');
+    let badgeId = '';
+    let lastKeyTime = Date.now();
 
-    const messageClass = computed(() => {
-      return {
-        'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100': messageType.value === 'success',
-        'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100': messageType.value === 'error'
+    const processBadge = async () => {
+      if (badgeId) {
+        try {
+          const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+          await store.dispatch('badging/verifyAndScanBadge', { rfid: badgeId, day: currentDay });
+          setMessage('Badge scanned successfully', 'success');
+          lastScannedBadge.value = badgeId;
+        } catch (error) {
+          setMessage(error.message || 'An error occurred while scanning the badge', 'error');
+        }
+        badgeId = ''; // Clear the badgeId for the next scan
       }
-    })
+    };
 
-    let scannerInterval
+    const handleKeyPress = (event) => {
+      const currentTime = Date.now();
+      if (currentTime - lastKeyTime > 100) { // Reset if there's a pause longer than 100ms
+        badgeId = '';
+      }
+      lastKeyTime = currentTime;
 
-    const toggleScanner = () => {
-      isScanning.value = !isScanning.value
-      if (isScanning.value) {
-        startScanning()
+      if (event.key !== 'Enter') {
+        badgeId += event.key;
       } else {
-        stopScanning()
+        processBadge();
       }
-    }
+    };
 
-    const startScanning = () => {
-      scannerInterval = setInterval(simulateScan, 5000) // Simulate a scan every 5 seconds
-    }
+    const setMessage = (text, type) => {
+      message.value = text;
+      messageClass.value = type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    };
 
-    const stopScanning = () => {
-      clearInterval(scannerInterval)
-    }
+    onMounted(() => {
+      document.addEventListener('keypress', handleKeyPress);
+    });
 
-    const simulateScan = async () => {
-      const simulatedRFID = Math.random().toString(36).substr(2, 10) // Generate a random RFID
-      try {
-        const currentDay = new Date().toLocaleLowerCase().split(',')[0] // Get current day of the week
-        const response = await store.dispatch('badging/scanBadge', { rfid: simulatedRFID, day: currentDay })
-        setMessage(`Badge scanned: ${simulatedRFID}. ${response.message}`, 'success')
-      } catch (error) {
-        setMessage(error.response?.data?.error || 'An error occurred', 'error')
-      }
-    }
-
-    const setMessage = (msg, type) => {
-      message.value = msg
-      messageType.value = type
-      setTimeout(() => {
-        message.value = ''
-        messageType.value = ''
-      }, 5000)
-    }
+    onUnmounted(() => {
+      document.removeEventListener('keypress', handleKeyPress);
+    });
 
     return {
-      isScanning,
       message,
       messageClass,
-      toggleScanner
-    }
+      lastScannedBadge
+    };
   }
-}
+};
 </script>

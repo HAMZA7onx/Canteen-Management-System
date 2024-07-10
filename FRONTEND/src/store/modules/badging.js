@@ -1,30 +1,51 @@
-// src/store/modules/badging.js
-import BadgingService from '@/services/badging.service'
+import BadgingService from '@/services/badging.service';
 
-const state = {}
+const state = {
+  lastScannedBadge: null,
+  error: null,
+};
 
-const getters = {}
+const getters = {
+  getLastScannedBadge: (state) => state.lastScannedBadge,
+  getError: (state) => state.error,
+};
 
 const actions = {
-  scanBadge({ commit }, { rfid, day }) {
-    return BadgingService.scanBadge(rfid, day)
-      .then((response) => {
-        // You can add any additional logic here if needed
-        return response.data
-      })
-      .catch((error) => {
-        console.error('Error scanning badge:', error)
-        throw error
-      })
-  }
-}
+  async verifyAndScanBadge({ commit }, { rfid, day }) {
+    try {
+      // First, verify if the badge exists
+      const verificationResult = await BadgingService.verifyBadge(rfid);
+      if (!verificationResult.exists) {
+        throw new Error('Badge not found in the system');
+      }
+  
+      // If badge exists, proceed with scanning
+      const result = await BadgingService.scanBadge(verificationResult.badge_id, day);
+      console.log('verificationResult.badge_id: ',verificationResult.badge_id,' day: ', day);
+      commit('SET_LAST_SCANNED_BADGE', result);
+      commit('SET_ERROR', null);
+      return result;
+    } catch (error) {
+      commit('SET_ERROR', error.message);
+      throw error;
+    }
+  },
+};
 
-const mutations = {}
+
+const mutations = {
+  SET_LAST_SCANNED_BADGE(state, badge) {
+    state.lastScannedBadge = badge;
+  },
+  SET_ERROR(state, error) {
+    state.error = error;
+  },
+};
 
 export default {
   namespaced: true,
   state,
   getters,
   actions,
-  mutations
-}
+  mutations,
+};
