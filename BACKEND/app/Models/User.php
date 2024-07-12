@@ -18,7 +18,6 @@ class User extends Model
         'affected_categories' => 'json',
         'editors' => 'json',
         'email_verified_at' => 'datetime',
-
     ];
 
     protected $fillable = ['category_id' ,'affected_categories', 'creator', 'editors', 'name', 'email', 'phone_number', 'gender'];
