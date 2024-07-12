@@ -14,6 +14,7 @@ import weekSchedule from './modules/weekSchedule';
 import record from './modules/record';
 import badging from './modules/badging';
 import adminBadge from './modules/adminBadge';
+import posDevice from './modules/posDevice';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -35,6 +36,7 @@ const store = createStore({
     record,
     badging,
     adminBadge,
+    posDevice
   },
   plugins: [vuexLocal.plugin]
 });

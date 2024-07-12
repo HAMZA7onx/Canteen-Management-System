@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto">
       <!-- Header Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 mb-4">Badge Management</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 mb-4">Admins Badges Management</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
           Admins RFID badges management section. Import, assign, and track badges for your admins.
         </p>

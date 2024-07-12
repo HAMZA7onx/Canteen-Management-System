@@ -16,6 +16,7 @@ use App\Http\Controllers\WeekSchedule\FoodComposantsController;
 use App\Http\Controllers\Records\DailyRecordController;
 use App\Http\Controllers\RecordsDashboardController;
 use App\Http\Controllers\Badge\AdminBadgeController;
+use App\Http\Controllers\PosDeviceController;
 
 
 
@@ -176,4 +177,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser']);
     });
 
+    Route::prefix('pos-devices')->middleware('auth:sanctum')->group(function () {
+        Route::get('/', [PosDeviceController::class, 'index']);
+        Route::post('/', [PosDeviceController::class, 'store']);
+        Route::get('/{id}', [PosDeviceController::class, 'show']);
+        Route::put('/{id}', [PosDeviceController::class, 'update']);
+        Route::delete('/{id}', [PosDeviceController::class, 'destroy']);
+    });
 });
