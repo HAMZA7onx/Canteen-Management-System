@@ -79,5 +79,8 @@ class Seeder3_Permissions extends Seeder
         Permission::create(['name' => 'create_meal_record', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'update_meal_record', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'delete_meal_record', 'guard_name' => 'sanctum']);
+
+
+        Permission::create(['name' => 'open_pos_device', 'guard_name' => 'sanctum']);
     }
 }
