@@ -220,7 +220,7 @@
       <!-- User Details Popup -->
       <div v-if="showDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center">
         <Overlay @click="closeDetailsPopup" />
-        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full z-50">
           <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
