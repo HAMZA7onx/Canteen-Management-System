@@ -15,6 +15,8 @@ use App\Http\Controllers\WeekSchedule\MenuController;
 use App\Http\Controllers\WeekSchedule\FoodComposantsController;
 use App\Http\Controllers\Records\DailyRecordController;
 use App\Http\Controllers\RecordsDashboardController;
+use App\Http\Controllers\Badge\AdminBadgeController;
+
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -156,6 +158,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{year}/{month}/monthly-totals', [RecordsDashboardController::class, 'getMonthlyTotals']);
         Route::get('/{year}/{month}/days', [RecordsDashboardController::class, 'getDays']);
         Route::get('/{year}/{month}/{day}', [RecordsDashboardController::class, 'getDayRecords']);
+    });
+
+    Route::prefix('admins-badges')->group(function () {
+        Route::get('/', [AdminBadgeController::class, 'index']);
+        Route::post('/', [AdminBadgeController::class, 'store']);
+        Route::get('/{id}', [AdminBadgeController::class, 'show']);
+        Route::put('/{id}', [AdminBadgeController::class, 'update']);
+        Route::delete('/{id}', [AdminBadgeController::class, 'destroy']);
+
+        Route::post('/import', [AdminBadgeController::class, 'importRfids']);
+
+        Route::get('/admins/all-rfids-lost', [AdminBadgeController::class, 'getUsersWithAllRfidsLost']);
+        Route::get('/admins/without-rfids', [AdminBadgeController::class, 'getUsersWithoutRfids']);
+
+        Route::put('/{badgeId}/status', [AdminBadgeController::class, 'updateBadgeStatus']);
+        Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser']);
     });
 
 });

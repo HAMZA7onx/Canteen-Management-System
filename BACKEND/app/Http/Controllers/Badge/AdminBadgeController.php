@@ -1,37 +1,35 @@
 <?php
 
 namespace App\Http\Controllers\Badge;
-
 use App\Http\Controllers\Controller;
-use App\Models\Badge;
-use App\Models\User;
+use App\Models\AdminBadge;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\RfidImport;
+use App\Imports\adminRfidImport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-
-class BadgeController extends Controller
+class AdminBadgeController extends Controller
 {
     public function index()
     {
-        $badges = Badge::with('user')->get();
+        $badges = AdminBadge::with('admin')->get();
         return response()->json($badges);
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'rfid' => 'required|string|max:255|unique:badges',
+            'admin_id' => 'required|exists:admins,id',
+            'rfid' => 'required|string|max:255|unique:admins_badges',
             'status' => 'required|string|in:available,lost,assigned',
         ]);
 
         $currentUser = Auth::user();
 
-        $badge = Badge::create([
-            'user_id' => $validatedData['user_id'],
+        $badge = AdminBadge::create([
+            'admin_id' => $validatedData['admin_id'],
             'rfid' => $validatedData['rfid'],
             'status' => $validatedData['status'],
             'creator' => $currentUser->email,
@@ -39,29 +37,29 @@ class BadgeController extends Controller
         ]);
 
         $badge->setActiveRfid();
-        $badge->load('user');
+        $badge->load('admin');
 
         return response()->json($badge, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $badge = Badge::findOrFail($id);
+        $badge = AdminBadge::findOrFail($id);
 
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'admin_id' => 'required|exists:admins,id',
             'rfid' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('badges')->ignore($badge->id),
+                Rule::unique('admins_badges')->ignore($badge->id),
             ],
             'status' => 'required|string|in:available,lost,assigned',
         ]);
 
         $currentUser = Auth::user();
 
-        $badge->user_id = $validatedData['user_id'];
+        $badge->user_id = $validatedData['admin_id'];
         $badge->rfid = $validatedData['rfid'];
         $badge->status = $validatedData['status'];
 
@@ -78,19 +76,19 @@ class BadgeController extends Controller
             $badge->setActiveRfid();
         }
 
-        $badge->load('user');
+        $badge->load('admin');
 
         return response()->json($badge);
     }
     public function show($id)
     {
-        $badge = Badge::with('user')->findOrFail($id);
+        $badge = AdminBadge::with('admin')->findOrFail($id);
         return response()->json($badge);
     }
 
     public function destroy($id)
     {
-        $badge = Badge::findOrFail($id);
+        $badge = AdminBadge::findOrFail($id);
         $badge->delete();
         return response()->json(null, 204);
     }
@@ -102,15 +100,15 @@ class BadgeController extends Controller
         ]);
         $file = $request->file('file');
         try {
-            $rfids = Excel::toArray(new RfidImport, $file)[0];
+            $rfids = Excel::toArray(new adminRfidImport, $file)[0];
             \Log::info('Imported RFIDs:', $rfids);
         } catch (\Exception $e) {
             \Log::error('Error reading RFIDs from file: ' . $e->getMessage());
             return response()->json(['error' => 'Error reading RFIDs from file'], 500);
         }
 
-        $usersWithoutBadge = User::whereDoesntHave('badge')->get()->pluck('id');
-        $existingRfids = Badge::pluck('rfid')->toArray();
+        $usersWithoutBadge = Admin::whereDoesntHave('badge')->get()->pluck('id');
+        $existingRfids = AdminBadge::pluck('rfid')->toArray();
         foreach ($rfids as $rfidData) {
             try {
                 $rfid = $rfidData['rfid'];
@@ -127,8 +125,8 @@ class BadgeController extends Controller
                         'rfid' => $rfid,
                     ];
                     \Log::info('Creating badge with user ID and RFID', $context);
-                    $badge = Badge::create([
-                        'user_id' => $userId,
+                    $badge = AdminBadge::create([
+                        'admin_id' => $userId,
                         'rfid' => $rfid,
                         'status' => 'assigned',
                         'creator' => auth()->user()->email, // Assuming you want to set the creator to the currently authenticated user's email
@@ -140,7 +138,7 @@ class BadgeController extends Controller
                         'rfid' => $rfid,
                     ];
                     \Log::info('Creating badge with RFID', $context);
-                    $badge = Badge::create([
+                    $badge = AdminBadge::create([
                         'rfid' => $rfid,
                         'status' => 'available',
                         'creator' => auth()->user()->email, // Assuming you want to set the creator to the currently authenticated user's email
@@ -159,11 +157,11 @@ class BadgeController extends Controller
 
     public function getUsersWithAllRfidsLost()
     {
-        $usersWithAllLostRfids = User::select('users.*')
-            ->join('badges', 'users.id', '=', 'badges.user_id')
-            ->groupBy('users.id')
-            ->havingRaw('COUNT(CASE WHEN badges.status != ? THEN 1 END) = 0', ['lost'])
-            ->havingRaw('COUNT(badges.id) > 0')
+        $usersWithAllLostRfids = Admin::select('admins.*')
+            ->join('admins_badges', 'admins.id', '=', 'admins_badges.admin_id')
+            ->groupBy('admins.id')
+            ->havingRaw('COUNT(CASE WHEN admins_badges.status != ? THEN 1 END) = 0', ['lost'])
+            ->havingRaw('COUNT(admins_badges.id) > 0')
             ->get();
 
         return response()->json($usersWithAllLostRfids);
@@ -171,14 +169,14 @@ class BadgeController extends Controller
 
     public function getUsersWithoutRfids()
     {
-        $users =  User::whereDoesntHave('badge')->get();
+        $users =  Admin::whereDoesntHave('badge')->get();
         return response()->json($users);
     }
 
     public function updateBadgeStatus(Request $request, $badgeId)
     {
         try {
-            $badge = Badge::with('user')->findOrFail($badgeId);
+            $badge = AdminBadge::with('admin')->findOrFail($badgeId);
             $validatedData = $request->validate([
                 'status' => 'required|in:available,assigned,lost',
             ]);
@@ -200,19 +198,18 @@ class BadgeController extends Controller
             Log::info('Updated badge data:', $badge->toArray());
 
             // Load the user relationship and return the updated badge data
-            return response()->json($badge->load('user'));
+            return response()->json($badge->load('admin'));
         } catch (\Exception $e) {
             \Log::error('Error updating badge status: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while updating the badge status.'], 500);
         }
     }
 
-
     public function assignRfidToUser(Request $request, $badgeId)
     {
-        $badge = Badge::findOrFail($badgeId);
+        $badge = AdminBadge::findOrFail($badgeId);
         $validatedData = $request->validate([
-            'userId' => 'required|exists:users,id',
+            'userId' => 'required|exists:admins,id',
         ]);
         $userId = $validatedData['userId'];
 
@@ -220,7 +217,7 @@ class BadgeController extends Controller
         $currentUserEmail = auth()->user()->email;
 
         // Update the user_id and status
-        $badge->user_id = $userId;
+        $badge->admin_id = $userId;
         $badge->status = 'assigned';
 
         // Update the editors array

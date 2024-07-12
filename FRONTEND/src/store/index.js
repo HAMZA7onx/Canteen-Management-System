@@ -13,6 +13,7 @@ import dailyMeal from './modules/dailyMeal';
 import weekSchedule from './modules/weekSchedule';
 import record from './modules/record';
 import badging from './modules/badging';
+import adminBadge from './modules/adminBadge';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -32,7 +33,8 @@ const store = createStore({
     dailyMeal, 
     weekSchedule,
     record,
-    badging
+    badging,
+    adminBadge,
   },
   plugins: [vuexLocal.plugin]
 });
