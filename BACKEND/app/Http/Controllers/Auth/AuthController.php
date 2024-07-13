@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Models\AdminBadge;
 
 class AuthController extends Controller
 {
@@ -81,6 +82,44 @@ class AuthController extends Controller
                 'message' => 'Invalid credentials'
             ], 401);
         }
+    }
+
+    public function loginWithBadge(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rfid' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $badge = AdminBadge::where('rfid', $request->rfid)
+            ->where('status', 'assigned')
+            ->first();
+
+        if (!$badge || !$badge->admin) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Invalid badge or no admin associated'
+            ], 401);
+        }
+
+        $admin = $badge->admin;
+        $token = $admin->createToken('auth_token')->plainTextToken;
+        $adminRoles = $admin->getRoleNames();
+        $adminPermissions = $admin->getAllPermissions();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Admin logged in successfully.',
+            'data' => [
+                'admin' => $admin,
+                'token' => $token,
+                'roles' => $adminRoles,
+                'permissions' => $adminPermissions,
+            ],
+        ]);
     }
 
     public function logout(Request $request)

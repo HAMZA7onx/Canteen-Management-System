@@ -9,7 +9,7 @@ const routes = [
   {path: '/login', component: Login},
   { path: '/', component: BadgingInterface },
 ];
-
+ 
 
 const router = createRouter({
   history: createWebHistory(),

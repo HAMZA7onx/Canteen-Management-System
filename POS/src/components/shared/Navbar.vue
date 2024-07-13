@@ -68,4 +68,3 @@
     animation: gradientAnimation 15s ease infinite;
   }
   </style>
-  
