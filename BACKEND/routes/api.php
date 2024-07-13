@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminRolePermissionController;
@@ -19,8 +18,8 @@ use App\Http\Controllers\Badge\AdminBadgeController;
 use App\Http\Controllers\PosDeviceController;
 
 
-
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge'])->name('login.badge');
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {

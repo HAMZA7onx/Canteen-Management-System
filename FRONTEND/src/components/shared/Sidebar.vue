@@ -56,7 +56,7 @@ export default {
         { label: 'Gestion des repats', icon: 'utensils', route: '/daily' },
         { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules' },
         { label: 'Records', icon: 'chart-bar', route: '/records' },
-        { label: 'Badging', icon: 'chart-bar', route: '/badging' },
+        // { label: 'Badging', icon: 'chart-bar', route: '/badging' },
         { label: 'Gestion des pOS', icon: 'chart-bar', route: '/pos-devices' },
       ],
     };

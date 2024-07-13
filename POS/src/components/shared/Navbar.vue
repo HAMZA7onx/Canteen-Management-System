@@ -3,15 +3,11 @@
       <div class="container mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
           <router-link to="/" class="text-white font-bold text-2xl tracking-wider hover:text-indigo-200 transition-colors duration-300">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">DASHBOARD</span>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">POS @IP: 127.1.1.2</span>
           </router-link>
           
           <div class="flex items-center space-x-6">
-            <router-link to="/profile" class="group relative font-semibold text-white hover:text-indigo-200 transition-colors duration-300">
-              PROFILE
-              <span class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-            </router-link>
-            
+           
             
             <button
               @click="handleLogout"
@@ -72,4 +68,3 @@
     animation: gradientAnimation 15s ease infinite;
   }
   </style>
-  
