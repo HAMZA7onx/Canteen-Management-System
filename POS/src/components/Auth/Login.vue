@@ -1,41 +1,42 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
-      <div class="bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-3xl transition-all duration-500 transform hover:scale-105 border border-purple-500 relative overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 animate-gradient"></div>
-          
-          <h2 class="text-5xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Badge Login</h2>
-          
-          <div class="mb-10 text-center relative z-10">
-              <p class="text-3xl text-gray-300 font-light">
-                  Scan your badge to login
-              </p>
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 p-4">
+      <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <h2 class="text-4xl font-bold mb-6 text-center text-gray-800">Admin Access</h2>
+        
+        <div class="mb-8 text-center">
+          <p class="text-lg text-gray-600">
+            Scan your RFID badge to login
+          </p>
+        </div>
+        
+        <div class="mb-8 p-6 bg-gray-100 rounded-lg relative">
+          <div v-if="lastScannedBadge" class="text-center">
+            <p class="text-xl font-semibold text-gray-700 mb-2">
+              Last scanned badge:
+            </p>
+            <p class="text-3xl font-bold text-blue-600">
+              {{ lastScannedBadge }}
+            </p>
           </div>
-          
-          <div class="mb-10 p-8 bg-gray-800 rounded-2xl shadow-inner relative overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-pink-600/10 animate-pulse"></div>
-              <div v-if="lastScannedBadge" class="text-center relative z-10">
-                  <p class="text-3xl font-semibold text-gray-300 mb-4">
-                      Last scanned badge:
-                  </p>
-                  <p class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 animate-glow">
-                      {{ lastScannedBadge }}
-                  </p>
-              </div>
-              <div v-else class="text-center relative z-10">
-                  <p class="text-4xl font-semibold text-gray-400 animate-pulse">
-                      Waiting for badge...
-                  </p>
-              </div>
+          <div v-else class="text-center">
+            <p class="text-2xl font-semibold text-gray-500 animate-pulse">
+              Waiting for badge...
+            </p>
           </div>
-          
-          <div v-if="message"
-               :class="['mt-6 p-4 rounded-lg text-xl font-medium text-center relative z-10', messageClass]"
-               style="transition: all 0.5s ease;">
-              {{ message }}
-          </div>
+        </div>
+        
+        <div v-if="message"
+             :class="['mt-4 p-3 rounded text-sm font-medium text-center', messageClass]">
+          {{ message }}
+        </div>
+  
+        <div class="mt-8 text-center text-sm text-gray-500">
+          <p>Only authorized administrators with RFID badges can access this interface.</p>
+          <p class="mt-2">If you're having trouble, please contact IT support.</p>
+        </div>
       </div>
-  </div>
-</template>
+    </div>
+  </template>
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -69,7 +70,9 @@ export default {
       };
 
       const handleError = (error) => {
-          if (error.response) {
+        if (error.message === 'This device is not authorized to access the badging system.') {
+              setMessage(error.message, 'error');
+         } else if (error.response) {
               const { status, data } = error.response;
               switch (status) {
                   case 401:
@@ -134,26 +137,7 @@ export default {
 </script>
 
 <style scoped>
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes glow {
-  0%, 100% { text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3); }
-  50% { text-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 30px rgba(168, 85, 247, 0.5); }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 15s ease infinite;
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
-}
-
+/* Remove previous animations and keep it simple */
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

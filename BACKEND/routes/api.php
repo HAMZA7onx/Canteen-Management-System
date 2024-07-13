@@ -19,7 +19,11 @@ use App\Http\Controllers\PosDeviceController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge'])->name('login.badge');
+
+Route::middleware(['check.allowed.ip'])->group(function () {
+    Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge']);
+});
+
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
