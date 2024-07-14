@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://source.unsplash.com/1600x900/?food');">
+  <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed" :style="{ backgroundImage: `url(${foodBackground})` }">
     <div class="flex-grow flex items-center justify-center p-4 backdrop-blur-sm bg-black bg-opacity-50">
       <div class="w-full max-w-6xl flex gap-8">
         <!-- Meal Info Card -->
@@ -61,6 +61,7 @@
 <script>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useStore } from 'vuex';
+import foodBackground from '@/assets/food.jpg';
 
 export default {
   name: 'BadgingInterface',
@@ -171,7 +172,8 @@ export default {
       messageClass,
       lastScannedBadge,
       currentMeal,
-      lastScannedPerson
+      lastScannedPerson,
+      foodBackground, 
     };
   }
 };
