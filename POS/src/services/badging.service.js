@@ -24,7 +24,6 @@ class BadgingService {
     }
   }
   
-
   async getCurrentMeal() {
     try {
       const response = await request.get(`${API_URL}/badging/current-meal`);
@@ -34,6 +33,18 @@ class BadgingService {
       throw error;
     }
   }
+
+  // Add this method to the BadgingService class
+  async getDiscountsForMeal(day, mealId) {
+    try {
+      const response = await request.get(`${API_URL}/discounts/${day}/${mealId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching discounts:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default new BadgingService();

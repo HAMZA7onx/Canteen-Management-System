@@ -5,6 +5,7 @@ const state = {
   error: null,
   currentMeal: null,
   lastScannedPerson: null,
+  discounts: [],
 };
 
 const getters = {
@@ -12,6 +13,7 @@ const getters = {
   getError: (state) => state.error,
   getCurrentMeal: (state) => state.currentMeal,
   getLastScannedPerson: (state) => state.lastScannedPerson,
+  getDiscounts: (state) => state.discounts,
 };
 
 const actions = {
@@ -40,6 +42,19 @@ const actions = {
       console.error('Error fetching current meal:', error);
     }
   },
+
+  async fetchDiscounts({ commit }, { day, mealId }) {
+    console.log('mealId: ', mealId);
+    try {
+      const discounts = await BadgingService.getDiscountsForMeal(day, mealId);
+      commit('SET_DISCOUNTS', discounts);
+      return discounts;
+    } catch (error) {
+      console.error('Error fetching discounts:', error);
+      commit('SET_DISCOUNTS', []);
+      throw error;
+    }
+  },
 };
 
 const mutations = {
@@ -54,6 +69,9 @@ const mutations = {
   },
   SET_LAST_SCANNED_PERSON(state, person) {
     state.lastScannedPerson = person;
+  },
+  SET_DISCOUNTS(state, discounts) {
+    state.discounts = discounts;
   },
 };
 

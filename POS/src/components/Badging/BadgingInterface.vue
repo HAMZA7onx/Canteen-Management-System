@@ -8,6 +8,9 @@
           <p class="text-2xl font-semibold text-indigo-600">{{ currentMeal.name }}</p>
           <p class="text-xl text-gray-600">{{ currentMeal.start_time }} - {{ currentMeal.end_time }}</p>
           <p class="text-xl font-bold text-green-600 mt-2">${{ currentMeal.price }}</p>
+          <button @click="showDiscounts" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Show Discounts
+          </button>
         </div>
         <div v-else class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
           <p class="text-2xl font-semibold text-gray-600">No meal assigned at the current time</p>
@@ -55,6 +58,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Discount Modal -->
+    <div v-if="isDiscountModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-4">Discounts for {{ currentMeal.name }}</h2>
+        <ul v-if="discounts.length">
+          <li v-for="discount in discounts" :key="discount" class="mb-2">
+            {{ discount }}
+          </li>
+        </ul>
+        <p v-else>No discounts available for this meal.</p>
+        <button @click="closeDiscountModal" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+          Close
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -73,6 +92,8 @@ export default {
     const currentMeal = computed(() => store.getters['badging/getCurrentMeal']);
     const lastScannedPerson = computed(() => store.getters['badging/getLastScannedPerson']);
     const showWelcomeMessage = ref(false);
+    const isDiscountModalOpen = ref(false);
+    const discounts = ref([]);
     let badgeId = '';
     let lastKeyTime = Date.now();
     let messageTimer = null;
@@ -135,6 +156,23 @@ export default {
       store.dispatch('badging/fetchCurrentMeal');
     };
 
+    const showDiscounts = async () => {
+      if (currentMeal.value) {
+        const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        try {
+          const result = await store.dispatch('badging/fetchDiscounts', { day: currentDay, mealId: currentMeal.value.id });
+          discounts.value = result;
+          isDiscountModalOpen.value = true;
+        } catch (error) {
+          console.error('Error fetching discounts:', error);
+        }
+      }
+    };
+
+    const closeDiscountModal = () => {
+      isDiscountModalOpen.value = false;
+    };
+
     onMounted(() => {
       document.addEventListener('keypress', handleKeyPress);
       fetchCurrentMeal();
@@ -157,6 +195,10 @@ export default {
       lastScannedPerson,
       foodBackground,
       showWelcomeMessage,
+      isDiscountModalOpen,
+      discounts,
+      showDiscounts,
+      closeDiscountModal,
     };
   }
 };
