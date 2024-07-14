@@ -144,7 +144,7 @@ class DailyRecordController extends Controller
             ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
             ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
-            ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price')
+            ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
             ->first();
 
         if ($currentMeal) {

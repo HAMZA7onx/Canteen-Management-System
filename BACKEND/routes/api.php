@@ -16,6 +16,7 @@ use App\Http\Controllers\Records\DailyRecordController;
 use App\Http\Controllers\RecordsDashboardController;
 use App\Http\Controllers\Badge\AdminBadgeController;
 use App\Http\Controllers\PosDeviceController;
+use App\Http\Controllers\User\CategoryDiscountController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -188,4 +189,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [PosDeviceController::class, 'update']);
         Route::delete('/{id}', [PosDeviceController::class, 'destroy']);
     });
+
+    Route::get('discounts/{day}/{mealId}', [CategoryDiscountController::class, 'getDiscountsForMeal']);
+
 });
+
+
