@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\AdminBadge;
+use App\Models\PosDevice;
 
 class AuthController extends Controller
 {
@@ -86,30 +87,36 @@ class AuthController extends Controller
 
     public function loginWithBadge(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'rfid' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $badge = AdminBadge::where('rfid', $request->rfid)
-            ->where('status', 'assigned')
+        $clientIp = $request->ip();
+        $allowedDevice = PosDevice::where('ip_address', $clientIp)
+            ->where('status', 'allowed')
             ->first();
-
-        if (!$badge || !$badge->admin) {
+        if (!$allowedDevice) {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Invalid badge or no admin associated'
+                'message' => 'This device is not authorized to access the badging system.'
+            ], 403);
+        }
+
+        $badge = AdminBadge::where('rfid', $request->rfid)->first();
+        if (!$badge || $badge->status !== 'assigned') {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Invalid badge'
             ], 401);
         }
 
         $admin = $badge->admin;
+        if (!$admin->hasPermissionTo('open_pos_device')) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'You do not have permission to access this device'
+            ], 403);
+        }
+
         $token = $admin->createToken('auth_token')->plainTextToken;
         $adminRoles = $admin->getRoleNames();
         $adminPermissions = $admin->getAllPermissions();
-
         return response()->json([
             'status' => 'success',
             'message' => 'Admin logged in successfully.',

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Middleware;
-
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\PosDevice;
@@ -22,7 +20,10 @@ class CheckAllowedIp
 
         if (!$allowedDevice) {
             Log::warning("Unauthorized access attempt from IP: " . $clientIp);
-            return response()->json(['error' => 'Unauthorized IP address'], 403);
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'This device is not authorized to access the badging system.'
+            ], 403);
         }
 
         return $next($request);
