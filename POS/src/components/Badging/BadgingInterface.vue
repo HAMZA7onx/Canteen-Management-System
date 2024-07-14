@@ -61,15 +61,19 @@
 
     <!-- Discount Modal -->
     <div v-if="isDiscountModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-        <h2 class="text-2xl font-bold mb-4">Discounts for {{ currentMeal.name }}</h2>
-        <ul v-if="discounts.length">
-          <li v-for="discount in discounts" :key="discount" class="mb-2">
-            {{ discount }}
-          </li>
-        </ul>
-        <p v-else>No discounts available for this meal.</p>
-        <button @click="closeDiscountModal" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+      <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full">
+        <h2 class="text-3xl font-bold mb-4">Discounts for {{ currentMeal.name }}</h2>
+        <input v-model="searchTerm" placeholder="Search discounts..." class="w-full p-2 mb-4 border rounded">
+        <div class="max-h-96 overflow-y-auto">
+          <div v-if="filteredDiscounts.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-for="discount in filteredDiscounts" :key="discount" class="p-4 bg-gray-100 rounded-lg shadow">
+              <div class="font-semibold text-lg">{{ discount.split(':')[0] }}</div>
+              <div class="text-green-600 font-bold">{{ discount.split(':')[1] }}</div>
+            </div>
+          </div>
+          <p v-else class="text-center text-gray-500">No discounts available for this meal.</p>
+        </div>
+        <button @click="closeDiscountModal" class="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
           Close
         </button>
       </div>
@@ -94,9 +98,16 @@ export default {
     const showWelcomeMessage = ref(false);
     const isDiscountModalOpen = ref(false);
     const discounts = ref([]);
+    const searchTerm = ref('');
     let badgeId = '';
     let lastKeyTime = Date.now();
     let messageTimer = null;
+
+    const filteredDiscounts = computed(() => {
+      return discounts.value.filter(discount => 
+        discount.toLowerCase().includes(searchTerm.value.toLowerCase())
+      );
+    });
 
     const processBadge = async () => {
       if (badgeId) {
@@ -171,6 +182,7 @@ export default {
 
     const closeDiscountModal = () => {
       isDiscountModalOpen.value = false;
+      searchTerm.value = '';
     };
 
     onMounted(() => {
@@ -199,6 +211,8 @@ export default {
       discounts,
       showDiscounts,
       closeDiscountModal,
+      searchTerm,
+      filteredDiscounts,
     };
   }
 };
