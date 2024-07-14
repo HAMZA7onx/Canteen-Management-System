@@ -61,32 +61,31 @@ class DailyRecordController extends Controller
         ]);
     }
 
-
     public function store(Request $request, $day)
     {
         DB::enableQueryLog();
         $pivotTable = $day . '_daily_meal';
         $recordTable = $day . '_records';
-
         $validatedData = $request->validate([
-            'badge_id' => 'required|exists:badges,id',
+            'rfid' => 'required|exists:badges,rfid',
         ]);
+
+        $badge = Badge::where('rfid', $validatedData['rfid'])->firstOrFail();
+        $user = $badge->user;
+        $badgeOwnerName = $user ? $user->name : 'Unknown';
 
         $currentTime = Carbon::now();
         $currentTimeString = $currentTime->format('H:i:s');
-
         \Log::info("Processing request for day: $day, time: $currentTimeString");
 
-        // Find the active week schedule
         $activeSchedule = WeekSchedule::where('status', 'active')->first();
         if (!$activeSchedule) {
             \Log::error("No active week schedule found");
-            return response()->json(['error' => 'No active week schedule found'], 400);
+            return response()->json(['error' => "No active week schedule found for {$badgeOwnerName}.", 'badgeOwner' => $badgeOwnerName], 400);
         }
 
         \Log::info("Active week schedule: " . json_encode($activeSchedule));
 
-        // Find the current meal for the given day in the active schedule
         $currentMeal = DB::table($pivotTable)
             ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
@@ -96,46 +95,37 @@ class DailyRecordController extends Controller
 
         if (!$currentMeal) {
             \Log::info("No active meal found for day: $day, time: $currentTimeString in active schedule");
-            return response()->json(['error' => "There is no meal available at this time in the active schedule."], 400);
+            return response()->json(['error' => "There is no meal available at this time in the active schedule for {$badgeOwnerName}.", 'badgeOwner' => $badgeOwnerName], 400);
         }
 
         \Log::info("Current meal found: " . json_encode($currentMeal));
 
-        // Verify that the meal exists in the pivot table
-        $mealExists = DB::table($pivotTable)->where('id', $currentMeal->pivot_id)->exists();
-        if (!$mealExists) {
-            \Log::error("Meal with pivot_id {$currentMeal->pivot_id} does not exist in {$pivotTable}");
-            return response()->json(['error' => 'Invalid meal id'], 400);
-        }
-
-        // Check for existing record for this badge and meal (regardless of date)
         $existingRecord = DB::table($recordTable)
             ->where($day . '_daily_meal_id', $currentMeal->pivot_id)
-            ->where('badge_id', $validatedData['badge_id'])
+            ->where('badge_id', $badge->id)
             ->first();
 
         if ($existingRecord) {
-            \Log::info("Existing record found for badge {$validatedData['badge_id']} and meal {$currentMeal->pivot_id}");
-            return response()->json(['error' => 'A record for this badge and meal already exists.'], 400);
+            \Log::info("Existing record found for badge {$badge->id} and meal {$currentMeal->pivot_id}");
+            return response()->json(['error' => "A record for {$badgeOwnerName}'s badge and this meal already exists.", 'badgeOwner' => $badgeOwnerName], 400);
         }
 
-        // Create the record
         DB::beginTransaction();
         try {
             $record = DB::table($recordTable)->insert([
                 $day . '_daily_meal_id' => $currentMeal->pivot_id,
-                'badge_id' => $validatedData['badge_id'],
+                'badge_id' => $badge->id,
                 'created_at' => $currentTime,
                 'updated_at' => $currentTime,
             ]);
             DB::commit();
-            \Log::info("Record created successfully for day: $day, badge: {$validatedData['badge_id']}, meal: {$currentMeal->pivot_id} in active schedule");
-            return response()->json(['message' => 'Record created successfully'], 201);
+            \Log::info("Record created successfully for day: $day, badge: {$badge->id}, meal: {$currentMeal->pivot_id} in active schedule");
+            return response()->json(['message' => "Record created successfully for {$badgeOwnerName}", 'badgeOwner' => $badgeOwnerName], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Failed to create record: " . $e->getMessage());
             \Log::error("SQL: " . last(DB::getQueryLog())['query']);
-            return response()->json(['error' => 'Failed to create record', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => "Failed to create record for {$badgeOwnerName}", 'message' => $e->getMessage(), 'badgeOwner' => $badgeOwnerName], 500);
         }
     }
 

@@ -39,7 +39,7 @@
             </div>
           </div>
           
-          <div v-if="lastScannedPerson" class="mb-10 p-8 bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl shadow-inner relative overflow-hidden">
+          <div v-if="lastScannedPerson && showWelcomeMessage" class="mb-10 p-8 bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl shadow-inner relative overflow-hidden">
             <div class="text-center">
               <p class="text-3xl font-semibold text-gray-700 mb-4">Welcome:</p>
               <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
@@ -72,6 +72,7 @@ export default {
     const lastScannedBadge = computed(() => store.getters['badging/getLastScannedBadge']);
     const currentMeal = computed(() => store.getters['badging/getCurrentMeal']);
     const lastScannedPerson = computed(() => store.getters['badging/getLastScannedPerson']);
+    const showWelcomeMessage = ref(false);
     let badgeId = '';
     let lastKeyTime = Date.now();
     let messageTimer = null;
@@ -85,33 +86,14 @@ export default {
         } catch (error) {
           handleError(error);
         }
-        badgeId = ''; // Clear the badgeId for the next scan
+        badgeId = '';
       }
     };
 
     const handleError = (error) => {
       if (error.response) {
-        const { status, data } = error.response;
-        switch (status) {
-          case 400:
-            if (data.error === 'A record for this badge and meal already exists.') {
-              setMessage('You have already badged for this meal.', 'warning');
-            } else if (data.error.includes('There is no meal available at this time')) {
-              setMessage('No meal is currently available.', 'warning');
-            } else if (data.error === 'No active week schedule found') {
-              setMessage('No active meal schedule found.', 'error');
-            } else if (data.error === 'There is no meal available at this time in the active schedule.') {
-              setMessage('There is no meal available at this time in the active schedule.', 'error');
-            } else {
-              setMessage(data.error, 'error');
-            }
-            break;
-          case 404:
-            setMessage('Badge not found in the system.', 'error');
-            break;
-          default:
-            setMessage('An error occurred while processing your badge.', 'error');
-        }
+        const { data } = error.response;
+        setMessage(data.error, 'error');
       } else {
         setMessage('An error occurred while processing your badge.', 'error');
       }
@@ -119,7 +101,7 @@ export default {
 
     const handleKeyPress = (event) => {
       const currentTime = Date.now();
-      if (currentTime - lastKeyTime > 100) { // Reset if there's a pause longer than 100ms
+      if (currentTime - lastKeyTime > 100) {
         badgeId = '';
       }
       lastKeyTime = currentTime;
@@ -136,6 +118,7 @@ export default {
       messageClass.value = type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
                            type === 'warning' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                            'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      showWelcomeMessage.value = true;
       
       if (messageTimer) {
         clearTimeout(messageTimer);
@@ -144,6 +127,7 @@ export default {
       messageTimer = setTimeout(() => {
         message.value = '';
         messageClass.value = '';
+        showWelcomeMessage.value = false;
       }, 5000);
     };
 
@@ -154,10 +138,8 @@ export default {
     onMounted(() => {
       document.addEventListener('keypress', handleKeyPress);
       fetchCurrentMeal();
-      // Set up an interval to fetch the current meal every minute
       const intervalId = setInterval(fetchCurrentMeal, 60000);
       
-          // Clean up the interval when the component is unmounted
       onUnmounted(() => {
         document.removeEventListener('keypress', handleKeyPress);
         clearInterval(intervalId);
@@ -173,7 +155,8 @@ export default {
       lastScannedBadge,
       currentMeal,
       lastScannedPerson,
-      foodBackground, 
+      foodBackground,
+      showWelcomeMessage,
     };
   }
 };

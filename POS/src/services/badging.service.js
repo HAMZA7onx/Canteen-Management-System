@@ -14,15 +14,16 @@ class BadgingService {
     }
   }
 
-  async scanBadge(badgeId, day) {
+  async scanBadge(rfid, day) {
     try {
-      const response = await request.post(`${API_URL}/badging/${day}`, { badge_id: badgeId });
+      const response = await request.post(`${API_URL}/badging/${day}`, { rfid: rfid });
       return response.data;
     } catch (error) {
       console.error('Error scanning badge:', error);
       throw error;
     }
   }
+  
 
   async getCurrentMeal() {
     try {
