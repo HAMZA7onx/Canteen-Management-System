@@ -70,20 +70,22 @@ export default {
       };
 
       const handleError = (error) => {
-        if (error.message === 'This device is not authorized to access the badging system.') {
-              setMessage(error.message, 'error');
-         } else if (error.response) {
-              const { status, data } = error.response;
-              switch (status) {
-                  case 401:
-                      setMessage(data.message || 'Invalid badge', 'error');
-                      break;
-                  default:
-                      setMessage('An error occurred during login', 'error');
-              }
-          } else {
-              setMessage('An error occurred during login', 'error');
+        console.log(error)
+        if (error.response) {
+          const { status, data } = error.response;
+          switch (status) {
+            case 401:
+              setMessage(data.message || 'Invalid badge', 'error');
+              break;
+            case 403:
+              setMessage(data.message || 'You do not have permission to access this device', 'error');
+              break;
+            default:
+              setMessage(data.message || 'An error occurred during login', 'error');
           }
+        } else {
+          setMessage(error.message || 'An error occurred during login', 'error');
+        }
       };
 
       const handleKeyPress = (event) => {
