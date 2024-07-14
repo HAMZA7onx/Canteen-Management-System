@@ -20,6 +20,7 @@ const actions = {
     async loginWithBadge({ commit }, { rfid }) {
         try {
             const response = await AuthService.loginWithBadge(rfid);
+            console.log('auth.js: ',response)
             commit('setAuthData', response.data.data);
             return Promise.resolve(response.data);
         } catch (error) {
@@ -45,6 +46,7 @@ const mutations = {
         state.userRoles = data.roles;
         state.userPermissions = data.permissions;
     },
+
     clearAuthData(state) {
         state.user = null;
         state.token = null;
