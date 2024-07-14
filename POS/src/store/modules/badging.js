@@ -17,18 +17,16 @@ const getters = {
 const actions = {
   async verifyAndScanBadge({ commit }, { rfid, day }) {
     try {
-      const verificationResult = await BadgingService.verifyBadge(rfid);
-      if (!verificationResult.exists) {
-        throw { response: { status: 404, data: { error: 'Badge not found in the system' } } };
-      }
-
-      const result = await BadgingService.scanBadge(verificationResult.badge_id, day);
-      commit('SET_LAST_SCANNED_BADGE', result);
-      commit('SET_LAST_SCANNED_PERSON', result.personName);
+      const result = await BadgingService.scanBadge(rfid, day);
+      commit('SET_LAST_SCANNED_BADGE', rfid);
+      commit('SET_LAST_SCANNED_PERSON', result.badgeOwner);
       commit('SET_ERROR', null);
       return result;
     } catch (error) {
       commit('SET_ERROR', error.response ? error.response.data.error : error.message);
+      if (error.response && error.response.data.badgeOwner) {
+        commit('SET_LAST_SCANNED_PERSON', error.response.data.badgeOwner);
+      }
       throw error;
     }
   },
