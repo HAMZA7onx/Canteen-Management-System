@@ -3,6 +3,7 @@ import App from './App.vue';
 import './style.css';
 import router from './router';
 import store from './store';
+import i18n from './i18n'
 
 // Import Font Awesome core
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -26,4 +27,5 @@ app.component('font-awesome-icon', FontAwesomeIcon); // Register the FontAwesome
 
 app.use(router);
 app.use(store);
+app.use(i18n)
 app.mount('#app');
