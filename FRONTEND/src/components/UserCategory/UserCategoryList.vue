@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto">
       <!-- Header Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600 mb-4">User Category Hub</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600 mb-4">Centre de Gestion des Catégories d'Utilisateurs</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Manage and organize your user categories efficiently. Create, edit, and delete categories to keep your user base well-structured.
+          Gérez et organisez efficacement vos catégories d'utilisateurs. Créez, modifiez et supprimez des catégories pour maintenir une base d'utilisateurs bien structurée.
         </p>
         <div class="flex items-center text-sm text-indigo-600 dark:text-indigo-400">
           <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
           </svg>
-          Streamline your user management process
+          Simplifiez votre processus de gestion des utilisateurs
         </div>
       </div>
 
@@ -21,7 +21,7 @@
           class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="openCreateModal"
         >
-          <span class="mr-2">+</span> Create User Category
+          <span class="mr-2">+</span> Créer une Catégorie d'Utilisateur
         </button>
       </div>
 
@@ -32,9 +32,9 @@
           <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -47,7 +47,7 @@
                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-300"
                     @click="openDetailsPopup(category)"
                   >
-                    View Details
+                    Voir les Détails
                   </button>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -58,16 +58,15 @@
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
-  :class="[
-    'transition-colors duration-300',
-    category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
-  ]"
-  @click="deleteCategory(category)"
-  :disabled="category.is_assigned"
->
-  <font-awesome-icon icon="trash" />
-</button>
-
+                    :class="[
+                      'transition-colors duration-300',
+                      category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
+                    ]"
+                    @click="deleteCategory(category)"
+                    :disabled="category.is_assigned"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -78,7 +77,7 @@
       <!-- Create/Edit Modal -->
       <Overlay v-if="showModal">
         <div class="modal-container" @click.stop>
-          <Modal :show="showModal" :title="isEditMode ? 'Edit User Category' : 'Create User Category'" @close="closeModal">
+          <Modal :show="showModal" :title="isEditMode ? 'Modifier la Catégorie d\'Utilisateur' : 'Créer une Catégorie d\'Utilisateur'" @close="closeModal">
             <user-category-form
               :category="selectedCategory"
               @submit="handleSubmit"
@@ -100,11 +99,11 @@
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Delete User Category
+                    Supprimer la Catégorie d'Utilisateur
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Are you sure you want to delete {{ categoryToDelete?.name }}? This action cannot be undone.
+                      Êtes-vous sûr de vouloir supprimer {{ categoryToDelete?.name }} ? Cette action ne peut pas être annulée.
                     </p>
                   </div>
                 </div>
@@ -116,14 +115,14 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
                 @click="confirmDelete"
               >
-                Delete
+                Supprimer
               </button>
               <button
                 type="button"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-300"
                 @click="closeDeleteConfirmation"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>
@@ -138,39 +137,39 @@
               <div class="sm:flex sm:items-start">
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
-                    Category Details
+                    Détails de la Catégorie
                   </h3>
                   <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400"><strong>Name:</strong></p>
+                      <p class="text-gray-500 dark:text-gray-400"><strong>Nom :</strong></p>
                       <p class="text-gray-900 dark:text-gray-100">{{ selectedCategory.name }}</p>
                     </div>
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400"><strong>Description:</strong></p>
+                      <p class="text-gray-500 dark:text-gray-400"><strong>Description :</strong></p>
                       <p class="text-gray-900 dark:text-gray-100">{{ selectedCategory.description }}</p>
                     </div>
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400"><strong>Creator:</strong></p>
+                      <p class="text-gray-500 dark:text-gray-400"><strong>Créateur :</strong></p>
                       <p class="text-gray-900 dark:text-gray-100">{{ selectedCategory.creator }}</p>
                     </div>
                   </div>
                   <div class="mt-4">
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Editors:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Éditeurs :</strong></p>
                     <ul v-if="selectedCategory.editors && selectedCategory.editors.length > 0" class="list-disc list-inside text-gray-900 dark:text-gray-100">
                       <li v-for="editor in selectedCategory.editors" :key="editor">{{ editor }}</li>
                     </ul>
-                    <p v-else class="text-gray-900 dark:text-gray-100">No editors</p>
+                    <p v-else class="text-gray-900 dark:text-gray-100">Aucun éditeur</p>
                   </div>
                   <div class="mt-4 grid grid-cols-2 gap-4">
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400"><strong>Created At:</strong></p>
+                      <p class="text-gray-500 dark:text-gray-400"><strong>Créé le :</strong></p>
                       <p class="text-gray-900 dark:text-gray-100">{{ formatDate(selectedCategory.created_at) }}</p>
                     </div>
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400"><strong>Updated At:</strong></p>
+                      <p class="text-gray-500 dark:text-gray-400"><strong>Mis à jour le :</strong></p>
                       <p class="text-gray-900 dark:text-gray-100">
                         <span v-if="isUpdatedAtSameAsCreatedAt(selectedCategory)">
-                          {{ formatDate(selectedCategory.updated_at) }} (No updates)
+                          {{ formatDate(selectedCategory.updated_at) }} (Pas de mises à jour)
                         </span>
                         <span v-else>
                           {{ formatDate(selectedCategory.updated_at) }}
@@ -187,7 +186,7 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors duration-300"
                 @click="closeDetailsPopup"
               >
-                Close
+                Fermer
               </button>
             </div>
           </div>

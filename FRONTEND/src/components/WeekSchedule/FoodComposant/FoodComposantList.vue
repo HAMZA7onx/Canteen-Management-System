@@ -1,27 +1,27 @@
 <template>
   <div class="min-h-screen bg-food-ingredients dark:bg-food-ingredients-dark bg-cover bg-fixed py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-7xl mx-auto">
-      <!-- Header Section -->
+      <!-- Section d'en-tête -->
       <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-4">Food Components Management</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-4">Gestion des Composants Alimentaires</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Manage your food components efficiently. Create, edit, and organize the building blocks of your delicious menus!
+          Gérez efficacement vos composants alimentaires. Créez, modifiez et organisez les éléments de base de vos délicieux menus !
         </p>
         <button
           class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="openCreateModal"
         >
-          Create Food Component
+          Créer un Composant Alimentaire
         </button>
       </div>
 
-      <!-- Food Components List -->
+      <!-- Liste des Composants Alimentaires -->
       <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <loading-wheel v-if="isLoading" />
         <table v-else class="w-full table-auto">
           <thead class="bg-gray-100 dark:bg-gray-700">
             <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
-              <th class="py-3 px-6 text-left">Name</th>
+              <th class="py-3 px-6 text-left">Nom</th>
               <th class="py-3 px-6 text-left">Description</th>
               <th class="py-3 px-6 text-center">Actions</th>
             </tr>
@@ -60,7 +60,7 @@
       <!-- Modals -->
       <Overlay v-if="showCreateModal">
         <div class="modal-container" @click.stop>
-          <Modal :show="showCreateModal" title="Create Food Component" @close="closeCreateModal">
+          <Modal :show="showCreateModal" title="Créer un Composant Alimentaire" @close="closeCreateModal">
             <food-composant-form
               :foodComposant="{ name: '', description: '' }"
               @create="createFoodComposant"
@@ -72,7 +72,7 @@
 
       <Overlay v-if="showEditModal">
         <div class="modal-container" @click.stop>
-          <Modal :show="showEditModal" title="Edit Food Component" @close="closeEditModal">
+          <Modal :show="showEditModal" title="Modifier le Composant Alimentaire" @close="closeEditModal">
             <food-composant-form
               :foodComposant="selectedFoodComposant"
               @update="updateFoodComposant"
@@ -82,7 +82,7 @@
         </div>
       </Overlay>
 
-      <!-- Delete Confirmation Modal -->
+      <!-- Modal de Confirmation de Suppression -->
       <Overlay v-if="showDeleteConfirmation">
         <div class="modal-container" @click.stop>
           <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
@@ -95,11 +95,11 @@
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Delete Food Component
+                    Supprimer le Composant Alimentaire
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Are you sure you want to delete {{ selectedFoodComposant.name }}? This action cannot be undone.
+                      Êtes-vous sûr de vouloir supprimer {{ selectedFoodComposant.name }} ? Cette action est irréversible.
                     </p>
                   </div>
                 </div>
@@ -111,14 +111,14 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                 @click="handleDeleteFoodComposant"
               >
-                Delete
+                Supprimer
               </button>
               <button
                 type="button"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:border-gray-500"
                 @click="closeDeleteConfirmation"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>

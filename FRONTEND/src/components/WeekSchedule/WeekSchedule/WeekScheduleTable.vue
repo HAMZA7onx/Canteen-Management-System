@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto px-4 py-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-900 min-h-screen">
     <div class="mb-8 text-center">
-      <h1 class="text-4xl font-extrabold text-indigo-700 dark:text-indigo-300 mb-2">Week Schedules</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">Efficiently manage and organize your weekly meal plans</p>
+      <h1 class="text-4xl font-extrabold text-indigo-700 dark:text-indigo-300 mb-2">Horaires de la semaine</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Gérez et organisez efficacement vos plans de repas hebdomadaires</p>
     </div>
 
     <div class="mb-6 flex justify-between items-center">
@@ -11,7 +11,7 @@
         @click="openCreateModal"
       >
         <font-awesome-icon icon="plus-circle" class="mr-2" />
-        Create Week Schedule
+        Créer un programme hebdomadaire
       </button>
       <div class="text-gray-600 dark:text-gray-400 italic">
         Total Schedules: {{ weekSchedules.length }}
@@ -27,7 +27,7 @@
               <th class="py-3 px-6 text-left">Week Schedule</th>
               <th class="py-3 px-6 text-center">Status</th>
               <th class="py-3 px-6 text-center">Actions</th>
-              <th v-for="day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']" :key="day" class="py-3 px-6 text-center">
+              <th v-for="day in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']" :key="day" class="py-3 px-6 text-center">
                 {{ day }}
               </th>
             </tr>
@@ -75,7 +75,7 @@
                   class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
                   @click="openAssignModal(weekSchedule, day)"
                 >
-                  Assign
+                Attribuer
                 </button>
               </td>
             </tr>
@@ -102,7 +102,7 @@
     <overlay v-if="showEditModal" @close="closeEditModal">
       <modal
         :show="showEditModal"
-        title="Edit Week Schedule"
+        title="Modifier le programme hebdomadaire"
         @close="closeEditModal"
       >
         <edit-week-schedule-form

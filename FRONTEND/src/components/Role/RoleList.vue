@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto">
       <!-- Descriptive Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">Role Orchestration Hub</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">Centre d'Orchestration des Rôles</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Welcome to the nerve center of your system's access control. Here, you can sculpt the perfect balance of permissions and responsibilities, ensuring each role plays its part in harmony with your organization's needs.
+          Bienvenue au centre névralgique du contrôle d'accès de votre système. Ici, vous pouvez sculpter l'équilibre parfait entre les permissions et les responsabilités, en vous assurant que chaque rôle joue sa partition en harmonie avec les besoins de votre organisation.
         </p>
         <div class="flex items-center text-sm text-indigo-600 dark:text-indigo-400">
           <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
           </svg>
-          Craft roles with precision, assign permissions with confidence
+          Créez des rôles avec précision, attribuez des permissions en toute confiance
         </div>
       </div>
 
@@ -21,10 +21,10 @@
           class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="openCreateRoleModal"
         >
-          <span class="mr-2">+</span> Create New Role
+          <span class="mr-2">+</span> Créer un Nouveau Rôle
         </button>
         <div class="text-gray-600 dark:text-gray-300">
-          Total Roles: <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ roles.length }}</span>
+          Total des Rôles : <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ roles.length }}</span>
         </div>
       </div>
 
@@ -33,12 +33,12 @@
         <loading-wheel v-if="isLoading" />
         <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
           {{ error }}
-          <button @click="loadRoles" class="ml-2 underline">Retry</button>
+          <button @click="loadRoles" class="ml-2 underline">Réessayer</button>
         </div>
         <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -72,19 +72,19 @@
 
       <!-- Modals -->
       <Overlay v-if="showCreateRoleModal">
-        <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Craft a New Role">
+        <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Créer un Nouveau Rôle">
           <RoleForm :role="{}" @update:role="createRole" />
         </Modal>
       </Overlay>
 
       <Overlay v-if="showEditRoleModal">
-        <Modal :show="showEditRoleModal" @close="closeEditRoleModal" title="Refine Role Details">
+        <Modal :show="showEditRoleModal" @close="closeEditRoleModal" title="Affiner les Détails du Rôle">
           <RoleForm :role="selectedRole" @update:role="updateRole" />
         </Modal>
       </Overlay>
 
       <Overlay v-if="showManagePermissionsModal">
-        <Modal :show="showManagePermissionsModal" @close="closeManagePermissionsModal" title="Orchestrate Permissions">
+        <Modal :show="showManagePermissionsModal" @close="closeManagePermissionsModal" title="Orchestrer les Permissions">
           <RolePermissions :role="selectedRole" />
         </Modal>
       </Overlay>
@@ -111,11 +111,11 @@
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Confirm Role Deletion
+                    Confirmer la Suppression du Rôle
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Are you certain you want to remove the role "{{ roleToDelete.name }}"? This action is irreversible and may impact user permissions across the system.
+                      Êtes-vous certain de vouloir supprimer le rôle "{{ roleToDelete.name }}" ? Cette action est irréversible et peut avoir un impact sur les permissions des utilisateurs dans tout le système.
                     </p>
                   </div>
                 </div>
@@ -127,14 +127,14 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
                 @click="confirmDeleteRole"
               >
-                Confirm Deletion
+                Confirmer la Suppression
               </button>
               <button
                 type="button"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300"
                 @click="showDeleteConfirmation = false"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>

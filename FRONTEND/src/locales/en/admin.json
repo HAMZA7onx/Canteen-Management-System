@@ -1,0 +1,32 @@
+{
+    "dashboard": {
+      "title": "Admin Management Dashboard",
+      "description": "Efficiently manage administrator accounts, control access levels, and maintain system security. Create, edit, and oversee admin roles to ensure smooth operation and robust governance.",
+      "createAndManage": "Create and manage admin accounts with ease"
+    },
+    "actions": {
+      "createAdmin": "Create Admin",
+      "edit": "Edit",
+      "delete": "Delete",
+      "manageRoles": "Manage Roles"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "actions": "Actions"
+    },
+    "modal": {
+      "createAdmin": "Create Admin",
+      "editAdmin": "Edit Admin",
+      "manageRoles": "Manage Roles/Permissions",
+      "deleteAdmin": "Delete Admin",
+      "deleteConfirmation": "Are you sure you want to delete {name}? This action cannot be undone.",
+      "confirmDelete": "Delete",
+      "cancel": "Cancel"
+    },
+    "error": {
+      "loadAdmins": "Failed to load admins. Please try again.",
+      "retry": "Retry"
+    }
+  }
+  

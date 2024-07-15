@@ -1,6 +1,6 @@
 <template>
   <div class="records-dashboard p-6 pt-24 min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900 transition-all duration-300">
-    <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Records Dashboard</h1>
+    <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Tableau de bord des enregistrements</h1>
 
     <!-- Years Table -->
     <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl">

@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 py-3">
       <div class="flex items-center justify-between">
         <router-link to="/" class="text-white font-bold text-2xl tracking-wider hover:text-indigo-200 transition-colors duration-300">
-          <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">{{ $t('dashboard') }}</span>
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">TABLEAU DE BORD</span>
         </router-link>
         
         <div class="flex items-center space-x-6">
@@ -26,10 +26,7 @@
             </span>
           </button>
           
-          <select v-model="$i18n.locale">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
+          
         </div>
       </div>
     </div>
