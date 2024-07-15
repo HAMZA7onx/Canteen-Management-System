@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto">
       <!-- Descriptive Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-4">User Ecosystem Hub</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-4">Centre de Gestion des Utilisateurs</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
-          Welcome to the central nexus of user management. Here, you can orchestrate your entire user base, from creating individual profiles to bulk importing teams. Empower your organization with streamlined user administration.
+          Bienvenue dans le centre névralgique de la gestion des utilisateurs. Ici, vous pouvez orchestrer l'ensemble de votre base d'utilisateurs, de la création de profils individuels à l'importation en masse d'équipes. Renforcez votre organisation avec une administration rationalisée des utilisateurs.
         </p>
         <div class="flex items-center text-sm text-blue-600 dark:text-blue-400">
           <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
-          Manage users with precision and ease
+          Gérez les utilisateurs avec précision et facilité
         </div>
       </div>
 
@@ -22,150 +22,150 @@
             class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
             @click="openCreateUserModal"
           >
-            <span class="mr-2">+</span> Create User
+            <span class="mr-2">+</span> Créer un Utilisateur
           </button>
           <button
             class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
             @click="openImportUsersModal"
           >
-            <span class="mr-2">↑</span> Import Users
+            <span class="mr-2">↑</span> Importer des Utilisateurs
           </button>
         </div>
         <div class="text-gray-600 dark:text-gray-300">
-          Total Users: <span class="font-bold text-blue-600 dark:text-blue-400">{{ users.length }}</span>
+          Total des Utilisateurs: <span class="font-bold text-blue-600 dark:text-blue-400">{{ users.length }}</span>
         </div>
       </div>
 
       <!-- User List -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
-  <div class="overflow-x-auto">
-    <loading-wheel v-if="isLoading" />
-    <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
-      {{ error }}
-      <button @click="loadUsers" class="ml-2 underline">Retry</button>
-    </div>
-    <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead class="bg-gray-50 dark:bg-gray-700">
-        <tr>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Gender</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-        <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.name }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.phone_number }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.gender }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.category.name }}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <button
-              class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
-              @click="openDetailsPopup(user)"
-            >
-              Details
-            </button>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <button
-              class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
-              @click="openEditUserModal(user)"
-            >
-              <font-awesome-icon icon="edit" />
-            </button>
-            <button
-              class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
-              @click="deleteUser(user)"
-            >
-              <font-awesome-icon icon="trash" />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
+        <div class="overflow-x-auto">
+          <loading-wheel v-if="isLoading" />
+          <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
+            {{ error }}
+            <button @click="loadUsers" class="ml-2 underline">Réessayer</button>
+          </div>
+          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Téléphone</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Genre</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catégorie</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.phone_number }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.gender }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.category.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
+                    @click="openDetailsPopup(user)"
+                  >
+                    Détails
+                  </button>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
+                    @click="openEditUserModal(user)"
+                  >
+                    <font-awesome-icon icon="edit" />
+                  </button>
+                  <button
+                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
+                    @click="deleteUser(user)"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <!-- Modals -->
       <Overlay v-if="showCreateUserModal">
-        <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Create New User">
+        <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Créer un Nouvel Utilisateur">
           <UserForm :user="{}" @update:user="createUser" />
         </Modal>
       </Overlay>
 
       <Overlay v-if="showEditUserModal">
-        <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Edit User Profile">
+        <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Modifier le Profil Utilisateur">
           <UserForm :user="selectedUser" @update:user="updateUser" />
         </Modal>
       </Overlay>
 
       <Overlay v-if="showImportUsersModal">
-    <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Bulk Import Users">
-      <form @submit.prevent="importUsers" class="space-y-4">
-        <!-- New section for downloading template -->
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Download Template</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Download the Excel template, fill it with user data, then import.</p>
-          <button
-            @click.prevent="downloadTemplate"
-            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            Download Excel Template
-          </button>
-        </div>
+        <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Importation en Masse d'Utilisateurs">
+          <form @submit.prevent="importUsers" class="space-y-4">
+            <!-- New section for downloading template -->
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Télécharger le Modèle</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Téléchargez le modèle Excel, remplissez-le avec les données des utilisateurs, puis importez-le.</p>
+              <button
+                @click.prevent="downloadTemplate"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              >
+                Télécharger le Modèle Excel
+              </button>
+            </div>
 
-        <div>
-          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Category</label>
-          <select
-            id="category"
-            v-model="importCategoryId"
-            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          >
-            <option value="">Select Category</option>
-            <option v-for="category in userCategories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choose Excel File</label>
-          <input
-            type="file"
-            id="file"
-            ref="fileInput"
-            @change="handleFileChange"
-            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            accept=".xlsx,.xls"
-          >
-        </div>
-        <div>
-          <button
-            type="submit"
-            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
-          >
-            Import Users
-          </button>
-        </div>
-        <div v-if="importResult" class="mt-4">
-          <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
-          <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
-            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Skipped rows:</p>
-            <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-              <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
-                {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </form>
-    </Modal>
-  </Overlay>
+            <div>
+              <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sélectionner une Catégorie</label>
+              <select
+                id="category"
+                v-model="importCategoryId"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              >
+                <option value="">Sélectionner une Catégorie</option>
+                <option v-for="category in userCategories" :key="category.id" :value="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choisir un Fichier Excel</label>
+              <input
+                type="file"
+                id="file"
+                ref="fileInput"
+                @change="handleFileChange"
+                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                accept=".xlsx,.xls"
+              >
+            </div>
+            <div>
+              <button
+                type="submit"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
+              >
+                Importer les Utilisateurs
+              </button>
+            </div>
+            <div v-if="importResult" class="mt-4">
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
+              <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Lignes ignorées :</p>
+                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
+                  <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
+                    {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </form>
+        </Modal>
+      </Overlay>
+
       <!-- Delete Confirmation Modal -->
       <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -183,16 +183,17 @@
               <div class="sm:flex sm:items-start">
                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
                   <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path stroke-linecap="round" stroke-linej
+                    oin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Confirm User Deletion
+                    Confirmer la Suppression de l'Utilisateur
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Are you sure you want to delete the user "{{ userToDelete?.name }}"? This action cannot be undone.
+                      Êtes-vous sûr de vouloir supprimer l'utilisateur "{{ userToDelete?.name }}" ? Cette action ne peut pas être annulée.
                     </p>
                   </div>
                 </div>
@@ -204,13 +205,14 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
                 @click="confirmDeleteUser"
               >
-                Delete
+                Supprimer
               </button>
               <button
-                type="button"  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-300"
+                type="button"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors duration-300"
                 @click="showDeleteConfirmation = false"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>
@@ -225,51 +227,51 @@
             <div class="sm:flex sm:items-start">
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
-                  User Details
+                  Détails de l'Utilisateur
                 </h3>
                 <div class="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Name:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Nom :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.name }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Email:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Email :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.email }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Phone Number:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Numéro de Téléphone :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.phone_number }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Gender:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Genre :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.gender }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Category:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Catégorie :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.category.name }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Creator:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Créateur :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedUser.creator }}</p>
                   </div>
                 </div>
                 <div class="mt-4">
-                  <p class="text-gray-500 dark:text-gray-400"><strong>Editors:</strong></p>
+                  <p class="text-gray-500 dark:text-gray-400"><strong>Éditeurs :</strong></p>
                   <ul v-if="parsedEditors.length > 0" class="list-disc list-inside text-gray-900 dark:text-gray-100">
                     <li v-for="editor in parsedEditors" :key="editor">{{ editor }}</li>
                   </ul>
-                  <p v-else class="text-gray-900 dark:text-gray-100">No editors</p>
+                  <p v-else class="text-gray-900 dark:text-gray-100">Aucun éditeur</p>
                 </div>
                 <div class="mt-4 grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Created At:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Créé le :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ formatDate(selectedUser.created_at) }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Updated At:</strong></p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Mis à jour le :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">
                       <span v-if="isUpdatedAtSameAsCreatedAt(selectedUser)">
-                        {{ formatDate(selectedUser.updated_at) }} (No updates)
+                        {{ formatDate(selectedUser.updated_at) }} (Pas de mises à jour)
                       </span>
                       <span v-else>
                         {{ formatDate(selectedUser.updated_at) }}
@@ -286,7 +288,7 @@
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
               @click="closeDetailsPopup"
             >
-              Close
+              Fermer
             </button>
           </div>
         </div>

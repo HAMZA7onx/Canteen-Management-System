@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto">
       <!-- Descriptive Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8 transition-colors duration-300 border border-gray-300">
-        <h1 class="text-2xl sm:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-4">Admin Management Dashboard</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-4">Tableau de bord de gestion des administrateurs</h1>
         <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
-          Efficiently manage administrator accounts, control access levels, and maintain system security. Create, edit, and oversee admin roles to ensure smooth operation and robust governance.
+          Gérez efficacement les comptes administrateurs, contrôlez les niveaux d'accès et maintenez la sécurité du système. Créez, modifiez et supervisez les rôles d'administrateur pour assurer un fonctionnement fluide et une gouvernance robuste.
         </p>
         <div class="flex items-center text-sm text-indigo-600 dark:text-indigo-400">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
           </svg>
-          Create and manage admin accounts with ease
+          Créez et gérez facilement les comptes administrateurs
         </div>
       </div>
 
@@ -21,7 +21,7 @@
           class="bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
           @click="openCreateAdminModal"
         >
-          Create Admin
+          Créer un administrateur
         </button>
       </div>
 
@@ -30,13 +30,13 @@
         <loading-wheel v-if="isLoading" />
         <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
           {{ error }}
-          <button @click="loadAdmins" class="ml-2 underline">Retry</button>
+          <button @click="loadAdmins" class="ml-2 underline">Réessayer</button>
         </div>
         <!-- table  -->
         <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
@@ -62,7 +62,7 @@
                   class="bg-green-500 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
                   @click="openManageRolesPermissionsModal(admin)"
                 >
-                  Manage Roles
+                  Gérer les rôles
                 </button>
               </td>
             </tr>
@@ -75,7 +75,7 @@
         <Modal
           :show="showCreateAdminModal"
           @close="closeCreateAdminModal"
-          title="Create Admin"
+          title="Créer un administrateur"
         >
           <AdminForm :admin="{}" @update:admin="createAdmin" />
         </Modal>
@@ -86,7 +86,7 @@
         <Modal
           :show="showEditAdminModal"
           @close="closeEditAdminModal"
-          title="Edit Admin"
+          title="Modifier l'administrateur"
         >
           <AdminForm :admin="selectedAdmin" @update:admin="updateAdmin" />
         </Modal>
@@ -97,7 +97,7 @@
         <Modal
           :show="showManageRolesPermissionsModal"
           @close="closeManageRolesPermissionsModal"
-          title="Manage Roles/Permissions"
+          title="Gérer les rôles/permissions"
         >
           <AdminRolesPermissions :admin="selectedAdmin" />
         </Modal>
@@ -125,11 +125,11 @@
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Delete Admin
+                    Supprimer l'administrateur
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Are you sure you want to delete {{ adminToDelete.name }}? This action cannot be undone.
+                      Êtes-vous sûr de vouloir supprimer {{ adminToDelete.name }} ? Cette action ne peut pas être annulée.
                     </p>
                   </div>
                 </div>
@@ -141,14 +141,14 @@
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
                 @click="confirmDeleteAdmin"
               >
-                Delete
+                Supprimer
               </button>
               <button
                 type="button"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300"
                 @click="showDeleteConfirmation = false"
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </div>
