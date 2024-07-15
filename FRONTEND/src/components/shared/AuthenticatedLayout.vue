@@ -3,7 +3,10 @@
     <Navbar />
     <div class="flex flex-grow">
       <Sidebar />
-      <main class="ml-64 mt-14 p-6 flex-grow overflow-auto">
+      <main :class="[
+        'mt-14 p-6 flex-grow overflow-auto transition-all duration-300',
+        isSidebarOpen ? 'ml-64' : 'ml-20'
+      ]">
         <router-view />
       </main>
     </div>
@@ -11,9 +14,10 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
-import { mapState } from 'vuex';
 
 export default {
   name: 'AuthenticatedLayout',
@@ -21,11 +25,13 @@ export default {
     Navbar,
     Sidebar,
   },
-  computed: {
-    ...mapState(['auth']),
-  },
-  mounted() {
-    // console.log(this.auth);
+  setup() {
+    const store = useStore();
+    const isSidebarOpen = computed(() => store.getters['sidebar/isOpen']);
+
+    return {
+      isSidebarOpen,
+    };
   },
 };
 </script>

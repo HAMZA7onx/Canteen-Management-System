@@ -109,7 +109,7 @@ export default {
         discount.toLowerCase().includes(searchTerm.value.toLowerCase())
       );
     });
-
+  
     const processBadge = async () => {
       if (badgeId) {
         try {

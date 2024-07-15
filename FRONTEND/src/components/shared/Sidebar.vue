@@ -26,35 +26,35 @@
         </nav>
       </div>
       <button @click="toggleSidebar" class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-indigo-600 text-white p-2 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 focus:outline-none z-50">
-  <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
-</button>
-
-
+        <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
+      </button>
     </aside>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog
+  faCog, faLock, faUserCog, faClock
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog
+  faCog, faLock, faUserCog, faClock
 );
 
 export default {
   name: 'Sidebar',
   setup() {
-    const sidebarOpen = ref(true);
+    const store = useStore();
+    const sidebarOpen = computed(() => store.state.sidebar.isOpen);
     const activeItem = ref(null);
 
     const menuGroups = ref([
@@ -97,7 +97,7 @@ export default {
     ]);
 
     const toggleSidebar = () => {
-      sidebarOpen.value = !sidebarOpen.value;
+      store.dispatch('sidebar/toggleSidebar');
     };
 
     const toggleGroup = (index) => {
