@@ -8,10 +8,10 @@ import i18n from './i18n'
 // Import Font Awesome core
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons'; // Import the delete and edit icons
+import { faTrash, faEdit, faClock } from '@fortawesome/free-solid-svg-icons'; // Import the delete and edit icons
 
 // Add icons to the library
-library.add(faTrash, faEdit);
+library.add(faTrash, faEdit, faClock);
 
 // Initialize dark mode
 if (localStorage.getItem('darkMode') === 'true' ||

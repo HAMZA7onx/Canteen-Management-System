@@ -82,7 +82,7 @@ export default {
         items: [
           { label: 'Les composants du menus', icon: 'utensils', route: '/food-composants' },
           { label: 'Les menus', icon: 'clipboard-list', route: '/menus' },
-          { label: 'Gestion des repats', icon: 'utensils', route: '/daily' },
+          { label: 'Gestion des repats', icon: 'clock', route: '/daily' },
           { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules' },
         ]
       },
