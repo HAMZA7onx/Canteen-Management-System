@@ -25,9 +25,11 @@
           </ul>
         </nav>
       </div>
-      <button @click="toggleSidebar" class="fixed bottom-4 -right-4 bg-indigo-600 text-white p-2 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 focus:outline-none">
-        <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
-      </button>
+      <button @click="toggleSidebar" class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-indigo-600 text-white p-2 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 focus:outline-none z-50">
+  <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
+</button>
+
+
     </aside>
   </div>
 </template>
