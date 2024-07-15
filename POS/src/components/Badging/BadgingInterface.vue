@@ -2,34 +2,34 @@
   <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed" :style="{ backgroundImage: `url(${foodBackground})` }">
     <div class="flex-grow flex items-center justify-center p-4 backdrop-blur-sm bg-black bg-opacity-50">
       <div class="w-full max-w-6xl flex gap-8">
-        <!-- Meal Info Card -->
+        <!-- Carte d'information du repas -->
         <div v-if="currentMeal" class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
-          <h3 class="text-3xl font-bold mb-4 text-gray-800">Current Meal</h3>
+          <h3 class="text-3xl font-bold mb-4 text-gray-800">Repas Actuel</h3>
           <p class="text-2xl font-semibold text-indigo-600">{{ currentMeal.name }}</p>
           <p class="text-xl text-gray-600">{{ currentMeal.start_time }} - {{ currentMeal.end_time }}</p>
-          <p class="text-xl font-bold text-green-600 mt-2">${{ currentMeal.price }}</p>
+          <p class="text-xl font-bold text-green-600 mt-2">{{ currentMeal.price }} DH</p>
           <button @click="showDiscounts" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Show Discounts
+            Afficher les Réductions
           </button>
         </div>
         <div v-else class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
-          <p class="text-2xl font-semibold text-gray-600">No meal assigned at the current time</p>
+          <p class="text-2xl font-semibold text-gray-600">Aucun repas assigné pour le moment</p>
         </div>
 
-        <!-- Main Badging Card -->
+        <!-- Carte principale de badgeage -->
         <div class="bg-white bg-opacity-90 p-8 rounded-3xl shadow-2xl w-2/3 transform hover:scale-105 transition-all duration-300">
-          <h2 class="text-5xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Badge Scanning Interface</h2>
+          <h2 class="text-5xl font-extrabold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Interface de Scan de Badge</h2>
           
           <div class="mb-10 text-center">
             <p class="text-3xl text-gray-700 font-light">
-              Scan your badge to begin
+              Scannez votre badge pour commencer
             </p>
           </div>
           
           <div class="mb-10 p-8 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl shadow-inner relative overflow-hidden">
             <div v-if="lastScannedBadge" class="text-center">
               <p class="text-3xl font-semibold text-gray-700 mb-4">
-                Last scanned badge:
+                Dernier badge scanné :
               </p>
               <p class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 animate-pulse">
                 {{ lastScannedBadge }}
@@ -37,14 +37,14 @@
             </div>
             <div v-else class="text-center">
               <p class="text-4xl font-semibold text-gray-500 animate-pulse">
-                Waiting for badge...
+                En attente d'un badge...
               </p>
             </div>
           </div>
           
           <div v-if="lastScannedPerson && showWelcomeMessage" class="mb-10 p-8 bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl shadow-inner relative overflow-hidden">
             <div class="text-center">
-              <p class="text-3xl font-semibold text-gray-700 mb-4">Welcome:</p>
+              <p class="text-3xl font-semibold text-gray-700 mb-4">Bienvenue :</p>
               <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
                 {{ lastScannedPerson }}
               </p>
@@ -59,27 +59,28 @@
       </div>
     </div>
 
-    <!-- Discount Modal -->
+    <!-- Modal de réductions -->
     <div v-if="isDiscountModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
       <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full">
-        <h2 class="text-3xl font-bold mb-4">Discounts for {{ currentMeal.name }}</h2>
-        <input v-model="searchTerm" placeholder="Search discounts..." class="w-full p-2 mb-4 border rounded">
+        <h2 class="text-3xl font-bold mb-4">Réductions pour {{ currentMeal.name }}</h2>
+        <input v-model="searchTerm" placeholder="Rechercher des réductions..." class="w-full p-2 mb-4 border rounded">
         <div class="max-h-96 overflow-y-auto">
           <div v-if="filteredDiscounts.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div v-for="discount in filteredDiscounts" :key="discount" class="p-4 bg-gray-100 rounded-lg shadow">
               <div class="font-semibold text-lg">{{ discount.split(':')[0] }}</div>
-              <div class="text-green-600 font-bold">{{ discount.split(':')[1] }}</div>
+              <div class="text-green-600 font-bold">{{ discount.split(':')[1] }} DH</div>
             </div>
           </div>
-          <p v-else class="text-center text-gray-500">No discounts available for this meal.</p>
+          <p v-else class="text-center text-gray-500">Aucune réduction disponible pour ce repas.</p>
         </div>
         <button @click="closeDiscountModal" class="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-          Close
+          Fermer
         </button>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
