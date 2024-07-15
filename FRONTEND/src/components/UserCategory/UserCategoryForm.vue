@@ -1,48 +1,53 @@
 <template>
-  <div>
-    <form @submit.prevent="submitForm" class="mt-4">
-      <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">
-          Name
-        </label>
-        <div class="mt-1">
+  <div class="bg-gradient-to-br from-purple-600 to-indigo-800 p-1 rounded-3xl shadow-2xl">
+    <div class="bg-white dark:bg-gray-900 rounded-3xl p-8 backdrop-blur-lg bg-opacity-90 dark:bg-opacity-90">
+      <h2 class="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+        {{ isEditMode ? 'Update Category' : 'Create Category' }}
+      </h2>
+      <form @submit.prevent="submitForm" class="space-y-6">
+        <div class="relative group">
           <input
             type="text"
             id="name"
             v-model="category.name"
             required
-            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+            class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer"
+            placeholder=" "
           />
+          <label for="name" class="absolute left-4 top-3 text-gray-500 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Name
+          </label>
         </div>
-      </div>
-      <div class="mt-4">
-        <label for="description" class="block text-sm font-medium text-gray-700">
-          Description
-        </label>
-        <div class="mt-1">
+
+        <div class="relative group">
           <textarea
             id="description"
             v-model="category.description"
-            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+            class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer resize-none h-32"
+            placeholder=" "
           ></textarea>
+          <label for="description" class="absolute left-4 top-3 text-gray-500 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Description
+          </label>
         </div>
-      </div>
-      <div class="mt-4">
-        <button
-          type="submit"
-          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          {{ isEditMode ? 'Update' : 'Create' }}
-        </button>
-        <button
-          type="button"
-          class="ml-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          @click="$emit('close')"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+
+        <div class="flex justify-end space-x-4">
+          <button
+            type="submit"
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+          >
+            {{ isEditMode ? 'Update' : 'Create' }}
+          </button>
+          <button
+            type="button"
+            @click="$emit('close')"
+            class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-gray-800"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

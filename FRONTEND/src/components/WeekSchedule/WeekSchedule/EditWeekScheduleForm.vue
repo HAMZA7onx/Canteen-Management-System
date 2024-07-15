@@ -1,119 +1,85 @@
 <template>
-  <div :class="[
-    'p-6 rounded-lg',
-    darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
-  ]">
-    <div class="mb-4">
-      <label for="modeName" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Mode Name</label>
-      <input
-        id="modeName"
-        v-model="modeName"
-        type="text"
-        required
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      />
-    </div>
+  <div class="bg-gradient-to-br from-blue-400 to-indigo-500 dark:from-blue-800 dark:to-indigo-900 p-1 rounded-2xl shadow-xl">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
+      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-300 dark:to-indigo-400">
+        Edit Week Schedule
+      </h2>
 
-    <div class="mb-4">
-      <label for="description" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Description</label>
-      <textarea
-        id="description"
-        v-model="description"
-        rows="3"
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      ></textarea>
-    </div>
+      <div class="space-y-4">
+        <div class="relative">
+          <input
+            id="modeName"
+            v-model="modeName"
+            type="text"
+            required
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300 placeholder-transparent"
+            placeholder="Mode Name"
+          />
+          <label for="modeName" class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500 dark:peer-focus:text-blue-400">
+            Mode Name
+          </label>
+        </div>
 
-    <div class="mb-4">
-      <label for="status" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Status</label>
-      <select
-        id="status"
-        v-model="status"
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      >
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-    </div>
+        <div class="relative">
+          <textarea
+            id="description"
+            v-model="description"
+            rows="4"
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300 placeholder-transparent resize-none"
+            placeholder="Description"
+          ></textarea>
+          <label for="description" class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500 dark:peer-focus:text-blue-400">
+            Description
+          </label>
+        </div>
 
-
-    <div class="mb-4">
-      <h3 :class="[
-        'text-md font-medium leading-6',
-        darkMode ? 'text-gray-200' : 'text-gray-900'
-      ]">L'email d'utilisateur qui creer le calendrier:</h3>
-      <div :class="[
-        'mt-2 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-500'
-      ]">{{ creatorEmail }}</div>
-    </div>
-    
-    <div class="mb-4">
-      <h3 :class="[
-        'text-md font-medium leading-6',
-        darkMode ? 'text-gray-200' : 'text-gray-900'
-      ]">L'email des utilisateurs qui modifier le calendrier:</h3>
-      <div v-if="editors.length === 0" :class="[
-        'mt-2 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-500'
-      ]">
-        No editors assigned.
+        <div class="relative">
+          <select
+            id="status"
+            v-model="status"
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <label for="status" class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400">
+            Status
+          </label>
+        </div>
       </div>
-      <div v-else class="mt-2">
-        <ul role="list" :class="[
-          'divide-y',
-          darkMode ? 'divide-gray-700' : 'divide-gray-200'
-        ]">
-          <li v-for="(email, index) in editors" :key="index" class="py-2">
-            <div :class="[
-              'text-sm',
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            ]">{{ email }}</div>
-          </li>
-        </ul>
-      </div>
-    </div>
 
-    <div class="flex justify-end">
-      <button
-        type="button"
-        :class="[
-          'font-bold py-2 px-4 rounded',
-          darkMode
-            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-            : 'bg-blue-500 hover:bg-blue-700 text-white'
-        ]"
-        @click="updateWeekSchedule"
-      >
-        Update
-      </button>
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Creator Email:</h3>
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ creatorEmail }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Editors:</h3>
+          <div v-if="editors.length === 0" class="mt-1 text-sm text-gray-600 dark:text-gray-400 italic">
+            No editors assigned.
+          </div>
+          <ul v-else class="mt-2 space-y-2">
+            <li v-for="(email, index) in editors" :key="index" class="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-md px-3 py-2">
+              {{ email }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="button"
+          @click="updateWeekSchedule"
+          class="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-700 dark:hover:from-blue-500 dark:hover:to-indigo-600 transition duration-300"
+        >
+          Update
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapActions, mapGetters } from 'vuex'

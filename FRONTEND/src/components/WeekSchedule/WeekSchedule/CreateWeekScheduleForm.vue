@@ -1,81 +1,83 @@
 <template>
-  <div :class="[
-    'p-6 rounded-lg shadow-lg',
-    darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
-  ]">
-    <div class="mb-4">
-      <label for="modeName" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Mode Name</label>
-      <input
-        id="modeName"
-        v-model="modeName"
-        type="text"
-        required
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      />
-    </div>
+  <div class="bg-gradient-to-br from-blue-400 to-indigo-500 dark:from-blue-800 dark:to-indigo-900 p-1 rounded-2xl shadow-xl">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
+      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-300 dark:to-indigo-400">
+        Create Week Schedule
+      </h2>
 
-    <div class="mb-4">
-      <label for="description" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Description</label>
-      <textarea
-        id="description"
-        v-model="description"
-        rows="3"
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      ></textarea>
-    </div>
+      <div class="space-y-4">
+        <div class="relative">
+          <input
+            id="modeName"
+            v-model="modeName"
+            type="text"
+            required
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300 placeholder-transparent"
+            placeholder="Mode Name"
+          />
+          <label
+            for="modeName"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500 dark:peer-focus:text-blue-400"
+          >
+            Mode Name
+          </label>
+        </div>
 
-    <div class="mb-4">
-      <label for="status" :class="[
-        'block text-sm font-medium',
-        darkMode ? 'text-gray-300' : 'text-gray-700'
-      ]">Status</label>
-      <select
-        id="status"
-        v-model="status"
-        :class="[
-          'mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-          darkMode 
-            ? 'bg-gray-700 border-gray-600 text-white' 
-            : 'bg-white border-gray-300 text-gray-900'
-        ]"
-      >
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-    </div>
+        <div class="relative">
+          <textarea
+            id="description"
+            v-model="description"
+            rows="4"
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300 placeholder-transparent resize-none"
+            placeholder="Description"
+          ></textarea>
+          <label
+            for="description"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500 dark:peer-focus:text-blue-400"
+          >
+            Description
+          </label>
+        </div>
 
-    <div class="flex justify-end">
-      <button
-        type="button"
-        :class="[
-          'font-bold py-2 px-4 rounded',
-          darkMode
-            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-            : 'bg-blue-500 hover:bg-blue-700 text-white'
-        ]"
-        @click="submitForm"
-      >
-        Create
-      </button>
+        <div class="relative">
+          <select
+            id="status"
+            v-model="status"
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <label
+            for="status"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400"
+          >
+            Status
+          </label>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <button
+          type="button"
+          @click="$emit('close')"
+          class="px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          @click="submitForm"
+          class="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-700 dark:hover:from-blue-500 dark:hover:to-indigo-600 transition duration-300"
+        >
+          Create
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
+
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
