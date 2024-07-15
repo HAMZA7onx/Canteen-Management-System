@@ -15,7 +15,7 @@ const getters = {
   getLastScannedPerson: (state) => state.lastScannedPerson,
   getDiscounts: (state) => state.discounts,
 };
-
+ 
 const actions = {
   async verifyAndScanBadge({ commit }, { rfid, day }) {
     try {
