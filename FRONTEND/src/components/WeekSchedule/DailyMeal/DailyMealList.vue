@@ -1,25 +1,25 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200 dark:from-gray-900 dark:to-indigo-900 transition-all duration-500 ease-in-out">
-    <!-- Header Section -->
+    <!-- Section d'en-tête -->
     <div class="bg-white dark:bg-gray-800 shadow-lg transform -skew-y-2">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transform skew-y-2">
         <div class="flex flex-col md:flex-row items-center justify-between">
           <div class="mb-6 md:mb-0 text-center md:text-left">
             <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-              Daily Meals
+              Repas Quotidiens
             </h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 font-medium">
-              Crafting your perfect day, one delicious meal at a time
+              Créez votre journée parfaite, un délicieux repas à la fois
             </p>
           </div>
           <div class="flex items-center space-x-6">
-            <div class="meal-type-icon" title="Breakfast">
+            <div class="meal-type-icon" title="Petit-déjeuner">
               <span class="text-3xl">🍳</span>
             </div>
-            <div class="meal-type-icon" title="Lunch">
+            <div class="meal-type-icon" title="Déjeuner">
               <span class="text-3xl">🥗</span>
             </div>
-            <div class="meal-type-icon" title="Dinner">
+            <div class="meal-type-icon" title="Dîner">
               <span class="text-3xl">🍽️</span>
             </div>
           </div>
@@ -33,26 +33,26 @@
             <span class="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             </span>
-            <span class="relative">Create Daily Meal</span>
+            <span class="relative">Créer un Repas Quotidien</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Daily Meals List -->
+    <!-- Liste des Repas Quotidiens -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
              class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
           <div class="p-6">
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ dailyMeal.name }}</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto">{{ dailyMeal.description !== null ? dailyMeal.description : 'No description' }}</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
             <div class="flex justify-between items-center">
               <button
                 @click="openAssignMenuModal(dailyMeal)"
                 class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300"
               >
-                Assign Menus
+                Assigner des Menus
               </button>
               <div class="space-x-2">
                 <button
@@ -77,7 +77,7 @@
     <!-- Modals -->
     <Overlay v-if="showCreateModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showCreateModal" title="Create Daily Meal" @close="closeCreateModal">
+        <Modal :show="showCreateModal" title="Créer un Repas Quotidien" @close="closeCreateModal">
           <daily-meal-form
             :dailyMeal="{ name: '', description: '' }"
             @create="handleCreateDailyMeal"
@@ -88,7 +88,7 @@
 
     <Overlay v-if="showEditModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showEditModal" title="Edit Daily Meal" @close="closeEditModal">
+        <Modal :show="showEditModal" title="Modifier le Repas Quotidien" @close="closeEditModal">
           <daily-meal-form
             :dailyMeal="selectedDailyMeal"
             @update="handleUpdateDailyMeal"
@@ -99,7 +99,7 @@
 
     <Overlay v-if="showAssignMenuModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showAssignMenuModal" :title="`Assign Menus for ${selectedDailyMeal.name}`" @close="closeAssignMenuModal">
+        <Modal :show="showAssignMenuModal" :title="`Assigner des Menus pour ${selectedDailyMeal.name}`" @close="closeAssignMenuModal">
           <daily-meal-menu-form
             :dailyMealId="selectedDailyMeal.id"
             :assignedMenus="selectedDailyMeal.menus"
@@ -124,11 +124,11 @@
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-headline">
-                  Delete Daily Meal
+                  Supprimer le Repas Quotidien
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this daily meal? This action cannot be undone.
+                    Êtes-vous sûr de vouloir supprimer ce repas quotidien ? Cette action ne peut pas être annulée.
                   </p>
                 </div>
               </div>
@@ -140,14 +140,14 @@
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
               @click="handleDeleteDailyMeal"
             >
-              Delete
+              Supprimer
             </button>
             <button
               type="button"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:border-gray-500"
               @click="closeDeleteConfirmation"
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </div>

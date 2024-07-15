@@ -1,42 +1,42 @@
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-    <!-- Header Section with Background Image -->
+    <!-- Section d'en-tête avec image de fond -->
     <div class="relative bg-indigo-600 dark:bg-indigo-800 text-white overflow-hidden">
       <div class="absolute inset-0">
-        <img src="@/assets/menu-image.jpg" alt="Menu Background" class="w-full h-full object-cover opacity-30">
+        <img src="@/assets/menu-image.jpg" alt="Arrière-plan du menu" class="w-full h-full object-cover opacity-30">
         <div class="absolute inset-0 bg-indigo-600 dark:bg-indigo-800 mix-blend-multiply"></div>
       </div>
       <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">Menu Management</h1>
+        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">Gestion des Menus</h1>
         <p class="mt-6 max-w-3xl text-xl">
-          Create and manage your restaurant's menus with ease. Organize your dishes, set prices, and keep your offerings up to date.
+          Créez et gérez facilement les menus de votre restaurant. Organisez vos plats, définissez les prix et tenez vos offres à jour.
         </p>
         <div class="mt-10 flex items-center space-x-6">
           <button
             class="bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             @click="openCreateModal"
           >
-            Create Menu
+            Créer un Menu
           </button>
           <a href="#menu-list" class="text-white font-semibold hover:text-indigo-200 transition duration-300">
-            View Menus <span aria-hidden="true">→</span>
+            Voir les Menus <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Menu List Section -->
+    <!-- Section Liste des Menus -->
     <div id="menu-list" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transition-colors duration-300">
         <div class="px-4 py-5 sm:p-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Menu List</h2>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Liste des Menus</h2>
           <loading-wheel v-if="isLoading" />
           <table v-else class="w-full table-auto">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Food Components</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Composants Alimentaires</th>
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -49,7 +49,7 @@
                     class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
                     @click="openFoodComposantModal(menu)"
                   >
-                    Manage
+                    Gérer
                   </button>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
@@ -76,7 +76,7 @@
     <!-- Modals -->
     <Overlay v-if="showCreateModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showCreateModal" title="Create Menu" @close="closeCreateModal">
+        <Modal :show="showCreateModal" title="Créer un Menu" @close="closeCreateModal">
           <menu-form
             :menu="{ name: '', description: '' }"
             @create="handleCreateMenu"
@@ -87,7 +87,7 @@
 
     <Overlay v-if="showEditModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showEditModal" title="Edit Menu" @close="closeEditModal">
+        <Modal :show="showEditModal" title="Modifier le Menu" @close="closeEditModal">
           <menu-form
             :menu="selectedMenu"
             @update="handleUpdateMenu"
@@ -98,7 +98,7 @@
 
     <Overlay v-if="showFoodComposantModal">
       <div class="modal-container" @click.stop>
-        <Modal :show="showFoodComposantModal" title="Manage Food Components" @close="closeFoodComposantModal">
+        <Modal :show="showFoodComposantModal" title="Gérer les Composants Alimentaires" @close="closeFoodComposantModal">
           <menu-food-composant-form
             :menuId="selectedMenu ? selectedMenu.id : null"
           />
@@ -106,7 +106,7 @@
       </div>
     </Overlay>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Modal de Confirmation de Suppression -->
     <Overlay v-if="showDeleteConfirmation">
       <div class="modal-container" @click.stop>
         <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
@@ -119,11 +119,11 @@
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-headline">
-                  Delete Menu
+                  Supprimer le Menu
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete {{ selectedMenu.name }}? This action cannot be undone.
+                    Êtes-vous sûr de vouloir supprimer {{ selectedMenu.name }} ? Cette action ne peut pas être annulée.
                   </p>
                 </div>
               </div>
@@ -135,14 +135,14 @@
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
               @click="handleDeleteMenu"
             >
-              Delete
+              Supprimer
             </button>
             <button
               type="button"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:border-gray-500"
               @click="closeDeleteConfirmation"
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </div>
@@ -150,6 +150,7 @@
     </Overlay>
   </div>
 </template>
+
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
