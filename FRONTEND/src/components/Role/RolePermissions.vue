@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <div class="mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Assigned Permissions</h3>
-      <ul class="list-disc list-inside">
-        <li v-for="permission in fetchedAssignedPermissions" :key="permission.id" class="flex justify-between items-center">
-          <span>{{ permission.name }}</span>
+  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 transition-colors duration-300">
+    <div class="mb-6">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Assigned Permissions</h3>
+      <ul class="space-y-2">
+        <li v-for="permission in fetchedAssignedPermissions" :key="permission.id" class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+          <span class="text-gray-800 dark:text-gray-200">{{ permission.name }}</span>
           <button
             @click="removePermission(permission)"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
           >
             Remove
           </button>
@@ -15,12 +15,12 @@
       </ul>
     </div>
     <div>
-      <label for="permissions" class="block text-gray-700 font-bold mb-2">Available Permissions</label>
-      <div class="flex">
+      <label for="permissions" class="block text-gray-700 dark:text-gray-300 font-semibold mb-2">Available Permissions</label>
+      <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
         <select
           v-model="selectedPermission"
           id="permissions"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+          class="flex-grow bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors duration-300"
         >
           <option value="">Select a permission</option>
           <option v-for="permission in availablePermissions" :key="permission.id" :value="permission.id">
@@ -29,7 +29,7 @@
         </select>
         <button
           @click="assignPermission"
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-6 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
         >
           Assign Permission
         </button>
