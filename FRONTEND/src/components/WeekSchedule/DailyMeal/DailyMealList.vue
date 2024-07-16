@@ -3,31 +3,31 @@
     <!-- Section d'en-tête -->
     <div class="bg-white dark:bg-gray-800 shadow-lg transform -skew-y-2">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transform skew-y-2">
-        <div class="flex flex-col md:flex-row items-center justify-between">
-          <div class="mb-6 md:mb-0 text-center md:text-left">
-            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+        <div class="flex flex-col items-center justify-between">
+          <div class="mb-6 text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
               Repas Quotidiens
             </h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 font-medium">
               Créez votre journée parfaite, un délicieux repas à la fois
             </p>
           </div>
-          <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-4 sm:space-x-6 mb-6">
             <div class="meal-type-icon" title="Petit-déjeuner">
-              <span class="text-3xl">🍳</span>
+              <span class="text-2xl sm:text-3xl">🍳</span>
             </div>
             <div class="meal-type-icon" title="Déjeuner">
-              <span class="text-3xl">🥗</span>
+              <span class="text-2xl sm:text-3xl">🥗</span>
             </div>
             <div class="meal-type-icon" title="Dîner">
-              <span class="text-3xl">🍽️</span>
+              <span class="text-2xl sm:text-3xl">🍽️</span>
             </div>
           </div>
         </div>
-        <div class="mt-8 flex justify-center md:justify-start">
+        <div class="mt-6 flex justify-center">
           <button
             @click="openCreateModal"
-            class="group relative inline-flex items-center px-6 py-3 overflow-hidden text-lg font-medium text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white"
+            class="group relative inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 overflow-hidden text-base sm:text-lg font-medium text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white w-full sm:w-auto"
           >
             <span class="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease"></span>
             <span class="absolute right-0 flex items-center justify-start w-10 h-10 duration-300 transform translate-x-full group-hover:translate-x-0 ease">
@@ -40,38 +40,42 @@
     </div>
 
     <!-- Liste des Repas Quotidiens -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
-             class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300">
-          <div class="p-6">
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ dailyMeal.name }}</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
-            <div class="flex justify-between items-center">
-              <button
-                @click="openAssignMenuModal(dailyMeal)"
-                class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300"
-              >
-                Assigner des Menus
-              </button>
-              <div class="space-x-2">
-                <button
-                  @click="openEditModal(dailyMeal)"
-                  class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded-full transition-colors duration-300"
-                >
-                  <font-awesome-icon icon="edit" />
-                </button>
-                <button
-                  @click="openDeleteConfirmation(dailyMeal)"
-                  class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors duration-300"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-              </div>
-            </div>
-          </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+  <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
+       class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-gray-200 dark:border-gray-700">
+    <div class="p-5">
+      <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ dailyMeal.name }}</h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto text-sm">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
+      <div class="flex flex-col space-y-3">
+        <button
+          @click="openAssignMenuModal(dailyMeal)"
+          class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-300 text-sm flex items-center justify-center"
+        >
+          <font-awesome-icon icon="utensils" class="mr-2" />
+          Assigner des Menus
+        </button>
+        <div class="flex justify-between">
+          <button
+            @click="openEditModal(dailyMeal)"
+            class="flex-1 mr-2 bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
+          >
+            <font-awesome-icon icon="edit" class="mr-2" />
+            Modifier
+          </button>
+          <button
+            @click="openDeleteConfirmation(dailyMeal)"
+            class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
+          >
+            <font-awesome-icon icon="trash" class="mr-2" />
+            Supprimer
+          </button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <!-- Modals -->
@@ -155,6 +159,7 @@
     </Overlay>
   </div>
 </template>
+
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
