@@ -1,13 +1,13 @@
 <template>
   <div class="relative">
-    <aside :class="['sidebar bg-white dark:bg-gray-800 text-gray-800 dark:text-white fixed top-16 bottom-0 transition-all duration-300 shadow-lg', sidebarOpen ? 'w-64' : 'w-20']">
-      <div class="sidebar-content p-4 h-full overflow-y-auto">
+    <aside :class="['sidebar bg-white dark:bg-gray-800 text-gray-800 dark:text-white fixed top-16 bottom-0 transition-all duration-300 shadow-lg', sidebarOpen ? 'w-64' : 'w-0 sm:w-20', 'z-40']">
+      <div class="sidebar-content p-4 h-full overflow-y-auto" v-show="sidebarOpen || !isMobile">
         <nav>
           <ul class="space-y-4 pb-16">
             <li v-for="(group, index) in menuGroups" :key="index">
               <div @click="toggleGroup(index)" class="flex items-center justify-between cursor-pointer p-2 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900">
-                <span :class="['font-bold text-lg transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0']">{{ group.title }}</span>
-                <font-awesome-icon :icon="group.expanded ? 'chevron-up' : 'chevron-down'" :class="[sidebarOpen ? '' : 'hidden']" />
+                <span :class="['font-bold text-lg transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100']">{{ group.title }}</span>
+                <font-awesome-icon :icon="group.expanded ? 'chevron-up' : 'chevron-down'" :class="[sidebarOpen ? '' : 'hidden sm:inline-block']" />
               </div>
               <transition name="fade">
                 <ul v-if="group.expanded || !sidebarOpen" class="mt-2 space-y-2">
@@ -16,7 +16,7 @@
                     @click="setActiveItem(item)">
                     <router-link :to="item.route" class="flex items-center w-full p-2 text-sm font-medium hover:text-indigo-600 dark:hover:text-indigo-400">
                       <font-awesome-icon :icon="item.icon" class="w-5 h-5 icon" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" />
-                      <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden']">{{ item.label }}</span>
+                      <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100 w-0 overflow-hidden']">{{ item.label }}</span>
                     </router-link>
                   </li>
                 </ul>
@@ -25,15 +25,19 @@
           </ul>
         </nav>
       </div>
-      <button @click="toggleSidebar" class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-indigo-600 text-white p-2 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 focus:outline-none z-50">
-        <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
-      </button>
     </aside>
+    <button @click="toggleSidebar" :class="[
+      'fixed z-50 bg-indigo-600 text-white p-2 rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 focus:outline-none',
+      sidebarOpen ? 'left-64' : 'left-0 sm:left-20',
+      'top-1/2 -translate-y-1/2'
+    ]">
+      <font-awesome-icon :icon="sidebarOpen ? 'chevron-left' : 'chevron-right'" />
+    </button>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -56,6 +60,7 @@ export default {
     const store = useStore();
     const sidebarOpen = computed(() => store.state.sidebar.isOpen);
     const activeItem = ref(null);
+    const isMobile = ref(window.innerWidth < 640);
 
     const menuGroups = ref([
       {
@@ -108,6 +113,18 @@ export default {
       activeItem.value = item;
     };
 
+    const handleResize = () => {
+      isMobile.value = window.innerWidth < 640;
+    };
+
+    onMounted(() => {
+      window.addEventListener('resize', handleResize);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize);
+    });
+
     return {
       sidebarOpen,
       activeItem,
@@ -115,6 +132,7 @@ export default {
       toggleSidebar,
       toggleGroup,
       setActiveItem,
+      isMobile,
     };
   },
 };

@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+  <div class="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900 min-h-screen py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-7xl mx-auto">
       <!-- Descriptive Section -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8 transition-colors duration-300 border border-gray-300">
-        <h1 class="text-2xl sm:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-4">Tableau de bord de gestion des administrateurs</h1>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-8 transition-colors duration-300 border border-gray-300">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-4">Tableau de bord de gestion des administrateurs</h1>
         <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
           Gérez efficacement les comptes administrateurs, contrôlez les niveaux d'accès et maintenez la sécurité du système. Créez, modifiez et supervisez les rôles d'administrateur pour assurer un fonctionnement fluide et une gouvernance robuste.
         </p>
@@ -18,7 +18,7 @@
       <!-- Admin Actions -->
       <div class="mb-6">
         <button
-          class="bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+          class="w-full sm:w-auto bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
           @click="openCreateAdminModal"
         >
           Créer un administrateur
@@ -26,48 +26,79 @@
       </div>
 
       <!-- Admin List -->
-      <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-x-auto transition-colors duration-300">
+      <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden transition-colors duration-300">
         <loading-wheel v-if="isLoading" />
         <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
           {{ error }}
           <button @click="loadAdmins" class="ml-2 underline">Réessayer</button>
         </div>
-        <!-- table  -->
-        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="admin in admins" :key="admin.id">
-              <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ admin.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ admin.email }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  class="bg-yellow-500 hover:bg-yellow-700 dark:bg-yellow-600 dark:hover:bg-yellow-800 text-white font-bold py-2 px-4 rounded mr-2 transition-colors duration-300"
-                  @click="openEditAdminModal(admin)"
-                >
-                  <font-awesome-icon icon="edit" />
-                </button>
-                <button
-                  class="bg-red-500 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-800 text-white font-bold py-2 px-4 rounded mr-2 transition-colors duration-300"
-                  @click="deleteAdmin(admin)"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-                <button
-                  class="bg-green-500 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-800 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
-                  @click="openManageRolesPermissionsModal(admin)"
-                >
-                  Gérer les rôles
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Admin</th>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Email</th>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <template v-for="admin in admins" :key="admin.id">
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                  <td class="px-3 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" :src="admin.avatar || 'https://via.placeholder.com/40'" alt="">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ admin.name }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 sm:hidden">{{ admin.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-3 py-4 whitespace-nowrap hidden sm:table-cell">
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ admin.email }}</div>
+                  </td>
+                  <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2 sm:hidden">
+                      <button @click="toggleExpandRow(admin.id)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-200">
+                        <font-awesome-icon :icon="expandedRows.includes(admin.id) ? 'chevron-up' : 'chevron-down'" />
+                      </button>
+                    </div>
+                    <div class="hidden sm:flex space-x-2">
+                      <button @click="openEditAdminModal(admin)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-200">
+                        <font-awesome-icon icon="edit" />
+                      </button>
+                      <button @click="deleteAdmin(admin)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-200">
+                        <font-awesome-icon icon="trash" />
+                      </button>
+                      <button @click="openManageRolesPermissionsModal(admin)" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-200">
+                        <font-awesome-icon icon="user-cog" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="expandedRows.includes(admin.id)" class="bg-gray-50 dark:bg-gray-700 sm:hidden">
+                  <td colspan="3" class="px-3 py-4">
+                    <div class="flex flex-col space-y-2">
+                      <button @click="openEditAdminModal(admin)" class="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="edit" class="mr-2" />
+                        Edit
+                      </button>
+                      <button @click="deleteAdmin(admin)" class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="trash" class="mr-2" />
+                        Delete
+                      </button>
+                      <button @click="openManageRolesPermissionsModal(admin)" class="flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="user-cog" class="mr-2" />
+                        Manage Roles
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Create Admin Modal -->
@@ -111,7 +142,7 @@
           </div>
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
           <div
-            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-headline"
@@ -185,6 +216,7 @@ export default {
       adminToDelete: null,
       isLoading: true,
       error: null,
+      expandedRows: [],
     };
   },
   computed: {
@@ -226,7 +258,7 @@ export default {
         .dispatch('admin/updateAdmin', updatedAdmin)
         .then(() => {
           this.closeEditAdminModal();
-          this.loadAdmins(); // Refresh the admin list after update
+          this.loadAdmins();
         })
         .catch((error) => {
           console.error('Error updating admin:', error);
@@ -242,7 +274,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.adminToDelete = null;
-          this.loadAdmins(); // Refresh the admin list after deletion
+          this.loadAdmins();
         })
         .catch((error) => {
           console.error('Error deleting admin:', error);
@@ -258,6 +290,25 @@ export default {
       this.showManageRolesPermissionsModal = false;
       this.selectedAdmin = null;
     },
+    toggleExpandRow(adminId) {
+      const index = this.expandedRows.indexOf(adminId);
+      if (index > -1) {
+        this.expandedRows.splice(index, 1);
+      } else {
+        this.expandedRows.push(adminId);
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.expanded-row {
+  animation: fadeIn 0.3s ease-in-out;
+}
+</style>

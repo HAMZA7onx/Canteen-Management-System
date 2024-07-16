@@ -5,7 +5,7 @@
       <Sidebar />
       <main :class="[
         'mt-14 p-6 flex-grow overflow-auto transition-all duration-300',
-        isSidebarOpen ? 'ml-64' : 'ml-20'
+        isSidebarOpen ? 'sm:ml-64' : 'ml-0 sm:ml-20'
       ]">
         <router-view />
       </main>
