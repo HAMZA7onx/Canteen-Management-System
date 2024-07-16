@@ -29,7 +29,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
           <loading-wheel v-if="isLoading" />
-          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <table v-show="!isLoading" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th
@@ -101,6 +101,53 @@
               </tr>
             </tbody>
           </table>
+          <ul v-show="!isLoading" class="divide-y divide-gray-200 dark:divide-gray-700 md:hidden">
+            <li v-for="badge in sortedBadges" :key="badge.id" class="py-4 px-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</span>
+                <button
+                  class="text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200"
+                  @click="toggleBadgeActions(badge)"
+                >
+                  <font-awesome-icon icon="ellipsis-v" />
+                </button>
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ getUserName(badge) }}</p>
+              <span :class="getStatusClass(badge.status)" class="mt-1 inline-block">
+                {{ badge.status }}
+              </span>
+              <div v-if="badge.showActions" class="mt-2 space-y-2">
+                <button
+                  class="w-full text-left text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300 flex items-center"
+                  @click="showDetails(badge)"
+                >
+                  <font-awesome-icon icon="info-circle" class="mr-2" />
+                  Voir les détails
+                </button>
+                <button
+                  class="w-full text-left text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 transition-colors duration-300 flex items-center"
+                  @click="editBadge(badge)"
+                  :disabled="badge.status === 'lost'"
+                >
+                  <font-awesome-icon icon="edit" class="mr-2" />
+                  Modifier
+                </button>
+                <button
+                  class="w-full text-left transition-colors duration-300 flex items-center"
+                  :class="[
+                    badge.status === 'available'
+                      ? 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
+                      : 'text-gray-400 cursor-not-allowed'
+                  ]"
+                  @click="deleteBadge(badge)"
+                  :disabled="badge.status !== 'available'"
+                >
+                  <font-awesome-icon icon="trash" class="mr-2" />
+                  Supprimer
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -160,18 +207,9 @@
       </Overlay>
 
       <!-- Modal de confirmation de suppression -->
-      <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
-          </div>
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-          <div
-            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
+      <Overlay v-if="showDeleteConfirmation">
+        <div class="modal-container" @click.stop>
+          <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
@@ -209,12 +247,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </Overlay>
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -239,10 +275,10 @@ export default {
       showImportModal: false,
       showEditModal: false,
       showDetailsModal: false,
-      showDeleteConfirmation: false,  // Add this line
+      showDeleteConfirmation: false,
       selectedBadge: null,
       eligibleUsersKey: 0,
-      badgeToDelete: null,  // Add this line
+      badgeToDelete: null,
       sortBy: null,
       sortDirection: 'asc',
       isLoading: true,
@@ -304,7 +340,7 @@ export default {
         this.$store.dispatch('badge/deleteBadge', this.badgeToDelete.id)
           .then(() => {
             console.log('Badge deleted successfully');
-            this.loadBadges(); // Refresh the list
+            this.loadBadges();
           })
           .catch((error) => {
             console.error('Error deleting badge:', error);
@@ -314,7 +350,6 @@ export default {
           });
       }
     },
-
     closeDeleteConfirmation() {
       this.showDeleteConfirmation = false;
       this.badgeToDelete = null;
@@ -322,12 +357,12 @@ export default {
     handleImportSuccess() {
       this.showImportModal = false;
       this.fetchBadges();
-      this.loadBadges(); // Refresh the list
+      this.loadBadges();
     },
     handleUpdateSuccess(updatedBadge) {
       this.showEditModal = false;
       this.selectedBadge = null;
-      this.loadBadges(); // Refresh the list
+      this.loadBadges();
 
       if (updatedBadge) {
         const index = this.badges.findIndex(badge => badge.id === updatedBadge.id);
@@ -410,6 +445,14 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    toggleBadgeActions(badge) {
+      badge.showActions = !badge.showActions;
+      this.$forceUpdate();
+    },
+    toggleBadgeActions(badge) {
+      badge.showActions = !badge.showActions;
+      this.$forceUpdate();
     },
   },
 };

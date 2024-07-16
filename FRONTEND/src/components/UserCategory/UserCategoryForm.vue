@@ -31,21 +31,12 @@
           </label>
         </div>
 
-        <div class="flex justify-end space-x-4">
-          <button
+        <button
             type="submit"
             class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
           >
             {{ isEditMode ? 'Update' : 'Create' }}
           </button>
-          <button
-            type="button"
-            @click="$emit('close')"
-            class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-gray-800"
-          >
-            Cancel
-          </button>
-        </div>
       </form>
     </div>
   </div>

@@ -18,43 +18,77 @@
       <!-- Liste des Composants Alimentaires -->
       <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <loading-wheel v-if="isLoading" />
-        <table v-else class="w-full table-auto">
-          <thead class="bg-gray-100 dark:bg-gray-700">
-            <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
-              <th class="py-3 px-6 text-left">Nom</th>
-              <th class="py-3 px-6 text-left">Description</th>
-              <th class="py-3 px-6 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
-            <tr
-              v-for="foodComposant in foodComposants"
-              :key="foodComposant.id"
-              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-            >
-              <td class="py-3 px-6 text-left whitespace-nowrap">
-                {{ foodComposant.name }}
-              </td>
-              <td class="py-3 px-6 text-left">
-                {{ foodComposant.description !== null ? foodComposant.description : '-' }}
-              </td>
-              <td class="py-3 px-6 text-center">
+        <div v-else>
+          <table class="w-full table-auto hidden md:table">
+            <thead class="bg-gray-100 dark:bg-gray-700">
+              <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Nom</th>
+                <th class="py-3 px-6 text-left">Description</th>
+                <th class="py-3 px-6 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+              <tr
+                v-for="foodComposant in foodComposants"
+                :key="foodComposant.id"
+                class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+              >
+                <td class="py-3 px-6 text-left whitespace-nowrap">
+                  {{ foodComposant.name }}
+                </td>
+                <td class="py-3 px-6 text-left">
+                  {{ foodComposant.description !== null ? foodComposant.description : '-' }}
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <button
+                    class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full mr-2 transition-colors duration-300"
+                    @click="openEditModal(foodComposant)"
+                  >
+                    <font-awesome-icon icon="edit" />
+                  </button>
+                  <button
+                    class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
+                    @click="openDeleteConfirmation(foodComposant)"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Mobile view -->
+          <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+            <li v-for="foodComposant in foodComposants" :key="foodComposant.id" class="py-4 px-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
                 <button
-                  class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full mr-2 transition-colors duration-300"
+                  class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200"
+                  @click="toggleFoodComposantActions(foodComposant)"
+                >
+                  <font-awesome-icon icon="ellipsis-v" />
+                </button>
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ foodComposant.description !== null ? foodComposant.description : '-' }}</p>
+              <div v-if="foodComposant.showActions" class="mt-2 space-y-2">
+                <button
+                  class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                   @click="openEditModal(foodComposant)"
                 >
-                  <font-awesome-icon icon="edit" />
+                  <font-awesome-icon icon="edit" class="mr-2" />
+                  Modifier
                 </button>
                 <button
-                  class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
+                  class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                   @click="openDeleteConfirmation(foodComposant)"
                 >
-                  <font-awesome-icon icon="trash" />
+                  <font-awesome-icon icon="trash" class="mr-2" />
+                  Supprimer
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Modals -->
@@ -155,7 +189,7 @@ export default {
     ...mapGetters('foodComposant', ['foodComposants'])
   },
   created() {
-    this.fetchFoodComposants(),
+    this.fetchFoodComposants()
     this.loadFoodComposants()
   },
   watch: {
@@ -197,7 +231,7 @@ export default {
     handleDeleteFoodComposant() {
       this.deleteFoodComposant(this.selectedFoodComposant)
         .then(() => {
-          this.closeDeleteConfirmation(),
+          this.closeDeleteConfirmation()
           this.loadFoodComposants()
         })
         .catch(error => {
@@ -214,6 +248,10 @@ export default {
       } finally {
         this.isLoading = false
       }
+    },
+    toggleFoodComposantActions(foodComposant) {
+      foodComposant.showActions = !foodComposant.showActions
+      this.$forceUpdate()
     },
   }
 }

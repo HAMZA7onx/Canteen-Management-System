@@ -25,11 +25,11 @@
         </button>
       </div>
 
-      <!-- Categories Table -->
+      <!-- Categories Table/List -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
           <loading-wheel v-if="isLoading" />
-          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <table v-show="!isLoading" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
@@ -71,6 +71,46 @@
               </tr>
             </tbody>
           </table>
+          <ul v-show="!isLoading" class="divide-y divide-gray-200 dark:divide-gray-700 md:hidden">
+            <li v-for="category in userCategories" :key="category.id" class="py-4 px-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ category.name }}</span>
+                <button
+                  class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+                  @click="toggleCategoryActions(category)"
+                >
+                  <font-awesome-icon icon="ellipsis-v" />
+                </button>
+              </div>
+              <div v-if="category.showActions" class="mt-2 space-y-2">
+                <button
+                  class="w-full text-left text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-300 flex items-center"
+                  @click="openDetailsPopup(category)"
+                >
+                  <font-awesome-icon icon="info-circle" class="mr-2" />
+                  Voir les Détails
+                </button>
+                <button
+                  class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
+                  @click="openEditModal(category)"
+                >
+                  <font-awesome-icon icon="edit" class="mr-2" />
+                  Modifier
+                </button>
+                <button
+                  class="w-full text-left transition-colors duration-300 flex items-center"
+                  :class="[
+                    category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
+                  ]"
+                  @click="deleteCategory(category)"
+                  :disabled="category.is_assigned"
+                >
+                  <font-awesome-icon icon="trash" class="mr-2" />
+                  Supprimer
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -196,6 +236,8 @@
   </div>
 </template>
 
+
+
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import UserCategoryForm from '@/components/UserCategory/UserCategoryForm.vue';
@@ -310,6 +352,10 @@ export default {
     },
     isUpdatedAtSameAsCreatedAt(category) {
       return new Date(category.created_at).getTime() === new Date(category.updated_at).getTime();
+    },
+    toggleCategoryActions(category) {
+      category.showActions = !category.showActions;
+      this.$forceUpdate();
     },
   },
 };

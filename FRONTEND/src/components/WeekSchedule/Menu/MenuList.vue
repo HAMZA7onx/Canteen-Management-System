@@ -6,14 +6,14 @@
         <img src="@/assets/menu-image.jpg" alt="Arrière-plan du menu" class="w-full h-full object-cover opacity-30">
         <div class="absolute inset-0 bg-indigo-600 dark:bg-indigo-800 mix-blend-multiply"></div>
       </div>
-      <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">Gestion des Menus</h1>
-        <p class="mt-6 max-w-3xl text-xl">
+      <div class="relative max-w-7xl mx-auto py-12 px-4 sm:py-24 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">Gestion des Menus</h1>
+        <p class="mt-4 max-w-3xl text-lg sm:text-xl">
           Créez et gérez facilement les menus de votre restaurant. Organisez vos plats, définissez les prix et tenez vos offres à jour.
         </p>
-        <div class="mt-10 flex items-center space-x-6">
+        <div class="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
           <button
-            class="bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            class="w-full sm:w-auto bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             @click="openCreateModal"
           >
             Créer un Menu
@@ -31,44 +31,86 @@
         <div class="px-4 py-5 sm:p-6">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Liste des Menus</h2>
           <loading-wheel v-if="isLoading" />
-          <table v-else class="w-full table-auto">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Composants Alimentaires</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="menu in menus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
+          <div v-else>
+            <!-- Desktop view -->
+            <table class="w-full table-auto hidden md:table">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Composants Alimentaires</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="menu in menus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
+                    <button
+                      class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+                      @click="openFoodComposantModal(menu)"
+                    >
+                      Gérer
+                    </button>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                    <button
+                      class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-300 ease-in-out"
+                      @click="openEditModal(menu)"
+                    >
+                      <font-awesome-icon icon="edit" />
+                    </button>
+                    <button
+                      class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+                      @click="openDeleteConfirmation(menu)"
+                    >
+                      <font-awesome-icon icon="trash" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Mobile view -->
+            <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+              <li v-for="menu in menus" :key="menu.id" class="py-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</span>
                   <button
-                    class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+                    @click="toggleMenuActions(menu)"
+                  >
+                    <font-awesome-icon icon="ellipsis-v" />
+                  </button>
+                </div>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ menu.description !== null ? menu.description : '-' }}</p>
+                <div v-if="menu.showActions" class="mt-4 space-y-2">
+                  <button
+                    class="w-full text-left text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-300 flex items-center"
                     @click="openFoodComposantModal(menu)"
                   >
-                    Gérer
+                    <font-awesome-icon icon="utensils" class="mr-2" />
+                    Gérer les Composants
                   </button>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                   <button
-                    class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-300 ease-in-out"
+                    class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                     @click="openEditModal(menu)"
                   >
-                    <font-awesome-icon icon="edit" />
+                    <font-awesome-icon icon="edit" class="mr-2" />
+                    Modifier
                   </button>
                   <button
-                    class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
+                    class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                     @click="openDeleteConfirmation(menu)"
                   >
-                    <font-awesome-icon icon="trash" />
+                    <font-awesome-icon icon="trash" class="mr-2" />
+                    Supprimer
                   </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -151,7 +193,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import MenuForm from './MenuForm.vue'
@@ -159,7 +200,6 @@ import MenuFoodComposantForm from './MenuFoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
-
 
 export default {
   components: {
@@ -183,90 +223,95 @@ export default {
     ...mapGetters('menu', ['menus'])
   },
   created() {
-    this.fetchMenus(),
+    this.fetchMenus()
     this.loadMenus()
   },
   methods: {
-    ...mapActions('menu', [
-      'fetchMenus',
-      'createMenu',
-      'updateMenu',
-      'deleteMenu'
-    ]),
-    openCreateModal() {
-      this.showCreateModal = true
-    },
-    closeCreateModal() {
-      this.showCreateModal = false
-    },
-    handleCreateMenu(menuData) {
-      this.createMenu(menuData)
-        .then(() => {
-          this.closeCreateModal()
-          this.loadMenus()
-        })
-        .catch(error => {
-          console.error('Error creating menu:', error)
-          // Handle error if needed
-        })
-    },
-    openEditModal(menu) {
-      this.selectedMenu = { ...menu }
-      this.showEditModal = true
-    },
-    closeEditModal() {
-      this.showEditModal = false
-      this.selectedMenu = null
-    },
-    handleUpdateMenu(menuData) {
-      this.updateMenu(menuData)
-        .then(() => {
-          this.closeEditModal()
-          this.loadMenus()
-        })
-        .catch(error => {
-          console.error('Error updating menu:', error)
-          // Handle error if needed
-        })
-    },
-    openDeleteConfirmation(menu) {
-      this.selectedMenu = { ...menu }
-      this.showDeleteConfirmation = true
-    },
-    closeDeleteConfirmation() {
-      this.showDeleteConfirmation = false
-      this.selectedMenu = null
-    },
-    handleDeleteMenu() {
-      this.deleteMenu(this.selectedMenu)
-        .then(() => {
-          this.closeDeleteConfirmation()
-          this.loadMenus()
-        })
-        .catch(error => {
-          console.error('Error deleting menu:', error)
-          // Handle error if needed
-        })
-    },
-    openFoodComposantModal(menu) {
-      this.selectedMenu = { ...menu }
-      this.showFoodComposantModal = true
-    },
-    closeFoodComposantModal() {
-      this.showFoodComposantModal = false
-      this.selectedMenu = null
-    },
-    async loadMenus() {
-      this.isLoading = true
-      try {
-        await this.fetchMenus()
-      } catch (error) {
-        console.error('Error fetching menus:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-  }
+  ...mapActions('menu', [
+    'fetchMenus',
+    'createMenu',
+    'updateMenu',
+    'deleteMenu'
+  ]),
+  openCreateModal() {
+    this.showCreateModal = true
+  },
+  closeCreateModal() {
+    this.showCreateModal = false
+  },
+  handleCreateMenu(menuData) {
+    this.createMenu(menuData)
+      .then(() => {
+        this.closeCreateModal()
+        this.loadMenus()
+      })
+      .catch(error => {
+        console.error('Error creating menu:', error)
+        // Handle error if needed
+      })
+  },
+  openEditModal(menu) {
+    this.selectedMenu = { ...menu }
+    this.showEditModal = true
+  },
+  closeEditModal() {
+    this.showEditModal = false
+    this.selectedMenu = null
+  },
+  handleUpdateMenu(menuData) {
+    this.updateMenu(menuData)
+      .then(() => {
+        this.closeEditModal()
+        this.loadMenus()
+      })
+      .catch(error => {
+        console.error('Error updating menu:', error)
+        // Handle error if needed
+      })
+  },
+  openDeleteConfirmation(menu) {
+    this.selectedMenu = { ...menu }
+    this.showDeleteConfirmation = true
+  },
+  closeDeleteConfirmation() {
+    this.showDeleteConfirmation = false
+    this.selectedMenu = null
+  },
+  handleDeleteMenu() {
+    this.deleteMenu(this.selectedMenu)
+      .then(() => {
+        this.closeDeleteConfirmation()
+        this.loadMenus()
+      })
+      .catch(error => {
+        console.error('Error deleting menu:', error)
+        // Handle error if needed
+      })
+  },
+  openFoodComposantModal(menu) {
+    this.selectedMenu = { ...menu }
+    this.showFoodComposantModal = true
+  },
+  closeFoodComposantModal() {
+    this.showFoodComposantModal = false
+    this.selectedMenu = null
+  },
+  async loadMenus() {
+    this.isLoading = true
+    try {
+      await this.fetchMenus()
+    } catch (error) {
+      console.error('Error fetching menus:', error)
+    } finally {
+      this.isLoading = false
+    }
+  },
+  toggleMenuActions(menu) {
+    menu.showActions = !menu.showActions
+    this.$forceUpdate()
+  },
+}
+
 }
 </script>
 
