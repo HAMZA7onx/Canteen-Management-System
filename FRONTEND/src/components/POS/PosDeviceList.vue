@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-teal-100 to-blue-200 dark:from-gray-900 dark:to-blue-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+  <div class="min-h-screen bg-gradient-to-br from-teal-100 to-blue-200 dark:from-gray-900 dark:to-blue-900 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-7xl mx-auto">
       <!-- Section descriptive -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-4">Centre de Gestion des Appareils POS</h1>
-        <p class="text-gray-600 dark:text-gray-300 mb-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 transform hover:scale-105 transition-all duration-300">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-3 sm:mb-4">Centre de Gestion des Appareils POS</h1>
+        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
           Bienvenue dans le centre névralgique de la gestion des appareils POS. Ici, vous pouvez orchestrer l'ensemble de votre réseau d'appareils POS, de l'ajout d'appareils individuels à la gestion de leurs statuts. Donnez à votre organisation les moyens d'une administration rationalisée des appareils POS.
         </p>
-        <div class="flex items-center text-sm text-blue-600 dark:text-blue-400">
-          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div class="flex items-center text-xs sm:text-sm text-blue-600 dark:text-blue-400">
+          <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
           </svg>
           Gérez les appareils POS avec précision et facilité
@@ -16,16 +16,16 @@
       </div>
 
       <!-- Actions pour les appareils POS -->
-      <div class="mb-6 flex flex-wrap justify-between items-center">
-        <div class="space-x-4 mb-4 sm:mb-0">
+      <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-center">
+        <div class="w-full sm:w-auto mb-4 sm:mb-0">
           <button
-            class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
             @click="openAddPosDeviceModal"
           >
             <span class="mr-2">+</span> Ajouter un Appareil POS
           </button>
         </div>
-        <div class="text-gray-600 dark:text-gray-300">
+        <div class="text-sm sm:text-base text-gray-600 dark:text-gray-300">
           Total des Appareils POS : <span class="font-bold text-blue-600 dark:text-blue-400">{{ posDevices.length }}</span>
         </div>
       </div>
@@ -34,36 +34,35 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
           <loading-wheel v-if="isLoading" />
-          <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
+          <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400 text-sm sm:text-base">
             {{ error }}
             <button @click="loadPosDevices" class="ml-2 underline">Réessayer</button>
           </div>
-          <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="device in posDevices" :key="device.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ device.ip_address }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
+              <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+              <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              <th scope="col" class="sm:hidden px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <template v-for="device in posDevices" :key="device.id">
+              <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ device.ip_address }}</td>
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   <span :class="{'text-green-600 dark:text-green-400': device.status === 'allowed', 'text-red-600 dark:text-red-400': device.status === 'unauthorized'}">
                     {{ device.status === 'allowed' ? 'Autorisé' : 'Non autorisé' }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                   <button
-                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
+                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-3 transition-colors duration-300"
                     @click="openDetailsPopup(device)"
                   >
-                    Détails
+                    <font-awesome-icon icon="info-circle" />
                   </button>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
                     @click="openEditPosDeviceModal(device)"
@@ -77,9 +76,42 @@
                     <font-awesome-icon icon="trash" />
                   </button>
                 </td>
+                <td class="sm:hidden px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button @click="toggleDeviceActions(device)" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <font-awesome-icon icon="ellipsis-v" />
+                  </button>
+                </td>
               </tr>
-            </tbody>
-          </table>
+              <tr v-if="device.showActions" class="sm:hidden bg-gray-50 dark:bg-gray-700">
+                <td colspan="4" class="px-4 py-4">
+                  <div class="flex flex-col justify-around">
+                    <button
+                      @click="openDetailsPopup(device)"
+                      class="flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
+                    >
+                      <font-awesome-icon icon="info-circle" class="mr-2" />
+                      Détails
+                    </button>
+                    <button
+                      @click="openEditPosDeviceModal(device)"
+                      class="flex items-center text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300"
+                    >
+                      <font-awesome-icon icon="edit" class="mr-2" />
+                      Modifier
+                    </button>
+                    <button
+                      @click="deletePosDevice(device)"
+                      class="flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
+                    >
+                      <font-awesome-icon icon="trash" class="mr-2" />
+                      Supprimer
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
         </div>
       </div>
 
@@ -149,16 +181,16 @@
       </div>
 
       <!-- Popup de Détails de l'Appareil POS -->
-      <div v-if="showDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div v-if="showDetailsPopup" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <Overlay @click="closeDetailsPopup" />
-        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full z-50">
           <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
                   Détails de l'Appareil POS
                 </h3>
-                <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div>
                     <p class="text-gray-500 dark:text-gray-400"><strong>Adresse IP :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.ip_address }}</p>
@@ -179,7 +211,7 @@
                   </ul>
                   <p v-else class="text-gray-900 dark:text-gray-100">Aucun éditeur</p>
                 </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p class="text-gray-500 dark:text-gray-400"><strong>Créé le :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ formatDate(selectedDevice.created_at) }}</p>
@@ -214,7 +246,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import PosDeviceForm from '@/components/POS/PosDeviceForm.vue';
@@ -245,19 +276,21 @@ export default {
   computed: {
     ...mapGetters('posDevice', ['posDevices']),
     parsedEditors() {
-  if (this.selectedDevice && this.selectedDevice.editors) {
-    return Array.isArray(this.selectedDevice.editors) ? this.selectedDevice.editors : [];
-  }
-  return [];
-}
-
+      if (this.selectedDevice && this.selectedDevice.editors) {
+        return Array.isArray(this.selectedDevice.editors) ? this.selectedDevice.editors : [];
+      }
+      return [];
+    }
   },
   created() {
     this.loadPosDevices();
   },
   methods: {
     ...mapActions('posDevice', ['fetchPosDevices', 'createPosDevice', 'updatePosDevice', 'deletePosDevice']),
-    
+    toggleDeviceActions(device) {
+      device.showActions = !device.showActions;
+      this.$forceUpdate();
+    },
     async loadPosDevices() {
       this.isLoading = true;
       this.error = null;
