@@ -16,9 +16,9 @@
       </div>
 
       <!-- Role Actions -->
-      <div class="mb-6 flex justify-between items-center">
+      <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
         <button
-          class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 mb-4 sm:mb-0"
           @click="openCreateRoleModal"
         >
           <span class="mr-2">+</span> Créer un Nouveau Rôle
@@ -35,39 +35,68 @@
           {{ error }}
           <button @click="loadRoles" class="ml-2 underline">Réessayer</button>
         </div>
-        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="role in roles" :key="role.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ role.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3 transition-colors duration-300"
-                  @click="openEditRoleModal(role)"
-                >
-                  <font-awesome-icon icon="edit" />
-                </button>
-                <button
-                  class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 mr-3 transition-colors duration-300"
-                  @click="deleteRole(role)"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-                <button
-                  class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-300"
-                  @click="openManagePermissionsModal(role)"
-                >
-                  <font-awesome-icon icon="key" /> Permissions
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <template v-for="role in roles" :key="role.id">
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ role.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2 sm:hidden">
+                      <button @click="toggleExpandRow(role.id)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-200">
+                        <font-awesome-icon :icon="expandedRows.includes(role.id) ? 'chevron-up' : 'chevron-down'" />
+                      </button>
+                    </div>
+                    <div class="hidden sm:flex space-x-2">
+                      <button
+                        class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
+                        @click="openEditRoleModal(role)"
+                      >
+                        <font-awesome-icon icon="edit" />
+                      </button>
+                      <button
+                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
+                        @click="deleteRole(role)"
+                      >
+                        <font-awesome-icon icon="trash" />
+                      </button>
+                      <button
+                        class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-300"
+                        @click="openManagePermissionsModal(role)"
+                      >
+                        <font-awesome-icon icon="key" /> Permissions
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="expandedRows.includes(role.id)" class="bg-gray-50 dark:bg-gray-700 sm:hidden">
+                  <td colspan="2" class="px-6 py-4">
+                    <div class="flex flex-col space-y-2">
+                      <button @click="openEditRoleModal(role)" class="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="edit" class="mr-2" />
+                        Edit
+                      </button>
+                      <button @click="deleteRole(role)" class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="trash" class="mr-2" />
+                        Delete
+                      </button>
+                      <button @click="openManagePermissionsModal(role)" class="flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="key" class="mr-2" />
+                        Manage Permissions
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Modals -->
@@ -171,6 +200,7 @@ export default {
       roleToDelete: null,
       isLoading: true,
       error: null,
+      expandedRows: [],
     };
   },
   computed: {
@@ -212,7 +242,7 @@ export default {
         .dispatch('role/updateRole', updatedRole)
         .then(() => {
           this.closeEditRoleModal();
-          this.loadRoles(); // Refresh the role list after update
+          this.loadRoles();
         })
         .catch((error) => {
           console.error('Error updating role:', error);
@@ -228,7 +258,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.roleToDelete = null;
-          this.loadRoles(); // Refresh the role list after deletion
+          this.loadRoles();
         })
         .catch((error) => {
           console.error('Error deleting role:', error);
@@ -244,6 +274,25 @@ export default {
       this.showManagePermissionsModal = false;
       this.selectedRole = null;
     },
+    toggleExpandRow(roleId) {
+      const index = this.expandedRows.indexOf(roleId);
+      if (index > -1) {
+        this.expandedRows.splice(index, 1);
+      } else {
+        this.expandedRows.push(roleId);
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.expanded-row {
+  animation: fadeIn 0.3s ease-in-out;
+}
+</style>
