@@ -17,20 +17,21 @@
 
       <!-- User Actions -->
       <div class="mb-6 flex flex-wrap justify-between items-center">
-        <div class="space-x-4 mb-4 sm:mb-0">
-          <button
-            class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-            @click="openCreateUserModal"
-          >
-            <span class="mr-2">+</span> Créer un Utilisateur
-          </button>
-          <button
-            class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-            @click="openImportUsersModal"
-          >
-            <span class="mr-2">↑</span> Importer des Utilisateurs
-          </button>
-        </div>
+        <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
+        <button
+          class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
+          @click="openCreateUserModal"
+        >
+          <span class="mr-2">+</span> Créer un Utilisateur
+        </button>
+        <button
+          class="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
+          @click="openImportUsersModal"
+        >
+          <span class="mr-2">↑</span> Importer des Utilisateurs
+        </button>
+      </div>
+
         <div class="text-gray-600 dark:text-gray-300">
           Total des Utilisateurs: <span class="font-bold text-blue-600 dark:text-blue-400">{{ users.length }}</span>
         </div>
@@ -45,7 +46,7 @@
             <button @click="loadUsers" class="ml-2 underline">Réessayer</button>
           </div>
           <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700 hidden md:table-header-group">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
@@ -58,12 +59,13 @@
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.phone_number }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.gender }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.category.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <!-- Desktop view -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 hidden md:table-cell">{{ user.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.email }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.phone_number }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.gender }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.category.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium hidden md:table-cell">
                   <button
                     class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
                     @click="openDetailsPopup(user)"
@@ -71,7 +73,7 @@
                     Détails
                   </button>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium hidden md:table-cell">
                   <button
                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
                     @click="openEditUserModal(user)"
@@ -84,6 +86,42 @@
                   >
                     <font-awesome-icon icon="trash" />
                   </button>
+                </td>
+
+                <!-- Mobile view -->
+                <td class="px-6 py-4 md:hidden">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.email }}</span>
+                    <button
+                      class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
+                      @click="toggleMobileActions(user)"
+                    >
+                      <font-awesome-icon icon="ellipsis-v" />
+                    </button>
+                  </div>
+                  <div v-if="user.showMobileActions" class="mt-2 space-y-2">
+                    <button
+                      class="w-full text-left text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300 flex items-center"
+                      @click="openDetailsPopup(user)"
+                    >
+                      <font-awesome-icon icon="info-circle" class="mr-2" />
+                      Détails
+                    </button>
+                    <button
+                      class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
+                      @click="openEditUserModal(user)"
+                    >
+                      <font-awesome-icon icon="edit" class="mr-2" />
+                      Modifier
+                    </button>
+                    <button
+                      class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
+                      @click="deleteUser(user)"
+                    >
+                      <font-awesome-icon icon="fa-trash" class="mr-2" />
+                      Supprimer
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -183,8 +221,7 @@
               <div class="sm:flex sm:items-start">
                 <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
                   <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linej
-                    oin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -296,7 +333,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -470,6 +506,10 @@ export default {
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
       FileSaver.saveAs(data, 'user_import_template.xlsx');
+    },
+    toggleMobileActions(user) {
+      user.showMobileActions = !user.showMobileActions;
+      this.$forceUpdate();
     },
   },
 };
