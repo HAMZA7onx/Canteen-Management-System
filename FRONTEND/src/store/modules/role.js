@@ -26,26 +26,29 @@ const actions = {
   },
 
   createRole({ commit }, role) {
+    console.log('createRole action called with role:', role);
     return RoleService.createRole(role)
       .then((response) => {
         commit('ADD_ROLE', response.data);
+        return response.data; 
       })
       .catch((error) => {
         console.error('Error creating role:', error);
         throw error;
       });
-  },
+  },  
 
   updateRole({ commit }, role) {
     return RoleService.updateRole(role.id, role)
       .then((response) => {
         commit('UPDATE_ROLE', response.data);
+        return response.data; // Return the updated role data
       })
       .catch((error) => {
         console.error('Error updating role:', error);
         throw error;
       });
-  },
+  },  
 
   deleteRole({ commit }, roleId) {
     return RoleService.deleteRole(roleId)
@@ -57,7 +60,7 @@ const actions = {
         throw error;
       });
   },
-
+ 
   fetchRolePermissions({ commit }, roleId) {
     return RoleService.getRolePermissions(roleId)
       .then((response) => {
