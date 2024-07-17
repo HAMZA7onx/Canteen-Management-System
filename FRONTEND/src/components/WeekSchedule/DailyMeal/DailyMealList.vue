@@ -157,6 +157,7 @@
         </div>
       </div>
     </Overlay>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -167,6 +168,7 @@ import DailyMealForm from './DailyMealForm.vue'
 import DailyMealMenuForm from './DailyMealMenuForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   components: {
@@ -174,6 +176,7 @@ export default {
     DailyMealMenuForm,
     Modal,
     Overlay,
+    Toast,
   },
   data() {
     return {
@@ -182,6 +185,8 @@ export default {
       showAssignMenuModal: false,
       showDeleteConfirmation: false,
       selectedDailyMeal: null,
+      showToast: false,
+      toastMessage: '',
     }
   },
   computed: {
@@ -212,6 +217,7 @@ export default {
       this.createDailyMeal(dailyMealData)
         .then(() => {
           this.closeCreateModal()
+          this.showSuccessToast('DailyMeal created successfully!');
         })
         .catch((error) => {
           console.error('Error creating daily meal:', error)
@@ -230,6 +236,7 @@ export default {
       this.updateDailyMeal(dailyMealData)
         .then(() => {
           this.closeEditModal()
+          this.showSuccessToast('DailyMeal updated successfully!');
         })
         .catch((error) => {
           console.error('Error updating daily meal:', error)
@@ -256,6 +263,7 @@ export default {
       this.deleteDailyMeal(this.selectedDailyMeal)
         .then(() => {
           this.closeDeleteConfirmation()
+          this.showSuccessToast('DailyMeal created successfully!');
         })
         .catch((error) => {
           console.error('Error deleting daily meal:', error)
@@ -292,6 +300,13 @@ export default {
       this.selectedDailyMeal.menus = this.selectedDailyMeal.menus.filter(
         (menu) => menu.id !== menuId
       )
+    },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
     },
   },
 }

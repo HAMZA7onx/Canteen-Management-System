@@ -97,7 +97,7 @@
           <Modal :show="showCreateModal" title="Créer un Composant Alimentaire" @close="closeCreateModal">
             <food-composant-form
               :foodComposant="{ name: '', description: '' }"
-              @create="createFoodComposant"
+              @create="handleCreateFoodComposant"
               @close="closeCreateModal"
             />
           </Modal>
@@ -109,7 +109,7 @@
           <Modal :show="showEditModal" title="Modifier le Composant Alimentaire" @close="closeEditModal">
             <food-composant-form
               :foodComposant="selectedFoodComposant"
-              @update="updateFoodComposant"
+              @update="handleUpdateFoodComposant"
               @close="closeEditModal"
             />
           </Modal>
@@ -159,6 +159,7 @@
         </div>
       </Overlay>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -168,13 +169,15 @@ import FoodComposantForm from './FoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   components: {
     FoodComposantForm,
     Modal,
     Overlay,
-    LoadingWheel
+    LoadingWheel, 
+    Toast
   },
   data() {
     return {
@@ -182,7 +185,9 @@ export default {
       showEditModal: false,
       showDeleteConfirmation: false,
       selectedFoodComposant: null,
-      isLoading: true
+      isLoading: true,
+      showToast: false, 
+      toastMessage: '',
     }
   },
   computed: {
@@ -233,6 +238,7 @@ export default {
         .then(() => {
           this.closeDeleteConfirmation()
           this.loadFoodComposants()
+          this.showSuccessToast('Composant deleted successfully!');
         })
         .catch(error => {
           console.error('Error deleting food composant:', error)
@@ -252,6 +258,35 @@ export default {
     toggleFoodComposantActions(foodComposant) {
       foodComposant.showActions = !foodComposant.showActions
       this.$forceUpdate()
+    },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
+    },
+    handleCreateFoodComposant(formData) {
+      this.createFoodComposant(formData)
+        .then(() => {
+          this.closeCreateModal()
+          this.loadFoodComposants()
+          this.showSuccessToast('Food component created successfully')
+        })
+        .catch(error => {
+          console.error('Error creating food composant:', error)
+        })
+    },
+    handleUpdateFoodComposant(formData) {
+      this.updateFoodComposant(formData)
+        .then(() => {
+          this.closeEditModal()
+          this.loadFoodComposants()
+          this.showSuccessToast('Food component updated successfully')
+        })
+        .catch(error => {
+          console.error('Error updating food composant:', error)
+        })
     },
   }
 }

@@ -9,7 +9,6 @@ const getters = {
   getMenuById: (state) => (id) => state.menus.find(menu => menu.id === id)
 }
 
-
 const actions = {
   fetchMenus({ commit }) {
     console.log('Fetching menus...')
