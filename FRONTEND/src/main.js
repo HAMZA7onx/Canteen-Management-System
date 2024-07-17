@@ -3,7 +3,6 @@ import App from './App.vue';
 import './style.css';
 import router from './router';
 import store from './store';
-import i18n from './i18n'
 
 // Import Font Awesome core
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -12,7 +11,6 @@ import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus } f
 
 // Add icons to the library
 library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus);
-
 
 // Initialize dark mode
 if (localStorage.getItem('darkMode') === 'true' ||
@@ -28,5 +26,4 @@ app.component('font-awesome-icon', FontAwesomeIcon); // Register the FontAwesome
 
 app.use(router);
 app.use(store);
-app.use(i18n)
 app.mount('#app');
