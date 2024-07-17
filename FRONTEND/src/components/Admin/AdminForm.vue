@@ -1,6 +1,4 @@
 <template>
-  <div class=" inset-0 flex items-center justify-center z-50 p-4 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300">
-    <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-2xl shadow-2xl p-8 w-full max-w-md transform transition-all duration-500 ease-out scale-95 hover:scale-100">
       <form @submit.prevent="submitForm" class="space-y-6">
         <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
           {{ isEditMode ? 'Update Admin' : 'Create Admin' }}
@@ -72,8 +70,6 @@
           </button>
         </div>
       </form>
-    </div>
-  </div>
 </template>
 
 <style scoped>

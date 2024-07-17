@@ -43,7 +43,7 @@
           <select
             id="status"
             v-model="status"
-            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300"
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-100 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition duration-300"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>

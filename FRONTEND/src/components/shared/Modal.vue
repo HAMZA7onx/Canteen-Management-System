@@ -7,8 +7,7 @@
         aria-modal="true"
         aria-labelledby="modal-headline"
       >
-        <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 px-4 py-3 flex justify-between items-center">
-          <h3 class="text-lg font-semibold text-white" id="modal-headline">{{ title }}</h3>
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 px-4 py-3 flex justify-end items-center">
           <button
             type="button"
             class="text-white hover:text-gray-200 focus:outline-none transition-colors duration-200"
