@@ -1,94 +1,80 @@
 <template>
-  <div class="records-dashboard p-6 pt-24 min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900 transition-all duration-300">
-    <h1 class="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Tableau de bord des enregistrements</h1>
+  <div class="records-dashboard p-2 sm:p-6 pt-16 sm:pt-24 min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900 transition-all duration-300">
+    <h1 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Tableau de bord des enregistrements</h1>
 
-    <!-- Years Table -->
-    <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl">
-      <table class="min-w-full">
-        <thead>
-          <tr class="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-800 dark:to-indigo-800 text-white">
-            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Year</th>
-            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="year in years" :key="year" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 ease-in-out">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ year }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm">
-              <button @click="expandYear(year)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-150 ease-in-out">
-                {{ expandedYear === year ? 'Collapse' : 'Expand' }}
-              </button>
-            </td>
-          </tr>
+    <!-- Years List -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+        <li v-for="year in years" :key="year" class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 ease-in-out">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ year }}</span>
+            <button @click="expandYear(year)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-150 ease-in-out">
+              {{ expandedYear === year ? 'Collapse' : 'Expand' }}
+            </button>
+          </div>
+          
           <!-- Months for expanded year -->
-          <tr v-if="expandedYear && months.length">
-            <td colspan="2" class="px-6 py-4">
-              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-inner p-4">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Months of {{ expandedYear }}</h3>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                  <button
-                    v-for="month in months"
-                    :key="month"
-                    @click="expandMonth(month)"
-                    class="px-4 py-2 bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-md transition-shadow duration-150 ease-in-out text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
-                  >
-                    {{ monthName(month) }}
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <!-- Days for expanded month -->
-          <tr v-if="expandedMonth && days.length">
-            <td colspan="2" class="px-6 py-4">
-              <div class="bg-gray-100 dark:bg-gray-600 rounded-lg shadow-inner p-4">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Days of {{ monthName(expandedMonth) }}</h3>
-                <div class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 gap-2">
-                  <button
-                    v-for="day in days"
-                    :key="day"
-                    @click="showDayRecords(day)"
-                    class="px-3 py-2 bg-white dark:bg-gray-500 rounded-full shadow hover:shadow-md transition-shadow duration-150 ease-in-out text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-800"
-                  >
-                    {{ day }}
-                  </button>
-                </div>
-              </div>
+          <div v-if="expandedYear === year" class="mt-4">
+            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Months of {{ year }}</h3>
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <button
+                v-for="month in months"
+                :key="month"
+                @click="expandMonth(month)"
+                class="p-2 bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-md transition-shadow duration-150 ease-in-out text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+              >
+                {{ monthName(month) }}
+              </button>
+            </div>
+          </div>
 
-              <!-- Monthly Totals Section -->
-              <div v-if="expandedMonth && monthlyTotals.length" class="mt-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Totals</h3>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Without Discount</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total With Discount</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                      <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_without_discount.toFixed(2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_with_discount.toFixed(2) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          <!-- Days for expanded month -->
+          <div v-if="expandedMonth && expandedYear === year" class="mt-4">
+            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Days of {{ monthName(expandedMonth) }}</h3>
+            <div class="grid grid-cols-5 sm:grid-cols-7 gap-2">
+              <button
+                v-for="day in days"
+                :key="day"
+                @click="showDayRecords(day)"
+                class="p-2 bg-white dark:bg-gray-500 rounded-full shadow hover:shadow-md transition-shadow duration-150 ease-in-out text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-800"
+              >
+                {{ day }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Monthly Totals Section -->
+          <div v-if="expandedMonth && expandedYear === year && monthlyTotals.length" class="mt-6">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Monthly Totals</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Without Discount</th>
+                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total With Discount</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                  <tr v-for="total in monthlyTotals" :key="total.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ total.email }}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_without_discount.toFixed(2) }}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">DH {{ total.total_with_discount.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
 
     <!-- Day Records Modal -->
     <Transition name="modal">
-      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-start justify-center p-4 z-50" id="my-modal">
-        <div class="relative bg-white dark:bg-gray-800 w-full max-w-6xl mx-auto rounded-lg shadow-xl mt-10 mb-10">
-          <div class="p-6 max-h-[80vh] overflow-y-auto modal-content">
-            <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-2 z-50" id="my-modal">
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto rounded-lg shadow-xl">
+          <div class="p-4 max-h-[80vh] overflow-y-auto modal-content">
+            <h3 class="text-xl sm:text-2xl leading-6 font-bold text-gray-900 dark:text-gray-100 mb-4">
               Records for {{ expandedYear }}-{{ monthName(expandedMonth) }}-{{ expandedDay }}
             </h3>
             <div class="mt-4">
@@ -96,11 +82,11 @@
                 <div class="spinner"></div>
               </div>
               <div v-else-if="records.length" class="space-y-6">
-                <div v-for="(record, index) in records" :key="index" 
+                <div v-for="(record, index) in records" :key="index"
                      class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out hover:shadow-lg">
-                  <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                      <h2 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400">
+                  <div class="p-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                      <h2 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-2 sm:mb-0">
                         {{ record.week_schedule_name }}
                       </h2>
                       <span class="px-3 py-1 text-sm font-semibold text-indigo-600 bg-indigo-100 rounded-full dark:bg-indigo-900 dark:text-indigo-200">
@@ -129,17 +115,17 @@
                         </p>
                       </div>
                     </div>
-                    <button @click="toggleUserList(index)" 
+                    <button @click="toggleUserList(index)"
                             class="w-full px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
                       {{ showUsersMap[index] ? 'Hide Users' : 'Show Users' }}
                     </button>
                   </div>
-                  <div v-if="showUsersMap[index]" class="px-6 py-4 bg-gray-100 dark:bg-gray-600">
+                  <div v-if="showUsersMap[index]" class="px-4 py-4 bg-gray-100 dark:bg-gray-600">
                     <h3 class="font-semibold mb-2 text-gray-700 dark:text-gray-300">Users:</h3>
-                    
+                   
                     <!-- Search bar -->
                     <div class="mb-4">
-                      <input 
+                      <input
                         v-model="searchQuery"
                         type="text"
                         placeholder="Search by email"
@@ -147,36 +133,36 @@
                       />
                     </div>
 
-                    <div class="max-h-60 overflow-y-auto">
+                    <div class="overflow-x-auto">
                       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-800">
                           <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Email
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Badge ID
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Category Discount
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               User Category
                             </th>
                           </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                           <tr v-for="(user, userIndex) in filteredUsers" :key="userIndex" class="hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.email }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                               {{ user.badge_id }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.category_discount }} DH
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                               {{ user.user_category_name }}
                             </td>
                           </tr>
@@ -191,10 +177,10 @@
               </p>
             </div>
           </div>
-          
-          <div class="w-full flex justify-center bg-gray-100 dark:bg-gray-700 px-6 py-4 rounded-b-lg sticky bottom-0">
-            <button @click="closeModal" 
-                    class=" px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
+         
+          <div class="w-full flex justify-center bg-gray-100 dark:bg-gray-700 px-4 py-4 rounded-b-lg sticky bottom-0">
+            <button @click="closeModal"
+                    class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
               Close
             </button>
           </div>
