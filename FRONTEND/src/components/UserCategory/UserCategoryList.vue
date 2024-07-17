@@ -233,10 +233,9 @@
         </div>
       </Overlay>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
-
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -244,6 +243,7 @@ import UserCategoryForm from '@/components/UserCategory/UserCategoryForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   components: {
@@ -251,6 +251,7 @@ export default {
     Modal,
     Overlay,
     LoadingWheel,
+    Toast,
   },
   data() {
     return {
@@ -261,6 +262,8 @@ export default {
       categoryToDelete: null,
       isEditMode: false,
       isLoading: true,
+      showToast: false,
+      toastMessage: '',
     };
   },
   computed: {
@@ -301,12 +304,20 @@ export default {
       this.selectedCategory = null;
       this.isEditMode = false;
     },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
+    },
     handleSubmit(category) {
       const action = this.isEditMode ? this.updateUserCategory : this.createUserCategory;
       action(category)
         .then(() => {
           this.closeModal();
           this.loadUserCategories(); // Refresh the list
+          this.showSuccessToast('Category handled successfully!');
         })
         .catch((error) => {
           console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} user category:`, error);
@@ -327,6 +338,7 @@ export default {
         .then(() => {
           this.closeDeleteConfirmation();
           this.loadUserCategories(); // Refresh the list
+          this.showSuccessToast('Category deleted successfully!');
         })
         .catch((error) => {
           console.error('Error deleting user category:', error);

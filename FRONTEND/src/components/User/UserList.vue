@@ -132,13 +132,15 @@
       <!-- Modals -->
       <Overlay v-if="showCreateUserModal">
         <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Créer un Nouvel Utilisateur">
-          <UserForm :user="{}" @update:user="createUser" />
+          <UserForm :user="{}" @create:user="createUser" />
+
         </Modal>
       </Overlay>
 
       <Overlay v-if="showEditUserModal">
         <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Modifier le Profil Utilisateur">
           <UserForm :user="selectedUser" @update:user="updateUser" />
+
         </Modal>
       </Overlay>
 
@@ -331,6 +333,7 @@
         </div>
       </div>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -342,6 +345,7 @@ import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   name: 'UserList',
@@ -350,6 +354,7 @@ export default {
     Modal,
     Overlay,
     LoadingWheel,
+    Toast,
   },
   data() {
     return {
@@ -439,6 +444,7 @@ export default {
           this.showDeleteConfirmation = false;
           this.userToDelete = null;
           this.loadUsers(); // Refresh the user list after deletion
+          this.showSuccessToast('User deleted successfully!');
         })
         .catch((error) => {
           console.error('Error deleting user:', error);
@@ -510,6 +516,35 @@ export default {
     toggleMobileActions(user) {
       user.showMobileActions = !user.showMobileActions;
       this.$forceUpdate();
+    },
+    createUser(userData) {
+      this.$store.dispatch('user/createUser', userData)
+        .then(() => {
+          this.closeCreateUserModal();
+          this.loadUsers();
+          this.showSuccessToast('User created successfully!');
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error);
+        });
+    },
+    updateUser(updatedUser) {
+      this.$store.dispatch('user/updateUser', updatedUser)
+        .then(() => {
+          this.closeEditUserModal();
+          this.loadUsers();
+          this.showSuccessToast('User updated successfully!');
+        })
+        .catch((error) => {
+          console.error('Error updating user:', error);
+        });
+    },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
     },
   },
 };
