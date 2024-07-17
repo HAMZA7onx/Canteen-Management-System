@@ -381,7 +381,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped> 
 @media (max-width: 640px) {
   .container {
     padding-left: 1rem;

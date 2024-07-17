@@ -17,24 +17,24 @@ class Seeder4_UserCategories extends Seeder
     {
         DB::table('user_category')->insert([
             [
-                'name' => 'Admin',
-                'description' => 'Administrator with full access to the system',
+                'name' => 'Stuff',
+                'description' => 'Stuff with full access to the system',
                 'creator' => 'system@example.com',
                 'editors' => json_encode([]),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'name' => 'Editor',
-                'description' => 'User with permissions to edit content',
+                'name' => 'Formateur',
+                'description' => 'Formateur with permissions to edit content',
                 'creator' => 'system@example.com',
                 'editors' => json_encode([]),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'name' => 'Viewer',
-                'description' => 'User with permissions to view content only',
+                'name' => 'Manager',
+                'description' => 'Manager with permissions to view content only',
                 'creator' => 'system@example.com',
                 'editors' => json_encode([]),
                 'created_at' => Carbon::now(),
