@@ -119,7 +119,7 @@
           @close="closeEditAdminModal"
           title="Modifier l'administrateur"
         >
-          <AdminForm :admin="selectedAdmin" @update:admin="updateAdmin" />
+        <AdminForm :admin="selectedAdmin" @admin-updated="onAdminUpdated" />
         </Modal>
       </Overlay>
 
@@ -309,11 +309,6 @@ export default {
       this.showManageRolesPermissionsModal = false;
       this.selectedAdmin = null;
     },
-    onAdminCreated(createdAdmin) {
-      this.closeCreateAdminModal();
-      this.loadAdmins();
-      this.showSuccessToast('Admin created successfully!');
-    },
     toggleExpandRow(adminId) {
       const index = this.expandedRows.indexOf(adminId);
       if (index > -1) {
@@ -328,6 +323,16 @@ export default {
       setTimeout(() => {
         this.showToast = false;
       }, 3000);
+    },
+    onAdminCreated(createdAdmin) {
+      this.closeCreateAdminModal();
+      this.loadAdmins();
+      this.showSuccessToast('Admin created successfully!');
+    },
+    onAdminUpdated(updatedAdmin) {
+      this.closeEditAdminModal();
+      this.loadAdmins();
+      this.showSuccessToast('Admin updated successfully!');
     },
   },
 };

@@ -9,7 +9,7 @@ const getters = {
 };
 
 const actions = {
-  fetchUsers({ commit }) {
+  fetchUsers({ commit }) { 
     return UserService.getUsers()
       .then((response) => {
         commit('SET_USERS', response.data);
@@ -21,6 +21,7 @@ const actions = {
   },
 
   createUser({ commit }, user) {
+    console.log('user: ', user);
     return UserService.createUser(user)
       .then((response) => {
         console.log('response.data.user: ', response);

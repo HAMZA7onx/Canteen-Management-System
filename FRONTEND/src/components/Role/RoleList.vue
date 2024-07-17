@@ -102,13 +102,13 @@
       <!-- Modals -->
       <Overlay v-if="showCreateRoleModal">
         <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Créer un Nouveau Rôle">
-          <RoleForm :role="{}" @update:role="createRole" />
+          <RoleForm :role="{}" @role-created="onRoleCreated" />
         </Modal>
       </Overlay>
 
       <Overlay v-if="showEditRoleModal">
         <Modal :show="showEditRoleModal" @close="closeEditRoleModal" title="Affiner les Détails du Rôle">
-          <RoleForm :role="selectedRole" @update:role="updateRole" />
+          <RoleForm :role="selectedRole" @role-updated="onRoleUpdated" />
         </Modal>
       </Overlay>
 
@@ -170,6 +170,7 @@
         </div>
       </div>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -180,6 +181,7 @@ import RolePermissions from '@/components/Role/RolePermissions.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   name: 'RoleList',
@@ -189,7 +191,9 @@ export default {
     Modal,
     Overlay,
     LoadingWheel,
+    Toast,
   },
+  
   data() {
     return {
       showCreateRoleModal: false,
@@ -201,6 +205,8 @@ export default {
       isLoading: true,
       error: null,
       expandedRows: [],
+      showToast: false,
+      toastMessage: '',
     };
   },
   computed: {
@@ -258,6 +264,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.roleToDelete = null;
+          this.showSuccessToast('Role deleted successfully!');
           this.loadRoles();
         })
         .catch((error) => {
@@ -282,9 +289,26 @@ export default {
         this.expandedRows.push(roleId);
       }
     },
-  },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
+    },
+    onRoleCreated(createdRole) {
+      this.closeCreateRoleModal();
+      this.loadRoles();
+      this.showSuccessToast('Role created successfully!');
+    },
+    onRoleUpdated(updatedRole) {
+      this.closeEditRoleModal();
+      this.loadRoles();
+      this.showSuccessToast('Role updated successfully!');
+    },
+  }, 
 };
-</script>
+</script> 
 
 <style scoped>
 @keyframes fadeIn {

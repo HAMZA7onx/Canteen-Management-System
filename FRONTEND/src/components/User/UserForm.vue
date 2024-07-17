@@ -149,27 +149,14 @@ export default {
         gender: this.user.gender,
       };
 
-      console.log('Form Data:', formData); // Log the formData object
+      console.log('Form Data:', formData);
 
       if (this.isEditMode) {
-        this.updateUser(formData)
-          .then(() => {
-            // this.$emit('update:user', null);
-          })
-          .catch((error) => {
-            console.error('Error updating user:', error);
-          });
+        this.$emit('update:user', formData);
       } else {
-        this.createUser(formData)
-          .then(() => {
-            this.$emit('update:user', null);
-          })
-          .catch((error) => {
-            console.error('Error creating user:', error);
-          });
+        this.$emit('create:user', formData);
       }
     }
-
   },
 };
 </script>

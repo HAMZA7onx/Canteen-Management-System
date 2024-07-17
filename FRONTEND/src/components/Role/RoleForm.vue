@@ -30,7 +30,6 @@
     </form>
 </template>
 
-
 <script>
 import { mapActions } from 'vuex';
 
@@ -55,12 +54,12 @@ export default {
     async submitForm() {
       try {
         if (this.isEditMode) {
-          await this.updateRole(this.role);
+          const updatedRole = await this.updateRole(this.role);
+          this.$emit('role-updated', updatedRole);
         } else {
-          await this.createRole(this.role);
+          const createdRole = await this.createRole(this.role);
+          this.$emit('role-created', createdRole);
         }
-        this.$emit('update:role', null);
-        this.$emit('form-submitted', this.isEditMode ? 'updated' : 'created');
       } catch (error) {
         console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} role:`, error);
         this.$emit('form-error', error);
