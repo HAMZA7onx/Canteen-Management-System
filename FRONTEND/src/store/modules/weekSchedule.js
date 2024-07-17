@@ -8,13 +8,13 @@ const getters = {
   weekSchedules: (state) => state.weekSchedules,
   getAssignedDailyMealsForDay: (state) => (weekScheduleId, day) => {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
-    const assignedDailyMealsData = weekSchedule ? weekSchedule[`${day}_daily_meals`] : []
+    const assignedDailyMealsData = weekSchedule ? weekSchedule[`${day}_daily_meals`] || [] : []
     return assignedDailyMealsData.map((dailyMealData) => ({
       daily_meal_id: dailyMealData.id,
-      start_time: dailyMealData.pivot.start_time,
-      end_time: dailyMealData.pivot.end_time,
-      price: dailyMealData.pivot.price,
-      discounts: dailyMealData.discounts // Make sure this is included
+      start_time: dailyMealData.pivot?.start_time,
+      end_time: dailyMealData.pivot?.end_time,
+      price: dailyMealData.pivot?.price,
+      discounts: dailyMealData.discounts || []
     }))
   },  
   activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
@@ -107,6 +107,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       WeekScheduleService.getDailyMealDiscounts(weekScheduleId, day, dailyMealId)
         .then(response => {
+          console.log('DISCOUNTS DATA: ', response)
           const discounts = response.data
           console.log('Discounts received from API:', discounts)
           commit('SET_DISCOUNTS_FOR_DAILY_MEAL', { weekScheduleId, day, dailyMealId, discounts })
