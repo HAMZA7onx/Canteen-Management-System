@@ -23,9 +23,23 @@ class UsersImport implements ToModel, WithHeadingRow, SkipsOnError
         $this->categoryId = $categoryId;
     }
 
+    private function generateMatriculationNumber($category)
+    {
+        $year = date('Y');
+        $categoryCode = strtoupper(substr($category->name, 0, 3));
+        $lastUser = User::where('category_id', $this->categoryId)
+            ->whereYear('created_at', $year)
+            ->orderBy('id', 'desc')
+            ->first();
+        $sequentialNumber = $lastUser ? (intval(substr($lastUser->matriculation_number, -4)) + 1) : 1;
+        return $year . $categoryCode . str_pad($sequentialNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+
     public function model(array $row)
     {
         $user = User::withTrashed()->where('email', $row['email'])->first();
+        $category = \App\Models\UserCategory::find($this->categoryId);
 
         if ($user) {
             if ($user->trashed()) {
@@ -52,10 +66,9 @@ class UsersImport implements ToModel, WithHeadingRow, SkipsOnError
             'affected_categories' => json_encode([$this->categoryId]),
             'creator' => auth()->user()->name ?? 'System',
             'editors' => json_encode([]),
+            'matriculation_number' => $this->generateMatriculationNumber($category),
         ]);
-
         $user->save();
-
         return $user;
     }
 }

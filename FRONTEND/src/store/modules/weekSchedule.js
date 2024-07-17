@@ -2,7 +2,7 @@ import WeekScheduleService from '@/services/weekSchedule.service'
 
 const state = {
   weekSchedules: [],
-}
+} 
 
 const getters = {
   weekSchedules: (state) => state.weekSchedules,

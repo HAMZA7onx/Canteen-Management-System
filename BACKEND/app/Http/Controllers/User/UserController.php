@@ -33,10 +33,18 @@ class UserController extends Controller
         }
 
         $currentUser = Auth::user();
-
-        // Get the category name
         $category = UserCategory::findOrFail($request->category_id);
         $affectedCategories = [$category->name];
+
+        // Generate matriculation number
+        $year = date('Y');
+        $categoryCode = strtoupper(substr($category->name, 0, 3));
+        $lastUser = User::where('category_id', $request->category_id)
+            ->whereYear('created_at', $year)
+            ->orderBy('id', 'desc')
+            ->first();
+        $sequentialNumber = $lastUser ? (intval(substr($lastUser->matriculation_number, -4)) + 1) : 1;
+        $matriculationNumber = $year . $categoryCode . str_pad($sequentialNumber, 4, '0', STR_PAD_LEFT);
 
         $user = User::create([
             'category_id' => $request->category_id,
@@ -49,10 +57,10 @@ class UserController extends Controller
             'api_token' => str_replace('-', '', substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 20)),
             'creator' => $currentUser->email,
             'editors' => json_encode([]),
+            'matriculation_number' => $matriculationNumber,
         ]);
 
         $user->load('category');
-
         $status = "success";
         $response = ['user' => $user, 'status' => $status];
         return response()->json($response);
@@ -105,6 +113,7 @@ class UserController extends Controller
         $response = ['user' => $user, 'status' => $status];
         return response()->json($response);
     }
+
     function destroy(Request $request)
     {
         $user = User::find($request->id);

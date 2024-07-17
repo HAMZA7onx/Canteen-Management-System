@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('user_category', 'id');
+            $table->string('matriculation_number')->unique();
             $table->json('affected_categories');
             $table->string('creator');
             $table->json('editors');
