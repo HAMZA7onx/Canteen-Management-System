@@ -1,5 +1,5 @@
 import AdminService from '@/services/admin.service';
-
+ 
 console.log('admin module');
 
 const state = {
@@ -31,16 +31,18 @@ const actions = {
   },
 
   createAdmin({ commit }, admin) {
+    console.log('admin: ', admin);
     return AdminService.createAdmin(admin)
       .then((response) => {
         commit('ADD_ADMIN', response.data);
+        return response.data; // Return the created admin data
       })
       .catch((error) => {
         console.error('Error creating admin:', error);
         throw error;
       });
   },
-
+  
   updateAdmin({ commit }, admin) {
     return AdminService.updateAdmin(admin.id, admin)
       .then((response) => {

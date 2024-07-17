@@ -112,15 +112,15 @@ export default {
       if (this.isEditMode) {
         this.updateAdmin(this.admin)
           .then(() => {
-            this.$emit('update:admin', null);
+            this.$emit('admin-updated', this.admin);
           })
           .catch((error) => {
             console.error('Error updating admin:', error);
           });
       } else {
         this.createAdmin(this.admin)
-          .then(() => {
-            this.$emit('update:admin', null);
+          .then((createdAdmin) => {
+            this.$emit('admin-created', createdAdmin);
           })
           .catch((error) => {
             console.error('Error creating admin:', error);

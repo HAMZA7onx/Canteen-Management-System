@@ -24,7 +24,7 @@
           Créer un administrateur
         </button>
       </div>
-
+ 
       <!-- Admin List -->
       <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden transition-colors duration-300">
         <loading-wheel v-if="isLoading" />
@@ -108,7 +108,7 @@
           @close="closeCreateAdminModal"
           title="Créer un administrateur"
         >
-          <AdminForm :admin="{}" @update:admin="createAdmin" />
+        <AdminForm :admin="{}" @admin-created="onAdminCreated" />
         </Modal>
       </Overlay>
 
@@ -186,6 +186,7 @@
         </div>
       </div>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -196,6 +197,7 @@ import AdminRolesPermissions from '@/components/Admin/AdminRolesPermissions.vue'
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   name: 'AdminList',
@@ -205,6 +207,7 @@ export default {
     Modal,
     Overlay,
     LoadingWheel,
+    Toast,
   },
   data() {
     return {
@@ -217,6 +220,8 @@ export default {
       isLoading: true,
       error: null,
       expandedRows: [],
+      showToast: false,
+      toastMessage: '',
     };
   },
   computed: {
@@ -253,12 +258,25 @@ export default {
       this.showEditAdminModal = false;
       this.selectedAdmin = null;
     },
+    createAdmin(newAdmin) {
+      this.$store
+        .dispatch('admin/createAdmin', newAdmin)
+        .then(() => {
+          this.closeCreateAdminModal();
+          this.loadAdmins();
+          this.showSuccessToast('Admin created successfully!');
+        })
+        .catch((error) => {
+          console.error('Error creating admin:', error);
+        });
+    },
     updateAdmin(updatedAdmin) {
       this.$store
         .dispatch('admin/updateAdmin', updatedAdmin)
         .then(() => {
           this.closeEditAdminModal();
           this.loadAdmins();
+          this.showSuccessToast('Admin updated successfully!');
         })
         .catch((error) => {
           console.error('Error updating admin:', error);
@@ -275,6 +293,7 @@ export default {
           this.showDeleteConfirmation = false;
           this.adminToDelete = null;
           this.loadAdmins();
+          this.showSuccessToast('Admin deleted successfully!');
         })
         .catch((error) => {
           console.error('Error deleting admin:', error);
@@ -290,6 +309,11 @@ export default {
       this.showManageRolesPermissionsModal = false;
       this.selectedAdmin = null;
     },
+    onAdminCreated(createdAdmin) {
+      this.closeCreateAdminModal();
+      this.loadAdmins();
+      this.showSuccessToast('Admin created successfully!');
+    },
     toggleExpandRow(adminId) {
       const index = this.expandedRows.indexOf(adminId);
       if (index > -1) {
@@ -297,6 +321,13 @@ export default {
       } else {
         this.expandedRows.push(adminId);
       }
+    },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
     },
   },
 };
