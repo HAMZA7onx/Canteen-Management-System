@@ -32,7 +32,7 @@
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }} DH)</span>
                 </p>
                 <div v-if="dailyMealData.discounts">
-                  {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData.discounts) }}
+                  {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData) }}
                   <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
                   <ul class="list-disc list-inside">
                     <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
@@ -169,9 +169,11 @@ export default {
 
     const dailyMeals = computed(() => store.getters['dailyMeal/dailyMeals'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
-    const assignedDailyMeals = computed(() => 
-      store.getters['weekSchedule/getAssignedDailyMealsForDay'](props.weekScheduleId, props.day) || []
-    )
+    const assignedDailyMeals = computed(() => {
+      const meals = store.getters['weekSchedule/getAssignedDailyMealsForDay'](props.weekScheduleId, props.day) || []
+      console.log('Assigned Daily Meals:', meals)
+      return meals
+    })
 
     const availableDailyMeals = computed(() => {
       const assignedDailyMealIds = assignedDailyMeals.value.map((dailyMealData) => dailyMealData.daily_meal_id)
@@ -277,7 +279,6 @@ export default {
         dailyMealId
       }).then((discounts) => {
         console.log('Discounts fetched successfully. Discounts data:', discounts)
-        // Don't do anything else here for now
       }).catch(error => {
         console.error('Error fetching discounts:', error)
         errorMessage.value = 'An error occurred while fetching discounts.'
