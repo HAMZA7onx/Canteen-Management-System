@@ -243,6 +243,7 @@
         </div>
       </div>
     </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -252,6 +253,7 @@ import PosDeviceForm from '@/components/POS/PosDeviceForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   name: 'PosDeviceList',
@@ -260,6 +262,7 @@ export default {
     Modal,
     Overlay,
     LoadingWheel,
+    Toast,
   },
   data() {
     return {
@@ -271,6 +274,8 @@ export default {
       deviceToDelete: null,
       isLoading: true,
       error: null,
+      showToast: false,
+      toastMessage: '',
     };
   },
   computed: {
@@ -322,6 +327,7 @@ export default {
         .then(() => {
           this.closeAddPosDeviceModal();
           this.loadPosDevices();
+          this.showSuccessToast('Device created successfully!');
         })
         .catch((error) => {
           console.error('Error creating POS device:', error);
@@ -332,6 +338,7 @@ export default {
         .then(() => {
           this.closeEditPosDeviceModal();
           this.loadPosDevices();
+          this.showSuccessToast('Device updated successfully!');
         })
         .catch((error) => {
           console.error('Error updating POS device:', error);
@@ -347,6 +354,7 @@ export default {
           this.showDeleteConfirmation = false;
           this.deviceToDelete = null;
           this.loadPosDevices();
+          this.showSuccessToast('Device created successfully!');
         })
         .catch((error) => {
           console.error('Error deleting POS device:', error);
@@ -367,6 +375,13 @@ export default {
     },
     isUpdatedAtSameAsCreatedAt(device) {
       return new Date(device.created_at).getTime() === new Date(device.updated_at).getTime();
+    },
+    showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
     },
   },
 };

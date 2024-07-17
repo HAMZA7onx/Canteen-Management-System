@@ -190,6 +190,7 @@
         </div>
       </div>
     </Overlay>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
@@ -200,6 +201,7 @@ import MenuFoodComposantForm from './MenuFoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
+import Toast from '@/components/shared/Toast.vue';
 
 export default {
   components: {
@@ -207,7 +209,8 @@ export default {
     MenuFoodComposantForm,
     Modal,
     Overlay,
-    LoadingWheel
+    LoadingWheel,
+    Toast,
   },
   data() {
     return {
@@ -216,7 +219,9 @@ export default {
       showDeleteConfirmation: false,
       showFoodComposantModal: false,
       selectedMenu: null,
-      isLoading: true
+      isLoading: true,
+      showToast: false,
+      toastMessage: '',
     }
   },
   computed: {
@@ -244,6 +249,7 @@ export default {
       .then(() => {
         this.closeCreateModal()
         this.loadMenus()
+        this.showSuccessToast('Menu created successfully')
       })
       .catch(error => {
         console.error('Error creating menu:', error)
@@ -263,6 +269,7 @@ export default {
       .then(() => {
         this.closeEditModal()
         this.loadMenus()
+        this.showSuccessToast('Menu updated successfully')
       })
       .catch(error => {
         console.error('Error updating menu:', error)
@@ -282,10 +289,10 @@ export default {
       .then(() => {
         this.closeDeleteConfirmation()
         this.loadMenus()
+        this.showSuccessToast('Menu deleted successfully')
       })
       .catch(error => {
         console.error('Error deleting menu:', error)
-        // Handle error if needed
       })
   },
   openFoodComposantModal(menu) {
@@ -310,6 +317,13 @@ export default {
     menu.showActions = !menu.showActions
     this.$forceUpdate()
   },
+  showSuccessToast(message) {
+      this.toastMessage = message;
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
+    },
 }
 
 }

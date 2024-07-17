@@ -77,8 +77,6 @@
   </div>
 </template>
 
-
-
 <script>
 import { mapActions, mapGetters } from 'vuex'
 
@@ -89,7 +87,7 @@ export default {
       description: '',
       status: 'active',
     }
-  },
+  }, 
   computed: {
     ...mapGetters('weekSchedule', ['activeWeekSchedule']),
     hasActiveSchedule() {
