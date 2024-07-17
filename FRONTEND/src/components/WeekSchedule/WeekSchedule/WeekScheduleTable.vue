@@ -5,13 +5,13 @@
       <p class="text-lg text-gray-600 dark:text-gray-400">Gérez et organisez efficacement vos plans de repas hebdomadaires</p>
     </div>
 
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
       <button
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out flex items-center mb-4 sm:mb-0"
         @click="openCreateModal"
       >
         <font-awesome-icon icon="plus-circle" class="mr-2" />
-        Créer un programme hebdomadaire
+        Créer un programme
       </button>
       <div class="text-gray-600 dark:text-gray-400 italic">
         Total Schedules: {{ weekSchedules.length }}
@@ -21,27 +21,74 @@
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
         <loading-wheel v-if="isLoading" />
-        <table v-else class="w-full table-auto">
-          <thead>
-            <tr class="bg-indigo-600 text-white text-sm leading-normal">
-              <th class="py-3 px-6 text-left">Week Schedule</th>
-              <th class="py-3 px-6 text-center">Status</th>
-              <th class="py-3 px-6 text-center">Actions</th>
-              <th v-for="day in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']" :key="day" class="py-3 px-6 text-center">
-                {{ day }}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
-            <tr
-              v-for="weekSchedule in weekSchedules"
-              :key="weekSchedule.id"
-              class="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition duration-300"
-            >
-              <td class="py-3 px-6 text-left whitespace-nowrap font-medium">
-                {{ weekSchedule.mode_name }}
-              </td>
-              <td class="py-3 px-6 text-center">
+        <div v-else>
+          <!-- Desktop view -->
+          <table class="w-full table-auto hidden sm:table">
+            <thead>
+              <tr class="bg-indigo-600 text-white text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Week Schedule</th>
+                <th class="py-3 px-6 text-center">Status</th>
+                <th class="py-3 px-6 text-center">Actions</th>
+                <th v-for="day in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']" :key="day" class="py-3 px-6 text-center">
+                  {{ day }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+              <tr
+                v-for="weekSchedule in weekSchedules"
+                :key="weekSchedule.id"
+                class="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition duration-300"
+              >
+                <td class="py-3 px-6 text-left whitespace-nowrap font-medium ">
+                  {{ weekSchedule.mode_name }}
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <span
+                    :class="{
+                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': weekSchedule.status === 'active',
+                      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': weekSchedule.status === 'inactive',
+                    }"
+                    class="px-3 py-1 rounded-full text-xs font-semibold"
+                  >
+                    {{ weekSchedule.status }}
+                  </span>
+                </td>
+                <td class="py-3 px-6 text-center">
+                  <div class="flex justify-center space-x-2">
+                    <button
+                      class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
+                      @click="openEditModal(weekSchedule)"
+                      title="Edit"
+                    >
+                      <font-awesome-icon icon="edit" />
+                    </button>
+                    <button
+                      class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
+                      @click="openDeleteConfirmation(weekSchedule)"
+                      title="Delete"
+                    >
+                      <font-awesome-icon icon="trash" />
+                    </button>
+                  </div>
+                </td>
+                <td v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="py-3 px-6 text-center">
+                  <button
+                    class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
+                    @click="openAssignModal(weekSchedule, day)"
+                  >
+                    Attribuer
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Mobile view -->
+          <div class="sm:hidden">
+            <div v-for="weekSchedule in weekSchedules" :key="weekSchedule.id" class="mb-4 border-b border-gray-200 dark:border-gray-700">
+              <div class="flex justify-between items-center p-4">
+                <span class="font-medium dark:text-gray-100">{{ weekSchedule.mode_name }}</span>
                 <span
                   :class="{
                     'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': weekSchedule.status === 'active',
@@ -51,40 +98,46 @@
                 >
                   {{ weekSchedule.status }}
                 </span>
-              </td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex justify-center space-x-2">
+                <button
+                  @click="toggleExpand(weekSchedule.id)"
+                  class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+                >
+                  <font-awesome-icon :icon="expandedRows.includes(weekSchedule.id) ? 'chevron-up' : 'chevron-down'" />
+                </button>
+              </div>
+              <div v-if="expandedRows.includes(weekSchedule.id)" class="p-4 bg-gray-50 dark:bg-gray-800">
+                <div class="flex justify-center space-x-2 mb-4">
                   <button
                     class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                     @click="openEditModal(weekSchedule)"
-                    title="Edit"
                   >
-                    <font-awesome-icon icon="edit" />
+                    <font-awesome-icon icon="edit" /> Edit
                   </button>
                   <button
                     class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                     @click="openDeleteConfirmation(weekSchedule)"
-                    title="Delete"
                   >
-                    <font-awesome-icon icon="trash" />
+                    <font-awesome-icon icon="trash" /> Delete
                   </button>
                 </div>
-              </td>
-              <td v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="py-3 px-6 text-center">
-                <button
-                  class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
-                  @click="openAssignModal(weekSchedule, day)"
-                >
-                Attribuer
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <div class="grid grid-cols-7 gap-2">
+                  <button
+                    v-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                    :key="day"
+                    class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 text-xs"
+                    @click="openAssignModal(weekSchedule, ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'][index])"
+                  >
+                    {{ day }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Create Week Schedule Modal -->
+    <!-- Modals -->
     <overlay v-if="showCreateModal" @close="closeCreateModal">
       <modal
         :show="showCreateModal"
@@ -98,7 +151,6 @@
       </modal>
     </overlay>
 
-    <!-- Edit Week Schedule Modal -->
     <overlay v-if="showEditModal" @close="closeEditModal">
       <modal
         :show="showEditModal"
@@ -113,7 +165,6 @@
       </modal>
     </overlay>
 
-    <!-- Assign Daily Meals Modal -->
     <overlay v-if="showAssignModal" @close="closeAssignModal">
       <modal
         :show="showAssignModal"
@@ -129,7 +180,6 @@
       </modal>
     </overlay>
 
-    <!-- Delete Confirmation Modal -->
     <overlay v-if="showDeleteConfirmation" @close="closeDeleteConfirmation">
       <modal
         :show="showDeleteConfirmation"
@@ -162,15 +212,16 @@
   </div>
 </template>
 
+
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { ref, computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 import WeekScheduleForm from './WeekScheduleForm.vue'
 import CreateWeekScheduleForm from './CreateWeekScheduleForm.vue'
 import EditWeekScheduleForm from './EditWeekScheduleForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
-
 
 export default {
   components: {
@@ -181,117 +232,168 @@ export default {
     Overlay,
     LoadingWheel
   },
-  data() {
-    return {
-      showAssignModal: false,
-      showCreateModal: false,
-      showEditModal: false,
-      showDeleteConfirmation: false,
-      selectedWeekSchedule: null,
-      selectedDay: null,
-      isLoading: true
+  setup() {
+    const store = useStore()
+    const showAssignModal = ref(false)
+    const showCreateModal = ref(false)
+    const showEditModal = ref(false)
+    const showDeleteConfirmation = ref(false)
+    const selectedWeekSchedule = ref(null)
+    const selectedDay = ref(null)
+    const isLoading = ref(true)
+    const expandedRows = ref([])
+
+    const weekSchedules = computed(() => store.getters['weekSchedule/weekSchedules'])
+
+    const fetchWeekSchedules = () => store.dispatch('weekSchedule/fetchWeekSchedules')
+    const assignDailyMeals = (payload) => store.dispatch('weekSchedule/assignDailyMeals', payload)
+    const detachDailyMeal = (payload) => store.dispatch('weekSchedule/detachDailyMeal', payload)
+    const deleteWeekSchedule = (id) => store.dispatch('weekSchedule/deleteWeekSchedule', id)
+
+    const openAssignModal = (weekSchedule, day) => {
+      selectedWeekSchedule.value = weekSchedule
+      selectedDay.value = day
+      showAssignModal.value = true
     }
-  },
-  computed: {
-    ...mapGetters('weekSchedule', ['weekSchedules']),
-  },
-  created() {
-    this.fetchWeekSchedules(),
-    this.loadWeekSchedules()
-  },
-  methods: {
-    ...mapActions('weekSchedule', [
-      'fetchWeekSchedules',
-      'assignDailyMeals',
-      'detachDailyMeal',
-      'createWeekSchedule',
-      'updateWeekSchedule',
-      'deleteWeekSchedule',
-    ]),
-    openAssignModal(weekSchedule, day) {
-      this.selectedWeekSchedule = weekSchedule
-      this.selectedDay = day
-      this.showAssignModal = true
-    },
-    closeAssignModal() {
-      this.showAssignModal = false
-      this.selectedWeekSchedule = null
-      this.selectedDay = null
-    },
-    openCreateModal() {
-      this.showCreateModal = true
-    },
-    closeCreateModal() {
-      this.showCreateModal = false
-    },
-    openEditModal(weekSchedule) {
-      this.selectedWeekSchedule = weekSchedule
-      this.showEditModal = true
-    },
-    closeEditModal() {
-      this.showEditModal = false
-      this.selectedWeekSchedule = null
-    },
-    openDeleteConfirmation(weekSchedule) {
-      this.selectedWeekSchedule = { ...weekSchedule }
-      this.showDeleteConfirmation = true
-    },
-    closeDeleteConfirmation() {
-      this.showDeleteConfirmation = false
-      this.selectedWeekSchedule = null
-    },
-    handleAssignDailyMeals(dailyMealData) {
-      this.assignDailyMeals({
-        weekScheduleId: this.selectedWeekSchedule.id,
-        day: this.selectedDay,
+
+    const closeAssignModal = () => {
+      showAssignModal.value = false
+      selectedWeekSchedule.value = null
+      selectedDay.value = null
+    }
+
+    const openCreateModal = () => {
+      showCreateModal.value = true
+    }
+
+    const closeCreateModal = () => {
+      showCreateModal.value = false
+    }
+
+    const openEditModal = (weekSchedule) => {
+      selectedWeekSchedule.value = weekSchedule
+      showEditModal.value = true
+    }
+
+    const closeEditModal = () => {
+      showEditModal.value = false
+      selectedWeekSchedule.value = null
+    }
+
+    const openDeleteConfirmation = (weekSchedule) => {
+      selectedWeekSchedule.value = { ...weekSchedule }
+      showDeleteConfirmation.value = true
+    }
+
+    const closeDeleteConfirmation = () => {
+      showDeleteConfirmation.value = false
+      selectedWeekSchedule.value = null
+    }
+
+    const handleAssignDailyMeals = (dailyMealData) => {
+      assignDailyMeals({
+        weekScheduleId: selectedWeekSchedule.value.id,
+        day: selectedDay.value,
         dailyMealData,
       })
         .then(() => {
-          this.fetchWeekSchedules()
-          // this.closeAssignModal()
+          fetchWeekSchedules()
         })
         .catch((error) => {
           console.error('Error assigning daily meals:', error)
-          // Handle error if needed
         })
-    },
-    handleDetachDailyMeal(dailyMealId) {
-      this.detachDailyMeal({
-        weekScheduleId: this.selectedWeekSchedule.id,
-        day: this.selectedDay,
+    }
+
+    const handleDetachDailyMeal = (dailyMealId) => {
+      detachDailyMeal({
+        weekScheduleId: selectedWeekSchedule.value.id,
+        day: selectedDay.value,
         dailyMealId,
       })
         .then(() => {
-          this.fetchWeekSchedules()
-          // this.closeAssignModal()
+          fetchWeekSchedules()
         })
         .catch((error) => {
           console.error('Error detaching daily meal:', error)
-          // Handle error if needed
         })
-    },
-    handleDeleteWeekSchedule() {
-      this.deleteWeekSchedule(this.selectedWeekSchedule.id)
+    }
+
+    const handleDeleteWeekSchedule = () => {
+      deleteWeekSchedule(selectedWeekSchedule.value.id)
         .then(() => {
-          this.fetchWeekSchedules()
-          this.closeDeleteConfirmation()
-          // this.loadWeekSchedules()
+          fetchWeekSchedules()
+          closeDeleteConfirmation()
         })
         .catch((error) => {
           console.error('Error deleting week schedule:', error)
-          // Handle error if needed
         })
-    },
-    async loadWeekSchedules() {
-      this.isLoading = true
+    }
+
+    const loadWeekSchedules = async () => {
+      isLoading.value = true
       try {
-        await this.fetchWeekSchedules()
+        await fetchWeekSchedules()
       } catch (error) {
         console.error('Error fetching week schedules:', error)
       } finally {
-        this.isLoading = false
+        isLoading.value = false
       }
-    },
-  },
+    }
+
+    const toggleExpand = (weekScheduleId) => {
+      const index = expandedRows.value.indexOf(weekScheduleId)
+      if (index === -1) {
+        expandedRows.value.push(weekScheduleId)
+      } else {
+        expandedRows.value.splice(index, 1)
+      }
+    }
+
+    onMounted(() => {
+      fetchWeekSchedules()
+      loadWeekSchedules()
+    })
+
+    return {
+      showAssignModal,
+      showCreateModal,
+      showEditModal,
+      showDeleteConfirmation,
+      selectedWeekSchedule,
+      selectedDay,
+      isLoading,
+      expandedRows,
+      weekSchedules,
+      openAssignModal,
+      closeAssignModal,
+      openCreateModal,
+      closeCreateModal,
+      openEditModal,
+      closeEditModal,
+      openDeleteConfirmation,
+      closeDeleteConfirmation,
+      handleAssignDailyMeals,
+      handleDetachDailyMeal,
+      handleDeleteWeekSchedule,
+      toggleExpand,
+    }
+  }
 }
 </script>
+
+<style scoped>
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Add any additional custom styles here */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+</style>
