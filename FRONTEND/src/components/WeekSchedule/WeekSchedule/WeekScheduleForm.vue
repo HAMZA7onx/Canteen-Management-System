@@ -31,19 +31,19 @@
                   {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }}
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }} DH)</span>
                 </p>
-                <div v-if="dailyMealData.discounts">
-                  {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData) }}
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
-                  <ul class="list-disc list-inside">
-                    <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
-                      {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
-                    </li>
-                  </ul>
-                </div>
-                <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
-                  {{ console.log('Rendering Load discounts button for meal:', dailyMealData.daily_meal_id) }}
-                  Load discounts
-                </button>
+                <div v-if="Object.keys(dailyMealData.discounts).length > 0">
+                {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData) }}
+                <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
+                <ul class="list-disc list-inside">
+                  <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
+                  </li>
+                </ul>
+              </div>
+              <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
+                {{ console.log('Rendering Load discounts button for meal:', dailyMealData.daily_meal_id) }}
+                Load discounts
+              </button>
               </div>
               <div>
                 <button
@@ -277,8 +277,8 @@ export default {
         weekScheduleId: props.weekScheduleId,
         day: props.day,
         dailyMealId
-      }).then((discounts) => {
-        console.log('Discounts fetched successfully. Discounts data:', discounts)
+      }).then(() => {
+        console.log('Discounts fetched successfully.')
       }).catch(error => {
         console.error('Error fetching discounts:', error)
         errorMessage.value = 'An error occurred while fetching discounts.'
