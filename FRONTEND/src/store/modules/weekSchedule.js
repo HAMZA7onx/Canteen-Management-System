@@ -14,7 +14,7 @@ const getters = {
       start_time: dailyMealData.pivot?.start_time,
       end_time: dailyMealData.pivot?.end_time,
       price: dailyMealData.pivot?.price,
-      discounts: dailyMealData.discounts || []
+      discounts: dailyMealData.discounts || {}  // Change this to an object
     }))
   },  
   activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
@@ -81,6 +81,7 @@ const actions = {
   },
 
   assignDailyMeals({ commit }, { weekScheduleId, day, dailyMealData }) {
+    console.log('assignDailyMeals', weekScheduleId, day, dailyMealData)
     return WeekScheduleService.assignDailyMeals(weekScheduleId, day, dailyMealData)
       .then((response) => {
         commit('ASSIGN_DAILY_MEAL', { weekScheduleId, day, dailyMealData: response.data })
@@ -91,7 +92,6 @@ const actions = {
       })
   },
   
-
   detachDailyMeal({ commit }, { weekScheduleId, day, dailyMealId }) {
     return WeekScheduleService.detachDailyMeal(weekScheduleId, day, dailyMealId)
       .then(() => {
@@ -149,7 +149,6 @@ const mutations = {
       weekSchedule[`${day}DailyMeals`] = [...existingDailyMeals, dailyMealData]
     }
   },
-  
 
   DETACH_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
@@ -183,7 +182,7 @@ const mutations = {
       console.warn(`Week schedule with id ${weekScheduleId} not found`)
     }
   }
-  
+
 }
 
 export default {

@@ -95,8 +95,9 @@ export default {
         title: 'Rapports et Gestion',
         expanded: false,
         items: [
-          { label: 'Records', icon: 'chart-bar', route: '/records' },
-          { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices' },
+        { label: 'Records', icon: 'chart-bar', route: '/records' },
+        { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit' },
+        { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices' },
         ]
       },
     ]);
