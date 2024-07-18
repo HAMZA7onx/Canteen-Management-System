@@ -1,6 +1,37 @@
 <template>
   <div class="records-dashboard p-2 sm:p-6 pt-16 sm:pt-24 min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900 transition-all duration-300">
-    <h1 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Tableau de bord des enregistrements</h1>
+    <section class="bg-gradient-to-r from-purple-100 to-indigo-200 dark:from-gray-800 dark:to-indigo-900 py-6 px-4 rounded-xl shadow-lg mb-6">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+    Records Dashboard Features
+  </h2>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span class="text-sm text-gray-700 dark:text-gray-300">Hierarchical Date Navigation</span>
+    </div>
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <span class="text-sm text-gray-700 dark:text-gray-300">Monthly Totals Summary</span>
+    </div>
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+      <span class="text-sm text-gray-700 dark:text-gray-300">Detailed Day View</span>
+    </div>
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <span class="text-sm text-gray-700 dark:text-gray-300">User Search Functionality</span>
+    </div>
+  </div>
+</section>
 
     <!-- Years List -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
