@@ -58,7 +58,11 @@
                   <td class="px-3 md:px-6 py-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div v-for="meal in record.meals" :key="meal.meal_name" class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-                        <div class="font-medium text-indigo-600 dark:text-indigo-400">{{ meal.meal_name }}</div>
+                        <div class="flex justify-start">
+                          <div class="font-bold text-lg bg-gradient-to-r from-green-400 to-emerald-500 dark:bg-gray-800 text-transparent bg-clip-text p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                            {{ meal.meal_name }}
+                          </div>
+                        </div>
                         <div class="text-sm text-gray-600 dark:text-gray-300">{{ meal.persons_count }} persons</div>
                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ formatPrice(meal.total_with_discount) }}</div>
                       </div>
