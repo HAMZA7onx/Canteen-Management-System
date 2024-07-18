@@ -149,7 +149,7 @@ export default {
           }
           totals[meal.meal_name].total_persons += meal.persons_count;
           totals[meal.meal_name].total_with_discount += parseFloat(meal.total_with_discount);
-          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_without_discount);
+          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_no_discount);
         });
       });
       return Object.values(totals);
