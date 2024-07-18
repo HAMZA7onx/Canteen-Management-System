@@ -92,7 +92,6 @@ const actions = {
       })
   },
   
-
   detachDailyMeal({ commit }, { weekScheduleId, day, dailyMealId }) {
     return WeekScheduleService.detachDailyMeal(weekScheduleId, day, dailyMealId)
       .then(() => {
@@ -150,7 +149,6 @@ const mutations = {
       weekSchedule[`${day}DailyMeals`] = [...existingDailyMeals, dailyMealData]
     }
   },
-  
 
   DETACH_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
