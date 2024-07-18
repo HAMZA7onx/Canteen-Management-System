@@ -1,6 +1,36 @@
 <template>
   <div id="advanced-records-dashboard" class="advanced-records-dashboard p-4 md:p-6 bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-gray-900 dark:to-indigo-900 min-h-screen">
-    <h1 class="text-2xl md:text-4xl font-bold mb-6 md:mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Advanced Records Dashboard</h1>
+    <section class="bg-gradient-to-r from-green-50 to-teal-100 dark:from-gray-800 dark:to-gray-900 py-6 px-4 rounded-xl shadow-lg mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      Dashboard Features
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        <span class="text-sm text-gray-700 dark:text-gray-300">Advanced Filtering</span>
+      </div>
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span class="text-sm text-gray-700 dark:text-gray-300">Meal Totals Summary</span>
+      </div>
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <span class="text-sm text-gray-700 dark:text-gray-300">PDF Export</span>
+      </div>
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span class="text-sm text-gray-700 dark:text-gray-300">Weekly Meal Grouping</span>
+      </div>
+    </div>
+  </section>
 
     <!-- Filters Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6 mb-6 md:mb-8">
@@ -58,7 +88,11 @@
                   <td class="px-3 md:px-6 py-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div v-for="meal in record.meals" :key="meal.meal_name" class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-                        <div class="font-medium text-indigo-600 dark:text-indigo-400">{{ meal.meal_name }}</div>
+                        <div class="flex justify-start">
+                          <div class="font-bold text-lg bg-gradient-to-r from-green-400 to-emerald-500 dark:bg-gray-800 text-transparent bg-clip-text p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                            {{ meal.meal_name }}
+                          </div>
+                        </div>
                         <div class="text-sm text-gray-600 dark:text-gray-300">{{ meal.persons_count }} persons</div>
                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ formatPrice(meal.total_with_discount) }}</div>
                       </div>
@@ -149,7 +183,7 @@ export default {
           }
           totals[meal.meal_name].total_persons += meal.persons_count;
           totals[meal.meal_name].total_with_discount += parseFloat(meal.total_with_discount);
-          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_without_discount);
+          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_no_discount);
         });
       });
       return Object.values(totals);
