@@ -164,6 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{year}/{month}/monthly-totals', [RecordsDashboardController::class, 'getMonthlyTotals']);
         Route::get('/{year}/{month}/days', [RecordsDashboardController::class, 'getDays']);
         Route::get('/{year}/{month}/{day}', [RecordsDashboardController::class, 'getDayRecords']);
+        Route::get('/advanced', [RecordsDashboardController::class, 'getAdvancedRecords']);
     });
 
     Route::prefix('admins-badges')->group(function () {
