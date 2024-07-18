@@ -16,6 +16,7 @@ import RecordsDashboard from '@/components/Record/RecordsDashboard.vue'
 import BadgingInterface from '@/components/Badging/BadgingInterface.vue'
 import AdminBadgeList from '@/components/AdminBadge/BadgeList.vue'
 import PosDeviceList from '@/components/POS/PosDeviceList.vue'
+import AdvancedRecordsDashboard from '../components/Record/AdvancedRecordsDashboard.vue';
  
 const routes = [
   { path: '/', component: AdminListView },
@@ -33,6 +34,7 @@ const routes = [
   { path: '/badging', component: BadgingInterface },
   { path: '/admins-badges', component: AdminBadgeList },
   { path: '/pos-devices', component: PosDeviceList },
+  { path: '/records-audit', component: AdvancedRecordsDashboard },
 ];
 
 

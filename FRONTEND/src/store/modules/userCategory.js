@@ -15,6 +15,7 @@ const actions = {
       .then((response) => {
         console.log('response.data: ', response.data);
         commit('SET_USER_CATEGORIES', response.data);
+        return response;
       })
       .catch((error) => {
         console.error('Error fetching user categories:', error);

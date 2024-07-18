@@ -198,4 +198,89 @@ class RecordsDashboardController extends Controller
             'monthlyTotals' => $monthlyTotals
         ]);
     }
+
+    public function getAdvancedRecords(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'user_category' => 'nullable|exists:user_category,id',
+            'search' => 'nullable|string',
+        ]);
+
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+        $userCategory = $request->user_category;
+        $search = $request->search;
+        $records = [];
+
+        $daysWithRecords = DB::table('week_schedule')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->pluck('created_at')
+            ->map(function ($date) {
+                return Carbon::parse($date)->format('Y-m-d');
+            })
+            ->unique();
+
+        \Log::info('Days with records: ' . json_encode($daysWithRecords));
+
+        foreach ($daysWithRecords as $date) {
+            \Log::info("Processing date: $date");
+            $dayOfWeek = strtolower(Carbon::parse($date)->format('l'));
+            $pivotTable = "{$dayOfWeek}_daily_meal";
+            $recordTable = "{$dayOfWeek}_records";
+            $discountTable = "{$dayOfWeek}_discounts";
+
+            $dayRecords = DB::table($pivotTable)
+                ->join('daily_meals', 'daily_meals.id', '=', "{$pivotTable}.daily_meal_id")
+                ->join('week_schedule', 'week_schedule.id', '=', "{$pivotTable}.week_schedule_id")
+                ->leftJoin($recordTable, "{$recordTable}.{$dayOfWeek}_daily_meal_id", '=', "{$pivotTable}.id")
+                ->leftJoin('badges', 'badges.id', '=', "{$recordTable}.badge_id")
+                ->leftJoin('users', 'users.id', '=', 'badges.user_id')
+                ->leftJoin('user_category', 'user_category.id', '=', 'users.category_id')
+                ->leftJoin($discountTable, function ($join) use ($pivotTable, $discountTable) {
+                    $join->on("{$discountTable}.meal_id", '=', "{$pivotTable}.id")
+                        ->on("{$discountTable}.category_id", '=', 'user_category.id');
+                })
+                ->whereDate('week_schedule.created_at', $date)
+                ->select(
+                    'daily_meals.name as meal_name',
+                    "{$pivotTable}.start_time",
+                    "{$pivotTable}.end_time",
+                    "{$pivotTable}.price",
+                    DB::raw("COUNT(DISTINCT {$recordTable}.id) as persons_count"),
+                    DB::raw("SUM({$pivotTable}.price) as total_no_discount"),
+                    DB::raw("SUM({$pivotTable}.price * (1 - COALESCE({$discountTable}.discount, 0) / 100)) as total_with_discount")
+                )
+                ->groupBy('daily_meals.id', "{$pivotTable}.id", "{$pivotTable}.start_time", "{$pivotTable}.end_time", "{$pivotTable}.price");
+
+            if ($userCategory) {
+                $dayRecords->where('user_category.id', $userCategory);
+            }
+
+            if ($search) {
+                $dayRecords->where(function ($query) use ($search) {
+                    $query->where('users.name', 'like', "%{$search}%")
+                        ->orWhere('users.matriculation_number', 'like', "%{$search}%");
+                });
+            }
+
+            \Log::info("Query for $date: " . $dayRecords->toSql());
+            \Log::info("Bindings: " . json_encode($dayRecords->getBindings()));
+
+            $dayRecords = $dayRecords->get();
+
+            \Log::info("Number of records for $date: " . $dayRecords->count());
+
+            if ($dayRecords->isNotEmpty()) {
+                $records[] = [
+                    'date' => $date,
+                    'meals' => $dayRecords
+                ];
+            }
+        }
+
+        return response()->json($records);
+    }
+
 }
