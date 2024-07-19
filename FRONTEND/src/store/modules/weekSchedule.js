@@ -24,6 +24,7 @@ const actions = {
   fetchWeekSchedules({ commit }) {
     return WeekScheduleService.getWeekSchedules()
       .then((response) => {
+        console.log('weekSchedules', response.data)
         commit('SET_WEEK_SCHEDULES', response.data)
       })
       .catch((error) => {
@@ -182,7 +183,6 @@ const mutations = {
       console.warn(`Week schedule with id ${weekScheduleId} not found`)
     }
   }
-
 }
 
 export default {

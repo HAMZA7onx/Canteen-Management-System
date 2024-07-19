@@ -4,6 +4,19 @@
       <div class="sidebar-content p-4 h-full overflow-y-auto" v-show="sidebarOpen || !isMobile">
         <nav>
           <ul class="space-y-4 pb-16">
+            <!-- Home item -->
+            <li class="mb-4">
+              <router-link :to="homeItem.route" 
+                class="flex items-center w-full p-2 rounded-md text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors duration-200"
+                :class="{ 'bg-indigo-100 dark:bg-indigo-900': activeItem === homeItem }"
+                @click="setActiveItem(homeItem)">
+                <font-awesome-icon :icon="homeItem.icon" class="w-5 h-5 icon" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" />
+                <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100 w-0 overflow-hidden']">
+                  {{ homeItem.label }}
+                </span>
+              </router-link>
+            </li>
+            <!-- Existing menu groups -->
             <li v-for="(group, index) in menuGroups" :key="index">
               <div @click="toggleGroup(index)" class="flex items-center justify-between cursor-pointer p-2 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900">
                 <span :class="['font-bold text-lg transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100']">{{ group.title }}</span>
@@ -41,6 +54,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useStore } from 'vuex';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faHome,
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
@@ -48,6 +62,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
+  faHome,
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
@@ -62,12 +77,18 @@ export default {
     const activeItem = ref(null);
     const isMobile = ref(window.innerWidth < 640);
 
+    const homeItem = computed(() => ({
+      label: 'Home',
+      icon: 'home',
+      route: '/'
+    }));
+
     const menuGroups = ref([
       {
         title: 'Administration',
         expanded: true,
         items: [
-          { label: 'Les admins', icon: 'user-shield', route: '/' },
+          { label: 'Les admins', icon: 'user-shield', route: '/admins' },
           { label: 'Les roles', icon: 'user-tag', route: '/roles' },
           { label: 'Les user-Categories', icon: 'user-friends', route: '/user-categories' },
         ]
@@ -95,9 +116,9 @@ export default {
         title: 'Rapports et Gestion',
         expanded: false,
         items: [
-        { label: 'Records', icon: 'chart-bar', route: '/records' },
-        { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit' },
-        { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices' },
+          { label: 'Records', icon: 'chart-bar', route: '/records' },
+          { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit' },
+          { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices' },
         ]
       },
     ]);
@@ -130,6 +151,7 @@ export default {
       sidebarOpen,
       activeItem,
       menuGroups,
+      homeItem,
       toggleSidebar,
       toggleGroup,
       setActiveItem,

@@ -7,10 +7,10 @@ import store from './store';
 // Import Font Awesome core
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
-library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink);
+library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs);
 
 // Initialize dark mode
 if (localStorage.getItem('darkMode') === 'true' ||
