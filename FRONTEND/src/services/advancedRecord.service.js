@@ -8,4 +8,4 @@ class AdvancedRecordService {
   }
 }
 
-export default new AdvancedRecordService();
+export default new AdvancedRecordService(); 

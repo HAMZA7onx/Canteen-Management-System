@@ -19,7 +19,7 @@ const actions = {
     } catch (error) {
       console.error('Error fetching advanced records:', error);
       throw error;
-    }
+    } 
   },
 };
 

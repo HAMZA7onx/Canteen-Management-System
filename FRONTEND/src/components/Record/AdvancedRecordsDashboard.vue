@@ -120,7 +120,7 @@
           <p class="text-sm text-gray-600 dark:text-gray-300">Total without Discount: {{ formatPrice(total.total_without_discount) }}</p>
         </div>
       </div>
-    </div>
+    </div> 
 
     <!-- Download PDF Button -->
     <div class="mt-8 flex justify-end">

@@ -17,6 +17,7 @@ use App\Http\Controllers\RecordsDashboardController;
 use App\Http\Controllers\Badge\AdminBadgeController;
 use App\Http\Controllers\PosDeviceController;
 use App\Http\Controllers\User\CategoryDiscountController;
+use App\Http\Controllers\Admin\AdminReportSubscriptionController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -193,6 +194,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('discounts/{day}/{mealId}', [CategoryDiscountController::class, 'getDiscountsForMeal']);
 
+    Route::prefix('admin-report-subscriptions')->group(function () {
+        Route::get('/', [AdminReportSubscriptionController::class, 'index']);
+        Route::post('/', [AdminReportSubscriptionController::class, 'store']);
+        Route::put('/{subscription}', [AdminReportSubscriptionController::class, 'update']);
+        Route::delete('/{subscription}', [AdminReportSubscriptionController::class, 'destroy']);
+    });
 });
 
 
