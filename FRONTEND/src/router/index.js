@@ -16,10 +16,12 @@ import RecordsDashboard from '@/components/Record/RecordsDashboard.vue'
 import BadgingInterface from '@/components/Badging/BadgingInterface.vue'
 import AdminBadgeList from '@/components/AdminBadge/BadgeList.vue'
 import PosDeviceList from '@/components/POS/PosDeviceList.vue'
-import AdvancedRecordsDashboard from '../components/Record/AdvancedRecordsDashboard.vue';
+import AdvancedRecordsDashboard from '@/components/Record/AdvancedRecordsDashboard.vue';
+import Home from '@/components/Home/Home.vue';
  
 const routes = [
-  { path: '/', component: AdminListView },
+  { path: '/', component: Home },
+  { path: '/admins', component: AdminListView },
   {path: '/login', component: Login},
   { path: '/users', component: UserList },
   { path: '/roles', component: RoleList },

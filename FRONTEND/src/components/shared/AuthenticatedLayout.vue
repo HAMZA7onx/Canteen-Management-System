@@ -25,7 +25,7 @@ export default {
     Navbar,
     Sidebar,
   },
-  setup() {
+  setup() { 
     const store = useStore();
     const isSidebarOpen = computed(() => store.getters['sidebar/isOpen']);
 

@@ -12,6 +12,7 @@ const actions = {
   fetchUsers({ commit }) { 
     return UserService.getUsers()
       .then((response) => {
+        console.log('response.data: ', response.data);
         commit('SET_USERS', response.data);
       })
       .catch((error) => {
