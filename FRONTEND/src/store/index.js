@@ -17,6 +17,7 @@ import adminBadge from './modules/adminBadge';
 import posDevice from './modules/posDevice';
 import sidebar from './modules/sidebar';
 import advancedRecord from './modules/advancedRecord';
+import adminReportSubscription from './modules/adminReportSubscription';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -41,6 +42,7 @@ const store = createStore({
     posDevice,
     sidebar,
     advancedRecord,
+    adminReportSubscription,
   },
   plugins: [vuexLocal.plugin]
 });

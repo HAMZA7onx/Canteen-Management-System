@@ -88,8 +88,9 @@ export default {
         title: 'Administration',
         expanded: true,
         items: [
-          { label: 'Les admins', icon: 'user-shield', route: '/admins' },
-          { label: 'Les roles', icon: 'user-tag', route: '/roles' },
+        { label: 'Les admins', icon: 'user-shield', route: '/admins' },
+        { label: 'Les subscriptions des admins', icon: 'user-shield', route: '/admins-report-subscriptions' },
+        { label: 'Les roles', icon: 'user-tag', route: '/roles' },
           { label: 'Les user-Categories', icon: 'user-friends', route: '/user-categories' },
         ]
       },

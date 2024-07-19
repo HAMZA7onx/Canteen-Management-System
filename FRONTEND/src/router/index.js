@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Login from '@/views/Auth/Login.vue';
 import store from '@/store';
+import Home from '@/components/Home/Home.vue';
 import UserList from '@/components/User/UserList.vue';
 import AdminListView from '@/views/Admin/AdminListView.vue';
 import RoleList from '@/components/Role/RoleList.vue';
@@ -17,7 +18,7 @@ import BadgingInterface from '@/components/Badging/BadgingInterface.vue'
 import AdminBadgeList from '@/components/AdminBadge/BadgeList.vue'
 import PosDeviceList from '@/components/POS/PosDeviceList.vue'
 import AdvancedRecordsDashboard from '@/components/Record/AdvancedRecordsDashboard.vue';
-import Home from '@/components/Home/Home.vue';
+import AdminReportSubscriptionDashboard from '@/components/Admin/AdminReportSubscriptionDashboard.vue';
  
 const routes = [
   { path: '/', component: Home },
@@ -37,6 +38,7 @@ const routes = [
   { path: '/admins-badges', component: AdminBadgeList },
   { path: '/pos-devices', component: PosDeviceList },
   { path: '/records-audit', component: AdvancedRecordsDashboard },
+  { path: '/admins-report-subscriptions', component: AdminReportSubscriptionDashboard },
 ];
 
 
