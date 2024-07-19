@@ -226,6 +226,7 @@ export default {
     };
   }
 };
+// comment
 </script>
 
 <style scoped>
