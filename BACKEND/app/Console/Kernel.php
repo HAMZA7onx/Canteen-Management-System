@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Jobs\SendAdminReports;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +13,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->job(new SendAdminReports('daily'))->dailyAt('15:54');
+        $schedule->job(new SendAdminReports('weekly'))->weekly()->sundays()->at('11:59');
+        $schedule->job(new SendAdminReports('monthly'))->monthly()->lastDayOfMonth()->at('11:59');
+        $schedule->job(new SendAdminReports('yearly'))->cron('59 23 31 12 *');
     }
 
     /**
