@@ -282,5 +282,4 @@ class RecordsDashboardController extends Controller
 
         return response()->json($records);
     }
-
 }
