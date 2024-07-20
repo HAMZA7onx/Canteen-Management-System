@@ -44,14 +44,14 @@
     <div v-if="mobileMenuOpen" class="sm:hidden bg-indigo-700 dark:bg-gray-800">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <router-link to="/profile" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-600 dark:hover:bg-gray-700">
-          {{ $t('profile') }}
+          profile
         </router-link>
         <DarkModeToggle class="block px-3 py-2" />
         <button
           @click="handleLogout"
           class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:bg-red-600 dark:hover:bg-red-700"
         >
-          {{ $t('logout') }}
+          logout
         </button>
       </div>
     </div>
