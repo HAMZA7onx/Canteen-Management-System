@@ -15,53 +15,57 @@
         </div>
       </div>
 
-      <!-- Boutons d'action -->
-      <div class="mb-6 flex space-x-4">
+      <!-- Boutons d'action et barre de recherche -->
+      <div class="mb-6 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
         <button
           class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="showImportModal = true"
         >
           Importer des RFID
         </button>
+        <div class="flex-grow flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+          <select
+            v-model="searchOption"
+            class="w-full sm:w-auto px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="rfid">RFID</option>
+            <option value="name">Nom</option>
+            <option value="matriculation_number">Matriculation</option>
+          </select>
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="`Rechercher par ${searchOption}...`"
+            class="w-full sm:flex-grow px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
       </div>
 
       <!-- Tableau des badges -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
           <loading-wheel v-if="isLoading" />
-          <table v-show="!isLoading" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
+          <div v-else-if="paginatedBadges.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
+            Aucun RFID trouvé. Importez des RFID pour commencer.
+          </div>
+          <table v-if="paginatedBadges.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th
+                  v-for="header in tableHeaders"
+                  :key="header.key"
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  @click="sortByRfid"
+                  @click="sortBy(header.key)"
                 >
-                  RFID
-                  <span v-if="sortBy === 'rfid'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+                  {{ header.label }}
+                  <span v-if="sortColumn === header.key" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  @click="sortByEmail"
-                >
-                  Email
-                  <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  @click="sortByStatus"
-                >
-                  Statut
-                  <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+              <tr v-for="badge in paginatedBadges" :key="badge.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ getUserName(badge) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -69,6 +73,8 @@
                     {{ badge.status }}
                   </span>
                 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ badge.user ? badge.user.matriculation_number : 'N/A' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(badge.updated_at) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     class="text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300"
@@ -79,7 +85,12 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
-                    class="text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 mr-3 transition-colors duration-300"
+                    :class="[
+                      'mr-3 transition-colors duration-300',
+                      badge.status === 'lost'
+                        ? 'text-white dark:text-white cursor-not-allowed'
+                        : 'text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200'
+                    ]"
                     @click="editBadge(badge)"
                     :disabled="badge.status === 'lost'"
                   >
@@ -101,8 +112,8 @@
               </tr>
             </tbody>
           </table>
-          <ul v-show="!isLoading" class="divide-y divide-gray-200 dark:divide-gray-700 md:hidden">
-            <li v-for="badge in sortedBadges" :key="badge.id" class="py-4 px-4">
+          <ul v-if="paginatedBadges.length > 0" class="divide-y divide-gray-200 dark:divide-gray-700 block md:hidden">
+            <li v-for="badge in paginatedBadges" :key="badge.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</span>
                 <button
@@ -116,6 +127,8 @@
               <span :class="getStatusClass(badge.status)" class="mt-1 inline-block">
                 {{ badge.status }}
               </span>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Matriculation: {{ badge.user ? badge.user.matriculation_number : 'N/A' }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Mis à jour: {{ formatDate(badge.updated_at) }}</p>
               <div v-if="badge.showActions" class="mt-2 space-y-2">
                 <button
                   class="w-full text-left text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300 flex items-center"
@@ -125,7 +138,12 @@
                   Voir les détails
                 </button>
                 <button
-                  class="w-full text-left text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 transition-colors duration-300 flex items-center"
+                  :class="[
+                    'w-full text-left transition-colors duration-300 flex items-center',
+                    badge.status === 'lost'
+                      ? 'text-white dark:text-white cursor-not-allowed'
+                      : 'text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200'
+                  ]"
                   @click="editBadge(badge)"
                   :disabled="badge.status === 'lost'"
                 >
@@ -149,6 +167,25 @@
             </li>
           </ul>
         </div>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="paginatedBadges.length > 0" class="mt-4 flex justify-between items-center">
+        <button
+          class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          @click="prevPage"
+          :disabled="currentPage === 1"
+        >
+          Précédent
+        </button>
+        <span class="text-gray-700 dark:text-gray-300">Page {{ currentPage }} sur {{ totalPages }}</span>
+        <button
+          class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+        >
+          Suivant
+        </button>
       </div>
 
       <!-- Composants modaux -->
@@ -279,43 +316,67 @@ export default {
       selectedBadge: null,
       eligibleUsersKey: 0,
       badgeToDelete: null,
-      sortBy: null,
+      sortColumn: null,
       sortDirection: 'asc',
       isLoading: true,
+      searchQuery: '',
+      searchOption: 'rfid',
+      currentPage: 1,
+      itemsPerPage: 10,
+      tableHeaders: [
+        { key: 'rfid', label: 'RFID' },
+        { key: 'name', label: 'NAME' },
+        { key: 'status', label: 'Statut' },
+        { key: 'matriculation_number', label: 'Matriculation' },
+        { key: 'updated_at', label: 'Dernière mise à jour' },
+      ],
     };
   },
   computed: {
     ...mapGetters('badge', ['badges']),
-    getUserName() {
-      return (badge) => {
-        if (badge.user) {
-          return badge.user.email;
-        } else if (badge.userId) {
-          const user = this.users.find(u => u.id === badge.userId);
-          return user ? user.email : 'Unassigned';
-        } else {
-          return 'Unassigned';
+    filteredBadges() {
+      return this.badges.filter(badge => {
+        const searchLower = this.searchQuery.toLowerCase();
+        switch (this.searchOption) {
+          case 'rfid':
+            return badge.rfid.toLowerCase().includes(searchLower);
+          case 'name':
+            return this.getUserName(badge).toLowerCase().includes(searchLower);
+          case 'matriculation_number':
+            return badge.user && badge.user.matriculation_number.toLowerCase().includes(searchLower);
+          default:
+            return true;
         }
-      };
+      });
     },
     sortedBadges() {
-      let sortedBadges = [...this.badges];
+      return [...this.filteredBadges].sort((a, b) => {
+        let valueA = a[this.sortColumn];
+        let valueB = b[this.sortColumn];
 
-      if (this.sortBy === 'email') {
-        sortedBadges.sort((a, b) => {
-          const emailA = this.getUserName(a).toLowerCase();
-          const emailB = this.getUserName(b).toLowerCase();
-          return this.sortDirection === 'asc' ? emailA.localeCompare(emailB) : emailB.localeCompare(emailA);
-        });
-      } else if (this.sortBy === 'status') {
-        sortedBadges.sort((a, b) => {
-          const statusA = a.status.toLowerCase();
-          const statusB = b.status.toLowerCase();
-          return this.sortDirection === 'asc' ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
-        });
-      }
+        if (this.sortColumn === 'matriculation_number') {
+          valueA = a.user ? a.user.matriculation_number : '';
+          valueB = b.user ? b.user.matriculation_number : '';
+        } else if (this.sortColumn === 'name') {
+          valueA = this.getUserName(a);
+          valueB = this.getUserName(b);
+        }
 
-      return sortedBadges;
+        if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+        if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+        if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+        if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    },
+    paginatedBadges() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.sortedBadges.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.sortedBadges.length / this.itemsPerPage);
     },
   },
   created() {
@@ -411,27 +472,11 @@ export default {
       const updatedAt = new Date(badge.updated_at);
       return createdAt.getTime() === updatedAt.getTime();
     },
-    sortByRfid() {
-      if (this.sortBy === 'rfid') {
+    sortBy(column) {
+      if (this.sortColumn === column) {
         this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
       } else {
-        this.sortBy = 'rfid';
-        this.sortDirection = 'asc';
-      }
-    },
-    sortByEmail() {
-      if (this.sortBy === 'email') {
-        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortBy = 'email';
-        this.sortDirection = 'asc';
-      }
-    },
-    sortByStatus() {
-      if (this.sortBy === 'status') {
-        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortBy = 'status';
+        this.sortColumn = column;
         this.sortDirection = 'asc';
       }
     },
@@ -450,9 +495,25 @@ export default {
       badge.showActions = !badge.showActions;
       this.$forceUpdate();
     },
-    toggleBadgeActions(badge) {
-      badge.showActions = !badge.showActions;
-      this.$forceUpdate();
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    getUserName(badge) {
+      if (badge.user) {
+        return badge.user.name;
+      } else if (badge.userId) {
+        const user = this.users.find(u => u.id === badge.userId);
+        return user ? user.name : 'Unassigned';
+      } else {
+        return 'Unassigned';
+      }
     },
   },
 };
@@ -492,3 +553,4 @@ export default {
   animation: slideIn 0.3s ease-in-out;
 }
 </style>
+

@@ -16,7 +16,7 @@ class BadgeController extends Controller
 {
     public function index()
     {
-        $badges = Badge::with('user')->get();
+        $badges = Badge::with('user')->orderBy('updated_at', 'desc')->get();
         return response()->json($badges);
     }
 
