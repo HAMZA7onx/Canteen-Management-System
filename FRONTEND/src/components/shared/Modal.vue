@@ -1,8 +1,8 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
+  <div v-if="show" class="fixed inset-0 z-[100] overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4">
       <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-all sm:max-w-lg sm:w-full"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-all sm:max-w-lg sm:w-full "
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-headline"

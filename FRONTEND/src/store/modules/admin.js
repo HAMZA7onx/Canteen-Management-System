@@ -31,24 +31,30 @@ const actions = {
   },
 
   createAdmin({ commit }, admin) {
-    console.log('admin: ', admin);
     return AdminService.createAdmin(admin)
       .then((response) => {
         commit('ADD_ADMIN', response.data);
-        return response.data; // Return the created admin data
+        return response.data;
       })
       .catch((error) => {
-        console.error('Error creating admin:', error);
+        if (error.response && error.response.data && error.response.data.errors) {
+          throw error.response.data;
+        }
         throw error;
       });
   },
   
+
   updateAdmin({ commit }, admin) {
     return AdminService.updateAdmin(admin.id, admin)
       .then((response) => {
         commit('UPDATE_ADMIN', response.data);
+        return response.data;
       })
       .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          throw error.response.data;
+        }
         console.error('Error updating admin:', error);
         throw error;
       });

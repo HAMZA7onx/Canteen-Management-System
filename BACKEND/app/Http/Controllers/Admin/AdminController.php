@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $admins = Admin::all();
+        $admins = Admin::orderBy('updated_at', 'desc')->get();
         return response()->json($admins);
     }
 
