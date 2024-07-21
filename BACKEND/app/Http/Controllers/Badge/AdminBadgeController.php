@@ -14,7 +14,7 @@ class AdminBadgeController extends Controller
 {
     public function index()
     {
-        $badges = AdminBadge::with('admin')->get();
+        $badges = AdminBadge::with('admin')->orderBy('updated_at', 'desc')->get();
         return response()->json($badges);
     }
 

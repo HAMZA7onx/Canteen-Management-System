@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     function index()
     {
-        $users = User::with('category')->latest()->get();
+        $users = User::with('category')->orderBy('updated_at', 'desc')->get();
         return response()->json($users);
     }
 
