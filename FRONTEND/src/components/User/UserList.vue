@@ -15,6 +15,37 @@
         </div>
       </div>
 
+      <!-- Search and Navigation -->
+      <div class="mb-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+        <div class="w-full sm:w-1/2 relative">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+        <div class="flex space-x-2">
+          <button
+            @click="currentPage = 'list'"
+            :class="['px-4 py-2 rounded-md transition-colors duration-300', currentPage === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300']"
+          >
+            Liste
+          </button>
+          <button
+            @click="currentPage = 'grid'"
+            :class="['px-4 py-2 rounded-md transition-colors duration-300', currentPage === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300']"
+          >
+            Grille
+          </button>
+        </div>
+      </div>
+
       <!-- User Actions -->
       <div class="mb-6 flex flex-wrap justify-between items-center">
         <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
@@ -32,18 +63,37 @@
         </button>
       </div>
 
-        <div class="text-gray-600 dark:text-gray-300">
-          Total des Utilisateurs: <span class="font-bold text-blue-600 dark:text-blue-400">{{ users.length }}</span>
-        </div>
+      <div class="text-gray-600 dark:text-gray-300">
+        Total des Utilisateurs: <span class="font-bold text-blue-600 dark:text-blue-400">{{ sortedUsers.length }}</span>
+      </div>
       </div>
 
       <!-- User List -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
+      <div v-if="currentPage === 'list'" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
           <loading-wheel v-if="isLoading" />
           <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400">
             {{ error }}
             <button @click="loadUsers" class="ml-2 underline">Réessayer</button>
+          </div>
+          <div v-else-if="paginatedUsers.length === 0" class="p-8 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Aucun utilisateur</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Commencez par créer un nouvel utilisateur.</p>
+            <div class="mt-6">
+              <button
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                @click="openCreateUserModal"
+              >
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Créer un utilisateur
+              </button>
+            </div>
           </div>
           <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700 hidden md:table-header-group">
@@ -53,18 +103,23 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Téléphone</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">matriculation</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catégorie</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dernière Mise à Jour</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+              <tr v-for="user in paginatedUsers" :key="user.id + '_' + currentPageIndex">
                 <!-- Desktop view -->
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 hidden md:table-cell">{{ user.name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.email }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.phone_number }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.matriculation_number }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">{{ user.category.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                  {{ formatDate(Math.max(new Date(user.created_at), new Date(user.updated_at))) }}
+                </td>
+
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium hidden md:table-cell">
                   <button
                     class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
@@ -100,6 +155,7 @@
                     </button>
                   </div>
                   <div v-if="user.showMobileActions" class="mt-2 space-y-2">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Dernière mise à jour: {{ formatDate(user.updated_at) }}</p>
                     <button
                       class="w-full text-left text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300 flex items-center"
                       @click="openDetailsPopup(user)"
@@ -108,7 +164,7 @@
                       Détails
                     </button>
                     <button
-                      class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
+                      class="w-full text-left text-yellow-600 hover:text-yellow-900                       dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                       @click="openEditUserModal(user)"
                     >
                       <font-awesome-icon icon="edit" class="mr-2" />
@@ -118,7 +174,7 @@
                       class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                       @click="deleteUser(user)"
                     >
-                      <font-awesome-icon icon="fa-trash" class="mr-2" />
+                      <font-awesome-icon icon="trash" class="mr-2" />
                       Supprimer
                     </button>
                   </div>
@@ -127,20 +183,94 @@
             </tbody>
           </table>
         </div>
+        <!-- Pagination -->
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <button @click="prevPage" :disabled="currentPageIndex === 0" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600">
+              Previous
+            </button>
+            <button @click="nextPage" :disabled="currentPageIndex === totalPages - 1" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600">
+              Next
+            </button>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700 dark:text-gray-300">
+                Showing
+                <span class="font-medium">{{ paginationStart + 1 }}</span>
+                to
+                <span class="font-medium">{{ paginationEnd }}</span>
+                of
+                <span class="font-medium">{{ sortedUsers.length }}</span>
+                results
+              </p>
+            </div>
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button @click="prevPage" :disabled="currentPageIndex === 0" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                  <span class="sr-only">Previous</span>
+                  <!-- Heroicon name: solid/chevron-left -->
+                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+                <button v-for="page in visiblePageNumbers" :key="page" @click="goToPage(page - 1)" :class="['relative inline-flex items-center px-4 py-2 border text-sm font-medium', currentPageIndex === page - 1 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600 dark:bg-indigo-900 dark:border-indigo-500 dark:text-indigo-200' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600']">
+                  {{ page }}
+                </button>
+                <button @click="nextPage" :disabled="currentPageIndex === totalPages - 1" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                  <span class="sr-only">Next</span>
+                  <!-- Heroicon name: solid/chevron-right -->
+                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Grid -->
+      <div v-else-if="currentPage === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div v-for="user in paginatedUsers" :key="user.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 transition-colors duration-300">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ user.name }}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ user.email }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ user.phone_number }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ user.category.name }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Dernière mise à jour: {{ formatDate(user.updated_at) }}</p>
+          <div class="mt-4 flex justify-between">
+            <button
+              @click="openDetailsPopup(user)"
+              class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+            >
+              Détails
+            </button>
+            <button
+              @click="openEditUserModal(user)"
+              class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-200"
+            >
+              <font-awesome-icon icon="edit" />
+            </button>
+            <button
+              @click="deleteUser(user)"
+              class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+            >
+              <font-awesome-icon icon="trash" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Modals -->
       <Overlay v-if="showCreateUserModal">
         <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Créer un Nouvel Utilisateur">
           <UserForm :user="{}" @create:user="createUser" />
-
         </Modal>
       </Overlay>
 
       <Overlay v-if="showEditUserModal">
         <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Modifier le Profil Utilisateur">
           <UserForm :user="selectedUser" @update:user="updateUser" />
-
         </Modal>
       </Overlay>
 
@@ -326,7 +456,7 @@
               type="button"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
               @click="closeDetailsPopup"
-            >
+              >
               Fermer
             </button>
           </div>
@@ -370,6 +500,12 @@ export default {
       importResult: null,
       isLoading: true,
       error: null,
+      searchQuery: '',
+      currentPage: 'list',
+      currentPageIndex: 0,
+      itemsPerPage: 10,
+      showToast: false,
+      toastMessage: '',
     };
   },
   computed: {
@@ -386,7 +522,72 @@ export default {
         }
       }
       return [];
-    }
+    },
+    filteredUsers() {
+      return this.users.filter(user =>
+        user.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        user.phone_number.includes(this.searchQuery) ||
+        user.category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
+    sortedUsers() {
+      return [...this.filteredUsers].sort((a, b) => {
+        const dateA = new Date(Math.max(new Date(a.created_at), new Date(a.updated_at)));
+        const dateB = new Date(Math.max(new Date(b.created_at), new Date(b.updated_at)));
+        return dateB - dateA;
+      });
+    },
+    paginatedUsers() {
+      const start = this.currentPageIndex * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredUsers.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.sortedUsers.length / this.itemsPerPage);
+    },
+    visiblePageNumbers() {
+      const pageNumbers = [];
+      const totalPages = this.totalPages;
+      const currentPage = this.currentPageIndex + 1;
+
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        if (currentPage <= 4) {
+          for (let i = 1; i <= 5; i++) {
+            pageNumbers.push(i);
+          }
+          pageNumbers.push('...');
+          pageNumbers.push(totalPages);
+        } else if (currentPage >= totalPages - 3) {
+          pageNumbers.push(1);
+          pageNumbers.push('...');
+          for (let i = totalPages - 4; i <= totalPages; i++) {
+            pageNumbers.push(i);
+          }
+        } else {
+          pageNumbers.push(1);
+          pageNumbers.push('...');
+          for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+            pageNumbers.push(i);
+          }
+          pageNumbers.push('...');
+          pageNumbers.push(totalPages);
+        }
+      }
+
+      return pageNumbers;
+    },
+    paginationStart() {
+      return this.currentPageIndex * this.itemsPerPage;
+    },
+    paginationEnd() {
+      const end = (this.currentPageIndex + 1) * this.itemsPerPage;
+      return end > this.sortedUsers.length ? this.sortedUsers.length : end;
+    },
   },
   created() {
     this.loadUsers();
@@ -427,7 +628,9 @@ export default {
         .dispatch('user/updateUser', updatedUser)
         .then(() => {
           this.closeEditUserModal();
-          this.loadUsers(); // Refresh the user list after update
+          this.loadUsers();
+          this.currentPageIndex = 0;
+          this.showSuccessToast('User updated successfully!');
         })
         .catch((error) => {
           console.error('Error updating user:', error);
@@ -443,7 +646,7 @@ export default {
         .then(() => {
           this.showDeleteConfirmation = false;
           this.userToDelete = null;
-          this.loadUsers(); // Refresh the user list after deletion
+          this.loadUsers();
           this.showSuccessToast('User deleted successfully!');
         })
         .catch((error) => {
@@ -480,7 +683,7 @@ export default {
       this.$store.dispatch('user/importUsers', formData)
         .then((response) => {
           this.importResult = response;
-          this.loadUsers(); // Refresh the user list after import
+          this.loadUsers();
         })
         .catch((error) => {
           console.error('Error importing users:', error);
@@ -528,23 +731,25 @@ export default {
           console.error('Error creating user:', error);
         });
     },
-    updateUser(updatedUser) {
-      this.$store.dispatch('user/updateUser', updatedUser)
-        .then(() => {
-          this.closeEditUserModal();
-          this.loadUsers();
-          this.showSuccessToast('User updated successfully!');
-        })
-        .catch((error) => {
-          console.error('Error updating user:', error);
-        });
-    },
     showSuccessToast(message) {
       this.toastMessage = message;
       this.showToast = true;
       setTimeout(() => {
         this.showToast = false;
       }, 3000);
+    },
+    prevPage() {
+      if (this.currentPageIndex > 0) {
+        this.currentPageIndex--;
+      }
+    },
+    nextPage() {
+      if (this.currentPageIndex < this.totalPages - 1) {
+        this.currentPageIndex++;
+      }
+    },
+    goToPage(pageIndex) {
+      this.currentPageIndex = pageIndex;
     },
   },
 };
