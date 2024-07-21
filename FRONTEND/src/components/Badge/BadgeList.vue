@@ -44,11 +44,14 @@
       <!-- Tableau des badges -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <div class="overflow-x-auto">
-          <loading-wheel v-if="isLoading" />
+          <div v-if="isLoading" class="flex justify-center items-center h-64">
+            <loading-wheel />
+          </div>
           <div v-else-if="paginatedBadges.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
             Aucun RFID trouvé. Importez des RFID pour commencer.
           </div>
-          <table v-if="paginatedBadges.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
+          <div v-else>
+             <table v-if="paginatedBadges.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th
@@ -166,6 +169,8 @@
               </div>
             </li>
           </ul>
+          </div>
+         
         </div>
       </div>
 
@@ -553,4 +558,3 @@ export default {
   animation: slideIn 0.3s ease-in-out;
 }
 </style>
-
