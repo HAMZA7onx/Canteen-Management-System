@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <!-- Role Actions -->
+      <!-- Role Actions and Search -->
       <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
         <button
           class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 mb-4 sm:mb-0"
@@ -23,8 +23,16 @@
         >
           <span class="mr-2">+</span> Créer un Nouveau Rôle
         </button>
-        <div class="text-gray-600 dark:text-gray-300">
-          Total des Rôles : <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ roles.length }}</span>
+        <div class="relative w-full sm:w-64">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Rechercher..."
+            class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+          />
+          <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
       </div>
 
@@ -40,13 +48,18 @@
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hidden sm:table-cell" @click="sortBy('updated_at')">
+                  Last Updated
+                  <span v-if="sortKey === 'updated_at'">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <template v-for="role in roles" :key="role.id">
+              <template v-for="role in paginatedRoles" :key="role.id">
                 <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ role.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 hidden sm:table-cell">{{ formatDate(role.updated_at) }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex space-x-2 sm:hidden">
                       <button @click="toggleExpandRow(role.id)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-200">
@@ -76,8 +89,11 @@
                   </td>
                 </tr>
                 <tr v-if="expandedRows.includes(role.id)" class="bg-gray-50 dark:bg-gray-700 sm:hidden">
-                  <td colspan="2" class="px-6 py-4">
+                  <td colspan="3" class="px-6 py-4">
                     <div class="flex flex-col space-y-2">
+                      <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span class="font-medium">Last Updated:</span> {{ formatDate(role.updated_at) }}
+                      </div>
                       <button @click="openEditRoleModal(role)" class="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
                         <font-awesome-icon icon="edit" class="mr-2" />
                         Edit
@@ -97,8 +113,46 @@
             </tbody>
           </table>
         </div>
+        <!-- Pagination -->
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <button @click="prevPage" :disabled="currentPage === 1" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+              Previous
+            </button>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+              Next
+            </button>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700 dark:text-gray-300">
+                Showing
+                <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+                to
+                <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredRoles.length) }}</span>
+                of
+                <span class="font-medium">{{ filteredRoles.length }}</span>
+                results
+              </p>
+            </div>
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button @click="prevPage" :disabled="currentPage === 1" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <span class="sr-only">Previous</span>
+                  <font-awesome-icon icon="chevron-left" class="h-5 w-5" />
+                </button>
+                <button v-for="page in displayedPages" :key="page" @click="goToPage(page)" :class="['relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium', currentPage === page ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700']">
+                  {{ page }}
+                </button>
+                <button @click="nextPage" :disabled="currentPage === totalPages" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <span class="sr-only">Next</span>
+                  <font-awesome-icon icon="chevron-right" class="h-5 w-5" />
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
-
       <!-- Modals -->
       <Overlay v-if="showCreateRoleModal">
         <Modal :show="showCreateRoleModal" @close="closeCreateRoleModal" title="Créer un Nouveau Rôle">
@@ -118,57 +172,59 @@
         </Modal>
       </Overlay>
 
-      <!-- Delete Confirmation Modal -->
-      <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
+<!-- Delete Confirmation Modal -->
+<div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+      <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75"></div>
+    </div>
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div
+      class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-headline"
+    >
+      <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
           </div>
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-          <div
-            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-headline"
-          >
-            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div class="sm:flex sm:items-start">
-                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
-                  <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                    Confirmer la Suppression du Rôle
-                  </h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      Êtes-vous certain de vouloir supprimer le rôle "{{ roleToDelete.name }}" ? Cette action est irréversible et peut avoir un impact sur les permissions des utilisateurs dans tout le système.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-              <button
-                type="button"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
-                @click="confirmDeleteRole"
-              >
-                Confirmer la Suppression
-              </button>
-              <button
-                type="button"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300"
-                @click="showDeleteConfirmation = false"
-              >
-                Annuler
-              </button>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+              Supprimer le rôle
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Êtes-vous sûr de vouloir supprimer {{ roleToDelete.name }} ? Cette action ne peut pas être annulée.
+              </p>
             </div>
           </div>
         </div>
       </div>
+      <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button
+          type="button"
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:bg-red-700 dark:hover:bg-red-800 transition-colors duration-300"
+          @click="confirmDeleteRole"
+        >
+          Supprimer
+        </button>
+        <button
+          type="button"
+          class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300"
+          @click="showDeleteConfirmation = false"
+        >
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     </div>
     <Toast :show="showToast" :message="toastMessage" />
   </div>
@@ -193,7 +249,7 @@ export default {
     LoadingWheel,
     Toast,
   },
-  
+ 
   data() {
     return {
       showCreateRoleModal: false,
@@ -207,10 +263,39 @@ export default {
       expandedRows: [],
       showToast: false,
       toastMessage: '',
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      sortKey: 'updated_at',
+      sortOrder: 'desc',
     };
   },
   computed: {
     ...mapGetters('role', ['roles']),
+    filteredRoles() {
+      return this.roles
+        .filter(role =>
+          role.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    },
+
+    paginatedRoles() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredRoles.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredRoles.length / this.itemsPerPage);
+    },
+    displayedPages() {
+      const range = 2;
+      const pages = [];
+      for (let i = Math.max(1, this.currentPage - range); i <= Math.min(this.totalPages, this.currentPage + range); i++) {
+        pages.push(i);
+      }
+      return pages;
+    },
   },
   created() {
     this.loadRoles();
@@ -306,9 +391,35 @@ export default {
       this.loadRoles();
       this.showSuccessToast('Role updated successfully!');
     },
-  }, 
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    goToPage(page) {
+      this.currentPage = page;
+    },
+    sortBy(key) {
+      if (this.sortKey === key) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortKey = key;
+        this.sortOrder = 'asc';
+      }
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+
+  },
 };
-</script> 
+</script>
 
 <style scoped>
 @keyframes fadeIn {

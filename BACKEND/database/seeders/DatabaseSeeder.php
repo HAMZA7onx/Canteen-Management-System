@@ -15,9 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             Seeder3_Permissions::class,
             Seeder4_UserCategories::class,
-            Seeder5_Users::class,
-            Seeder6_RecordsDashboard::class,
-            Seeder7_WeekSchedule::class,
+            Seeder5_RoleSeeder::class,
         ]);
     }
 }
