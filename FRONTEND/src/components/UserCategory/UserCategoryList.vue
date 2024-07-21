@@ -15,15 +15,35 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <div class="mb-6">
-        <button
-          class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
-          @click="openCreateModal"
-        >
-          <span class="mr-2">+</span> Créer une Catégorie d'Utilisateur
-        </button>
+      <div class="mb-6 space-y-4 sm:space-y-0 sm:flex sm:justify-between sm:items-center">
+  <div class="w-full sm:w-1/2 order-2 sm:order-1">
+    <div class="relative">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Rechercher une catégorie..."
+        class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      />
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
+    </div>
+  </div>
+  <div class="order-1 sm:order-2">
+    <button
+      class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
+      @click="openCreateModal"
+    >
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+      </svg>
+      Créer une Catégorie
+    </button>
+  </div>
+</div>
+
 
       <!-- Categories Table/List -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
@@ -34,14 +54,16 @@
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dernière Mise à Jour</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="category in userCategories" :key="category.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+              <tr v-for="category in paginatedCategories" :key="category.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ category.name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ category.description }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(category.updated_at) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-300"
@@ -72,7 +94,7 @@
             </tbody>
           </table>
           <ul v-show="!isLoading" class="divide-y divide-gray-200 dark:divide-gray-700 md:hidden">
-            <li v-for="category in userCategories" :key="category.id" class="py-4 px-4">
+            <li v-for="category in paginatedCategories" :key="category.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ category.name }}</span>
                 <button
@@ -82,6 +104,8 @@
                   <font-awesome-icon icon="ellipsis-v" />
                 </button>
               </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ category.description }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Dernière mise à jour: {{ formatDate(category.updated_at) }}</p>
               <div v-if="category.showActions" class="mt-2 space-y-2">
                 <button
                   class="w-full text-left text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-300 flex items-center"
@@ -112,6 +136,25 @@
             </li>
           </ul>
         </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4 flex justify-between items-center">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md disabled:opacity-50"
+        >
+          Précédent
+        </button>
+        <span class="dark:text-gray-100 ">Page {{ currentPage }} sur {{ totalPages }}</span>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md disabled:opacity-50"
+        >
+          Suivant
+        </button>
       </div>
 
       <!-- Create/Edit Modal -->
@@ -264,10 +307,33 @@ export default {
       isLoading: true,
       showToast: false,
       toastMessage: '',
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
     };
   },
   computed: {
     ...mapGetters('userCategory', ['userCategories']),
+    filteredCategories() {
+      return this.userCategories.filter(category =>
+        category.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        (category.description && category.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      );
+    },
+
+    totalPages() {
+      return Math.ceil(this.filteredCategories.length / this.itemsPerPage);
+    },
+    paginatedCategories() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredCategories.slice(start, end);
+    },
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
   },
   created() {
     this.loadUserCategories();
@@ -316,7 +382,7 @@ export default {
       action(category)
         .then(() => {
           this.closeModal();
-          this.loadUserCategories(); // Refresh the list
+          this.loadUserCategories();
           this.showSuccessToast('Category handled successfully!');
         })
         .catch((error) => {
@@ -337,7 +403,7 @@ export default {
       this.deleteUserCategory(this.categoryToDelete.id)
         .then(() => {
           this.closeDeleteConfirmation();
-          this.loadUserCategories(); // Refresh the list
+          this.loadUserCategories();
           this.showSuccessToast('Category deleted successfully!');
         })
         .catch((error) => {
@@ -368,6 +434,16 @@ export default {
     toggleCategoryActions(category) {
       category.showActions = !category.showActions;
       this.$forceUpdate();
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
     },
   },
 };

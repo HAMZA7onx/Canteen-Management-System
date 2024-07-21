@@ -11,7 +11,7 @@ class UserCategoryController extends Controller
 {
     public function index()
     {
-        $userCategories = UserCategory::all();
+        $userCategories = UserCategory::orderBy('updated_at', 'desc')->get();
 
         $userCategories = $userCategories->map(function ($category) {
             // Check if this category is associated with any users

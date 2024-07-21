@@ -10,36 +10,32 @@ class Seeder4_UserCategories extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        DB::table('user_category')->insert([
-            [
-                'name' => 'Stuff',
-                'description' => 'Stuff with full access to the system',
-                'creator' => 'system@example.com',
-                'editors' => json_encode([]),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'name' => 'Formateur',
-                'description' => 'Formateur with permissions to edit content',
-                'creator' => 'system@example.com',
-                'editors' => json_encode([]),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'name' => 'Manager',
-                'description' => 'Manager with permissions to view content only',
-                'creator' => 'system@example.com',
-                'editors' => json_encode([]),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+        $categories = [
+            'New Member', 'Regular User', 'Premium User', 'VIP Member',
+            'Bronze Tier', 'Silver Tier', 'Gold Tier', 'Platinum Tier',
+            'Student', 'Professional', 'Educator', 'Researcher',
+            'Small Business', 'Enterprise', 'Non-Profit', 'Government',
+            'Developer', 'Designer', 'Manager', 'Executive',
+            'Freelancer', 'Contractor', 'Consultant', 'Entrepreneur',
+            'Beginner', 'Intermediate', 'Advanced', 'Expert',
+            'Influencer', 'Brand Ambassador'
+        ];
+
+        foreach ($categories as $category) {
+            // Check if the category already exists
+            if (!DB::table('user_category')->where('name', $category)->exists()) {
+                DB::table('user_category')->insert([
+                    'name' => $category,
+                    'description' => 'Description for ' . $category . ' category',
+                    'creator' => 'System',
+                    'editors' => json_encode(['System']),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }
+        }
     }
 }
