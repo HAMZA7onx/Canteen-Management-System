@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto">
       <!-- Section d'en-tête -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 mb-4">Gestion des Badges</h1>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 mb-4">Gestion des Badges des Collaborateurs</h1>
         <p class="text-gray-600 dark:text-gray-300 mb-4">
           Gérez et organisez efficacement vos badges RFID. Importez, attribuez et suivez les badges de vos utilisateurs en toute simplicité.
         </p>
@@ -51,7 +51,8 @@
             Aucun RFID trouvé. Importez des RFID pour commencer.
           </div>
           <div v-else>
-             <table v-if="paginatedBadges.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
+
+            <table v-if="paginatedBadges.length > 0" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 hidden md:table">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th
@@ -330,7 +331,7 @@ export default {
       itemsPerPage: 10,
       tableHeaders: [
         { key: 'rfid', label: 'RFID' },
-        { key: 'name', label: 'NAME' },
+        { key: 'name', label: 'NOM' },
         { key: 'status', label: 'Statut' },
         { key: 'matriculation_number', label: 'Matriculation' },
         { key: 'updated_at', label: 'Dernière mise à jour' },
