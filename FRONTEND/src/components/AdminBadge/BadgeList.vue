@@ -15,14 +15,29 @@
         </div>
       </div>
 
-      <!-- Boutons d'action -->
-      <div class="mb-6 flex space-x-4">
+      <!-- Boutons d'action et barre de recherche -->
+      <div class="mb-6 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <button
           class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="showImportModal = true"
         >
           Importer des RFID
         </button>
+        <div class="flex-grow flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+          <select
+            v-model="searchOption"
+            class="w-full sm:w-auto px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="rfid">RFID</option>
+            <option value="name">Nom</option>
+          </select>
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="`Rechercher par ${searchOption}...`"
+            class="w-full sm:flex-grow px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
       </div>
 
       <!-- Tableau des badges -->
@@ -45,7 +60,7 @@
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                   @click="sortByEmail"
                 >
-                  Email
+                  Nom
                   <span v-if="sortBy === 'email'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
                 </th>
                 <th
@@ -56,12 +71,20 @@
                   Statut
                   <span v-if="sortBy === 'status'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
                 </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                  @click="sortByUpdatedAt"
+                >
+                Dernière mise à jour
+                  <span v-if="sortBy === 'updated_at'" :class="sortDirection === 'asc' ? 'inline-block rotate-180' : 'inline-block'">&#9660;</span>
+                </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Détails</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="badge in sortedBadges" :key="badge.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+              <tr v-for="badge in paginatedBadges" :key="badge.id" class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ getUserName(badge) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -69,6 +92,7 @@
                     {{ badge.status }}
                   </span>
                 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(badge.updated_at) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     class="text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300"
@@ -102,7 +126,7 @@
             </tbody>
           </table>
           <ul v-show="!isLoading" class="divide-y divide-gray-200 dark:divide-gray-700 md:hidden">
-            <li v-for="badge in sortedBadges" :key="badge.id" class="py-4 px-4">
+            <li v-for="badge in paginatedBadges" :key="badge.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ badge.rfid }}</span>
                 <button
@@ -116,6 +140,7 @@
               <span :class="getStatusClass(badge.status)" class="mt-1 inline-block">
                 {{ badge.status }}
               </span>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Last Updated: {{ formatDate(badge.updated_at) }}</p>
               <div v-if="badge.showActions" class="mt-2 space-y-2">
                 <button
                   class="w-full text-left text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 transition-colors duration-300 flex items-center"
@@ -149,6 +174,27 @@
             </li>
           </ul>
         </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4 flex justify-between items-center">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-4 py-2 font-bold text-gray-500 bg-white rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span class="text-gray-700 dark:text-gray-300">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-4 py-2 font-bold text-gray-500 bg-white rounded-full border border-gray-300 hover:bg-gray-100 disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
 
       <!-- Composants modaux -->
@@ -282,6 +328,11 @@ export default {
       sortBy: null,
       sortDirection: 'asc',
       isLoading: true,
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      searchType: 'all',
+      searchOption: 'rfid',
     };
   },
   computed: {
@@ -289,17 +340,23 @@ export default {
     getUserName() {
       return (badge) => {
         if (badge.admin) {
-          return badge.admin.email;
+          return badge.admin.name;
         } else if (badge.userId) {
           const user = this.users.find(u => u.id === badge.userId);
-          return user ? user.email : 'Unassigned';
+          return user ? user.name : 'Unassigned';
         } else {
           return 'Unassigned';
         }
       };
     },
+    filteredBadges() {
+      return this.badges.filter(badge => 
+        badge.rfid.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        this.getUserName(badge).toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
     sortedBadges() {
-      let sortedBadges = [...this.badges];
+      let sortedBadges = [...this.filteredBadges];
 
       if (this.sortBy === 'email') {
         sortedBadges.sort((a, b) => {
@@ -313,9 +370,49 @@ export default {
           const statusB = b.status.toLowerCase();
           return this.sortDirection === 'asc' ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
         });
+      } else if (this.sortBy === 'updated_at') {
+        sortedBadges.sort((a, b) => {
+          const dateA = new Date(a.updated_at);
+          const dateB = new Date(b.updated_at);
+          return this.sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        });
       }
 
       return sortedBadges;
+    },
+    paginatedBadges() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.sortedBadges.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.sortedBadges.length / this.itemsPerPage);
+    },
+    searchPlaceholder() {
+      switch (this.searchType) {
+        case 'name':
+          return 'Search by name';
+        case 'rfid':
+          return 'Search by RFID';
+        default:
+          return 'Search by name or RFID';
+      }
+    },
+    filteredBadges() {
+      return this.badges.filter(badge => {
+        const name = this.getUserName(badge).toLowerCase();
+        const rfid = badge.rfid.toLowerCase();
+        const query = this.searchQuery.toLowerCase();
+
+        switch (this.searchType) {
+          case 'name':
+            return name.includes(query);
+          case 'rfid':
+            return rfid.includes(query);
+          default:
+            return name.includes(query) || rfid.includes(query);
+        }
+      });
     },
   },
   created() {
@@ -412,26 +509,22 @@ export default {
       return createdAt.getTime() === updatedAt.getTime();
     },
     sortByRfid() {
-      if (this.sortBy === 'rfid') {
-        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortBy = 'rfid';
-        this.sortDirection = 'asc';
-      }
+      this.setSortBy('rfid');
     },
     sortByEmail() {
-      if (this.sortBy === 'email') {
-        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-      } else {
-        this.sortBy = 'email';
-        this.sortDirection = 'asc';
-      }
+      this.setSortBy('email');
     },
     sortByStatus() {
-      if (this.sortBy === 'status') {
+      this.setSortBy('status');
+    },
+    sortByUpdatedAt() {
+      this.setSortBy('updated_at');
+    },
+    setSortBy(field) {
+      if (this.sortBy === field) {
         this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
       } else {
-        this.sortBy = 'status';
+        this.sortBy = field;
         this.sortDirection = 'asc';
       }
     },
@@ -449,6 +542,16 @@ export default {
     toggleBadgeActions(badge) {
       badge.showActions = !badge.showActions;
       this.$forceUpdate();
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
     },
   },
 };
