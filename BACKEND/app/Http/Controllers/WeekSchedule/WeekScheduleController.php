@@ -103,6 +103,9 @@ class WeekScheduleController extends Controller
 
     public function attachDailyMeal(Request $request, $weekScheduleId, $day)
     {
+        \Log::info("Attaching daily meal for day: $day, weekScheduleId: $weekScheduleId");
+        \Log::info("Request data: " . json_encode($request->all()));
+
         $validatedData = $request->validate([
             'daily_meal_id' => 'required|exists:daily_meals,id',
             'start_time' => 'required|date_format:H:i',
@@ -112,8 +115,13 @@ class WeekScheduleController extends Controller
             'discounts.*' => 'numeric|min:0|max:100',
         ]);
 
+        \Log::info("Validated data: " . json_encode($validatedData));
+
         $dailyMeal = DailyMeal::findOrFail($validatedData['daily_meal_id']);
         $weekSchedule = WeekSchedule::findOrFail($weekScheduleId);
+
+        \Log::info("Daily meal: " . json_encode($dailyMeal));
+        \Log::info("Week schedule: " . json_encode($weekSchedule));
 
         // Check if the daily meal is already attached to the same day
         $existingDailyMeals = $weekSchedule->{"${day}DailyMeals"}()->get();
@@ -138,18 +146,30 @@ class WeekScheduleController extends Controller
         }
 
         DB::beginTransaction();
-
         try {
-            $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, [
+            $attachData = [
                 'start_time' => $validatedData['start_time'],
                 'end_time' => $validatedData['end_time'],
                 'price' => $validatedData['price'],
-            ]);
+                'created_at' => now('Europe/Paris'),
+                'updated_at' => now('Europe/Paris')
+            ];
+            \Log::info("Attaching data: " . json_encode($attachData));
+
+            $weekSchedule->{"${day}DailyMeals"}()->attach($dailyMeal, $attachData);
 
             $pivotId = DB::table("{$day}_daily_meal")
                 ->where('week_schedule_id', $weekSchedule->id)
                 ->where('daily_meal_id', $dailyMeal->id)
                 ->value('id');
+
+            \Log::info("Pivot ID: $pivotId");
+
+            // Log the inserted record
+            $insertedRecord = DB::table("{$day}_daily_meal")
+                ->where('id', $pivotId)
+                ->first();
+            \Log::info("Inserted record: " . json_encode($insertedRecord));
 
             foreach ($validatedData['discounts'] as $categoryId => $discount) {
                 DB::table("{$day}_discounts")->insert([
@@ -162,12 +182,16 @@ class WeekScheduleController extends Controller
             }
 
             DB::commit();
+            \Log::info("Transaction committed successfully");
             return response()->json(['message' => 'Daily meal attached to the week schedule for ' . $day]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error("Error attaching daily meal: " . $e->getMessage());
+            \Log::error("Stack trace: " . $e->getTraceAsString());
             return response()->json(['error' => 'Failed to attach daily meal: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function detachDailyMeal(WeekSchedule $weekSchedule, DailyMeal $dailyMeal, $day)
     {
