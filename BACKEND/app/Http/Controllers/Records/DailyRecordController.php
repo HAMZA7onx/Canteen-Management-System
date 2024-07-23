@@ -77,7 +77,7 @@ class DailyRecordController extends Controller
         $user = $badge->user;
         $badgeOwnerName = $user ? $user->name : 'Unknown';
 
-        $currentTime = Carbon::now();
+        $currentTime = Carbon::now('Europe/Paris');
         $currentTimeString = $currentTime->format('H:i:s');
         \Log::info("Processing request for day: $day, time: $currentTimeString");
 
