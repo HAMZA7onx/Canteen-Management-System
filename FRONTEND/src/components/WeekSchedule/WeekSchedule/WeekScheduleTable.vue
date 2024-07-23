@@ -353,7 +353,7 @@ export default {
       fetchWeekSchedules()
       loadWeekSchedules()
     })
-
+ 
     return {
       showAssignModal,
       showCreateModal,

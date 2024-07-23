@@ -32,18 +32,16 @@
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }} DH)</span>
                 </p>
                 <div v-if="Object.keys(dailyMealData.discounts).length > 0">
-                {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData) }}
-                <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
-                <ul class="list-disc list-inside">
-                  <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
-                  </li>
-                </ul>
-              </div>
-              <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
-                {{ console.log('Rendering Load discounts button for meal:', dailyMealData.daily_meal_id) }}
-                Load discounts
-              </button>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
+                  <ul class="list-disc list-inside">
+                    <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
+                    </li>
+                  </ul>
+                </div>
+                <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
+                  Load discounts
+                </button>
               </div>
               <div>
                 <button
@@ -110,22 +108,13 @@
         />
       </div>
 
-      <div v-if="userCategories.length > 0">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Discounts</h3>
-        <div v-for="category in userCategories" :key="category.id" class="mb-2">
-          <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ category.name }} Discount (DH)
-          </label>
-          <input
-            :id="`discount-${category.id}`"
-            v-model="discounts[category.id]"
-            type="number"
-            min="0"
-            max="100"
-            step="0.01"
-            class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
-          />
-        </div>
+      <div>
+        <button
+          @click="toggleDiscounts"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Set Discounts
+        </button>
       </div>
     </div>
 
@@ -139,11 +128,49 @@
         Assign
       </button>
     </div>
+
+    <!-- Overlay for discounts -->
+    <div v-if="showDiscounts" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Set Discounts</h3>
+        <div class="max-h-96 overflow-y-auto">
+          <div v-for="category in userCategories" :key="category.id" class="mb-4">
+            <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ category.name }} (DH)
+            </label>
+            <input
+              :id="`discount-${category.id}`"
+              v-model="discounts[category.id]"
+              type="number"
+              min="0"
+              :max="price"
+              step="0.01"
+              @input="validateDiscount(category.id)"
+              class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+            />
+          </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button
+            @click="toggleDiscounts"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 mr-2"
+          >
+            Close
+          </button>
+          <button
+            @click="applyDiscounts"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Apply Discounts
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -159,13 +186,13 @@ export default {
   },
   setup(props) {
     const store = useStore()
-
     const selectedDailyMealId = ref(null)
     const startTime = ref('')
     const endTime = ref('')
     const price = ref('')
     const errorMessage = ref('')
     const discounts = ref({})
+    const showDiscounts = ref(false)
 
     const dailyMeals = computed(() => store.getters['dailyMeal/dailyMeals'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
@@ -174,7 +201,6 @@ export default {
       console.log('Assigned Daily Meals:', meals)
       return meals
     })
-
     const availableDailyMeals = computed(() => {
       const assignedDailyMealIds = assignedDailyMeals.value.map((dailyMealData) => dailyMealData.daily_meal_id)
       return dailyMeals.value.filter(
@@ -182,9 +208,39 @@ export default {
       )
     })
 
+    const initializeDiscounts = () => {
+      userCategories.value.forEach(category => {
+        discounts.value[category.id] = 0
+      })
+    }
+
+    const toggleDiscounts = () => {
+      showDiscounts.value = !showDiscounts.value
+    }
+
+    const validateDiscount = (categoryId) => {
+      const discount = parseFloat(discounts.value[categoryId])
+      const currentPrice = parseFloat(price.value)
+
+      if (isNaN(discount) || discount < 0) {
+        discounts.value[categoryId] = 0
+      } else if (discount > currentPrice) {
+        discounts.value[categoryId] = currentPrice
+      }
+    }
+
+    const applyDiscounts = () => {
+      toggleDiscounts()
+    }
+
     onMounted(() => {
       store.dispatch('dailyMeal/fetchDailyMeals')
       store.dispatch('userCategory/fetchUserCategories')
+      initializeDiscounts()
+    })
+
+    watch(userCategories, () => {
+      initializeDiscounts()
     })
 
     const getDailyMealName = (dailyMealId) => {
@@ -229,7 +285,6 @@ export default {
         console.error('Full error object:', error);
         console.error('Error response:', error.response);
         console.error('Error response data:', error.response?.data);
-
         if (error.response && error.response.data) {
           if (typeof error.response.data === 'string') {
             errorMessage.value = error.response.data;
@@ -302,7 +357,11 @@ export default {
       assignDailyMeals,
       detachDailyMeal,
       handleDailyMealSelect,
-      fetchDiscounts
+      fetchDiscounts,
+      showDiscounts,
+      toggleDiscounts,
+      validateDiscount,
+      applyDiscounts
     }
   }
 }
