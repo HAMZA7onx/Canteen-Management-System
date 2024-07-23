@@ -36,6 +36,7 @@ const actions = {
   async fetchCurrentMeal({ commit }) {
     try {
       const meal = await BadgingService.getCurrentMeal();
+      console.log('MEAL: ', meal)
       commit('SET_CURRENT_MEAL', meal);
     } catch (error) {
       commit('SET_CURRENT_MEAL', null);
