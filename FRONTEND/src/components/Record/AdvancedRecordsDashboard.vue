@@ -34,31 +34,31 @@
 
     <!-- Filters Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6 mb-6 md:mb-8">
-      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Filters</h2>
+      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Filtres</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de Début</label>
           <input v-model="filters.startDate" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date de Fin</label>
           <input v-model="filters.endDate" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">User Category</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie d'Utilisateur</label>
           <select v-model="filters.userCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             <option value="">All Categories</option>
             <option v-for="category in userCategories" :key="category.id" :value="category.id">{{ category.name }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recherche</label>
           <input v-model="filters.search" type="text" placeholder="Name or Matriculation Number" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
         </div>
       </div>
       <div class="mt-4 flex justify-end">
         <button @click="fetchRecords" class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-150 ease-in-out">
-          Apply Filters
+          Appliquer les Filtres
         </button>
       </div>
     </div>
@@ -69,32 +69,33 @@
     </div>
     <div v-else-if="groupedRecords.length" class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
       <div class="p-4 md:p-6">
-        <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Records</h2>
+        <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Enregistrements</h2>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <template v-for="(group, groupIndex) in groupedRecords" :key="groupIndex">
-                <!-- Week Schedule Header -->
+              <template v-for="(dateRecord, groupIndex) in groupedRecords" :key="groupIndex">
+                <!-- Date Header -->
                 <tr class="bg-gray-50 dark:bg-gray-700">
                   <th colspan="100%" class="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    {{ group.weekSchedule }}
+                    {{ formatDate(dateRecord.date) }}
                   </th>
                 </tr>
-                <!-- Records -->
-                <tr v-for="record in group.records" :key="record.date" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td class="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {{ formatDate(record.date) }}
-                  </td>
+                <!-- Meals -->
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-3 md:px-6 py-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      <div v-for="meal in record.meals" :key="meal.meal_name" class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
-                        <div class="flex justify-start">
+                      <div v-for="meal in dateRecord.meals" :key="meal.meal_name" class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between">
                           <div class="font-bold text-lg bg-gradient-to-r from-green-400 to-emerald-500 dark:bg-gray-800 text-transparent bg-clip-text p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                             {{ meal.meal_name }}
                           </div>
+                          <div class="font-bold text-lg bg-gradient-to-r from-green-400 to-emerald-500 dark:bg-gray-800 text-transparent bg-clip-text p-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                            DH {{ meal.price }}
+                          </div>
                         </div>
-                        <div class="text-sm text-gray-600 dark:text-gray-300">{{ meal.persons_count }} persons</div>
-                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ formatPrice(meal.total_with_discount) }}</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-300">{{ meal.badge_count }} personnes</div>
+                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span class="text-[10px]">Total avec Remise:</span> {{ formatPrice(meal.total_with_discount) }}</div>
+                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span class="text-[10px]">Total sans Remise:</span> {{ formatPrice(meal.total_without_discount) }}</div>
                       </div>
                     </div>
                   </td>
@@ -106,26 +107,38 @@
       </div>
     </div>
     <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 text-center text-gray-500 dark:text-gray-400">
-      No records found for the selected criteria.
+      Aucun enregistrement trouvé pour les critères sélectionnés.
     </div>
 
     <!-- Meal Totals Summary -->
     <div v-if="mealTotals.length" class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6">
-      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Meal Totals Summary</h2>
+      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Résumé des Totaux de Repas</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div v-for="total in mealTotals" :key="total.meal_name" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
           <h3 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">{{ total.meal_name }}</h3>
           <p class="text-sm text-gray-600 dark:text-gray-300">Total Persons: {{ total.total_persons }}</p>
-          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Total with Discount: {{ formatPrice(total.total_with_discount) }}</p>
-          <p class="text-sm text-gray-600 dark:text-gray-300">Total without Discount: {{ formatPrice(total.total_without_discount) }}</p>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Total avec Remise : {{ formatPrice(total.total_with_discount) }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Total sans Remise: {{ formatPrice(total.total_without_discount) }}</p>
         </div>
       </div>
-    </div> 
+    </div>
+
+    <!-- Monthly Totals -->
+    <div v-if="monthlyTotals.length" class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6">
+      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Monthly Totals</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="total in monthlyTotals" :key="total.email" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+          <h3 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">{{ total.email }}</h3>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Total avec Remise : {{ formatPrice(total.total_with_discount) }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Total sans Remise: {{ formatPrice(total.total_without_discount) }}</p>
+        </div>
+      </div>
+    </div>
 
     <!-- Download PDF Button -->
     <div class="mt-8 flex justify-end">
       <button @click="downloadPDF" :disabled="!groupedRecords.length" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">
-        Download PDF
+        Télécharger PDF
       </button>
     </div>
   </div>
@@ -142,6 +155,7 @@ export default {
   setup() {
     const store = useStore();
     const records = ref([]);
+    const monthlyTotals = ref([]);
     const loading = ref(false);
     const userCategories = ref([]);
     const filters = ref({
@@ -152,27 +166,21 @@ export default {
     });
 
     const groupedRecords = computed(() => {
-      const groups = [];
-      let currentGroup = null;
-
-      records.value.forEach(record => {
-        if (!currentGroup || currentGroup.weekSchedule !== record.week_schedule) {
-          currentGroup = {
-            weekSchedule: record.week_schedule,
-            records: []
-          };
-          groups.push(currentGroup);
-        }
-        currentGroup.records.push(record);
-      });
-
-      return groups;
+      return records.value.map(dateRecord => ({
+        date: dateRecord.date,
+        meals: dateRecord.meals.map(meal => ({
+          ...meal,
+          badge_count: meal.badge_count,
+          total_with_discount: meal.total_with_discount,
+          total_without_discount: meal.total_without_discount
+        }))
+      }));
     });
 
     const mealTotals = computed(() => {
       const totals = {};
-      records.value.forEach(record => {
-        record.meals.forEach(meal => {
+      records.value.forEach(dateRecord => {
+        dateRecord.meals.forEach(meal => {
           if (!totals[meal.meal_name]) {
             totals[meal.meal_name] = {
               meal_name: meal.meal_name,
@@ -181,9 +189,9 @@ export default {
               total_without_discount: 0,
             };
           }
-          totals[meal.meal_name].total_persons += meal.persons_count;
+          totals[meal.meal_name].total_persons += meal.badge_count;
           totals[meal.meal_name].total_with_discount += parseFloat(meal.total_with_discount);
-          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_no_discount);
+          totals[meal.meal_name].total_without_discount += parseFloat(meal.total_without_discount);
         });
       });
       return Object.values(totals);
@@ -198,7 +206,8 @@ export default {
           user_category: filters.value.userCategory || null,
           search: filters.value.search || null
         });
-        records.value = response.data;
+        records.value = response.data.records;
+        monthlyTotals.value = response.data.monthlyTotals;
       } catch (error) {
         console.error('Error fetching records:', error);
         alert('An error occurred while fetching records. Please try again.');
@@ -226,31 +235,31 @@ export default {
     };
 
     const downloadPDF = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(18);
-        doc.text('Advanced Records Report', 14, 22);
-        doc.setFontSize(11);
-        doc.text(`From: ${filters.value.startDate} To: ${filters.value.endDate}`, 14, 30);
-  
-        records.value.forEach((dayRecord, index) => {
-          doc.setFontSize(14);
-          doc.text(formatDate(dayRecord.date), 14, index === 0 ? 40 : doc.lastAutoTable.finalY + 20);
-  
-          doc.autoTable({
-            startY: index === 0 ? 50 : doc.lastAutoTable.finalY + 30,
-            head: [['Meal', 'Time', 'Persons', 'Total (No Discount)', 'Total (With Discount)']],
-            body: dayRecord.meals.map(meal => [
-              meal.meal_name,
-              `${meal.start_time} - ${meal.end_time}`,
-              meal.persons_count,
-              formatPrice(meal.total_no_discount),
-              formatPrice(meal.total_with_discount)
-            ]),
-          });
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text('Rapport sur les enregistrements ', 14, 22);
+      doc.setFontSize(11);
+      doc.text(`Du: ${filters.value.startDate} à: ${filters.value.endDate}`, 14, 30);
+
+      records.value.forEach((dateRecord, index) => {
+        doc.setFontSize(14);
+        doc.text(formatDate(dateRecord.date), 14, index === 0 ? 40 : doc.lastAutoTable.finalY + 20);
+
+        doc.autoTable({
+          startY: index === 0 ? 50 : doc.lastAutoTable.finalY + 30,
+          head: [['Repat', 'Temps', 'Persons', 'Total (Sans remise)', 'Total (avec remise)']],
+          body: dateRecord.meals.map(meal => [
+            meal.meal_name,
+            `${meal.start_time} - ${meal.end_time}`,
+            meal.badge_count,
+            formatPrice(meal.total_without_discount),
+            formatPrice(meal.total_with_discount)
+          ]),
         });
-  
-        doc.save('advanced_records_report.pdf');
-      };
+      });
+
+      doc.save('advanced_records_report.pdf');
+    };
 
     onMounted(() => {
       fetchUserCategories();
@@ -259,6 +268,7 @@ export default {
     return {
       groupedRecords,
       mealTotals,
+      monthlyTotals,
       loading,
       userCategories,
       filters,

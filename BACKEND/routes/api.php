@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
 
         Route::post('/import', [UserController::class, 'import']);
-
     });
 
     // Managing Admins

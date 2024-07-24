@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\WeekSchedule;
 use App\Models\DailyMeal;
 use App\Models\Badge;
+use Carbon\CarbonPeriod;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -199,6 +200,92 @@ class RecordsDashboardController extends Controller
         ]);
     }
 
+//    public function getAdvancedRecords(Request $request)
+//    {
+//        $request->validate([
+//            'start_date' => 'required|date',
+//            'end_date' => 'required|date|after_or_equal:start_date',
+//            'user_category' => 'nullable|exists:user_category,id',
+//            'search' => 'nullable|string',
+//        ]);
+//
+//        $startDate = Carbon::parse($request->start_date)->startOfDay();
+//        $endDate = Carbon::parse($request->end_date)->endOfDay();
+//        $userCategory = $request->user_category;
+//        $search = $request->search;
+//        $records = [];
+//
+//        $daysWithRecords = DB::table('week_schedule')
+//            ->whereBetween('created_at', [$startDate, $endDate])
+//            ->pluck('created_at')
+//            ->map(function ($date) {
+//                return Carbon::parse($date)->format('Y-m-d');
+//            })
+//            ->unique();
+//
+//        \Log::info('Days with records: ' . json_encode($daysWithRecords));
+//
+//        foreach ($daysWithRecords as $date) {
+//            \Log::info("Processing date: $date");
+//            $dayOfWeek = strtolower(Carbon::parse($date)->format('l'));
+//            $pivotTable = "{$dayOfWeek}_daily_meal";
+//            $recordTable = "{$dayOfWeek}_records";
+//            $discountTable = "{$dayOfWeek}_discounts";
+//
+//            $dayRecords = DB::table($pivotTable)
+//                ->join('daily_meals', 'daily_meals.id', '=', "{$pivotTable}.daily_meal_id")
+//                ->join('week_schedule', 'week_schedule.id', '=', "{$pivotTable}.week_schedule_id")
+//                ->leftJoin($recordTable, "{$recordTable}.{$dayOfWeek}_daily_meal_id", '=', "{$pivotTable}.id")
+//                ->leftJoin('badges', 'badges.id', '=', "{$recordTable}.badge_id")
+//                ->leftJoin('users', 'users.id', '=', 'badges.user_id')
+//                ->leftJoin('user_category', 'user_category.id', '=', 'users.category_id')
+//                ->leftJoin($discountTable, function ($join) use ($pivotTable, $discountTable) {
+//                    $join->on("{$discountTable}.meal_id", '=', "{$pivotTable}.id")
+//                        ->on("{$discountTable}.category_id", '=', 'user_category.id');
+//                })
+//                ->whereDate('week_schedule.created_at', $date)
+//                ->select(
+//                    'daily_meals.name as meal_name',
+//                    "{$pivotTable}.start_time",
+//                    "{$pivotTable}.end_time",
+//                    "{$pivotTable}.price",
+//                    DB::raw("COUNT(DISTINCT {$recordTable}.id) as persons_count"),
+//                    DB::raw("SUM({$pivotTable}.price) as total_no_discount"),
+//                    DB::raw("SUM({$pivotTable}.price * (1 - COALESCE({$discountTable}.discount, 0) / 100)) as total_with_discount")
+//                )
+//                ->groupBy('daily_meals.id', "{$pivotTable}.id", "{$pivotTable}.start_time", "{$pivotTable}.end_time", "{$pivotTable}.price");
+//
+//            if ($userCategory) {
+//                $dayRecords->where('user_category.id', $userCategory);
+//            }
+//
+//            if ($search) {
+//                $dayRecords->where(function ($query) use ($search) {
+//                    $query->where('users.name', 'like', "%{$search}%")
+//                        ->orWhere('users.matriculation_number', 'like', "%{$search}%");
+//                });
+//            }
+//
+//            \Log::info("Query for $date: " . $dayRecords->toSql());
+//            \Log::info("Bindings: " . json_encode($dayRecords->getBindings()));
+//
+//            $dayRecords = $dayRecords->get();
+//
+//            \Log::info("Number of records for $date: " . $dayRecords->count());
+//
+//            if ($dayRecords->isNotEmpty()) {
+//                $records[] = [
+//                    'date' => $date,
+//                    'meals' => $dayRecords
+//                ];
+//            }
+//        }
+//
+//        \Log::info('Returning records: ' . json_encode($records));
+//        return response()->json($records);
+//    }
+
+
     public function getAdvancedRecords(Request $request)
     {
         $request->validate([
@@ -212,74 +299,110 @@ class RecordsDashboardController extends Controller
         $endDate = Carbon::parse($request->end_date)->endOfDay();
         $userCategory = $request->user_category;
         $search = $request->search;
+
+        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         $records = [];
+        $monthlyTotals = [];
 
-        $daysWithRecords = DB::table('week_schedule')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->pluck('created_at')
-            ->map(function ($date) {
-                return Carbon::parse($date)->format('Y-m-d');
-            })
-            ->unique();
-
-        \Log::info('Days with records: ' . json_encode($daysWithRecords));
-
-        foreach ($daysWithRecords as $date) {
-            \Log::info("Processing date: $date");
-            $dayOfWeek = strtolower(Carbon::parse($date)->format('l'));
-            $pivotTable = "{$dayOfWeek}_daily_meal";
-            $recordTable = "{$dayOfWeek}_records";
-            $discountTable = "{$dayOfWeek}_discounts";
-
-            $dayRecords = DB::table($pivotTable)
-                ->join('daily_meals', 'daily_meals.id', '=', "{$pivotTable}.daily_meal_id")
-                ->join('week_schedule', 'week_schedule.id', '=', "{$pivotTable}.week_schedule_id")
-                ->leftJoin($recordTable, "{$recordTable}.{$dayOfWeek}_daily_meal_id", '=', "{$pivotTable}.id")
-                ->leftJoin('badges', 'badges.id', '=', "{$recordTable}.badge_id")
-                ->leftJoin('users', 'users.id', '=', 'badges.user_id')
-                ->leftJoin('user_category', 'user_category.id', '=', 'users.category_id')
-                ->leftJoin($discountTable, function ($join) use ($pivotTable, $discountTable) {
-                    $join->on("{$discountTable}.meal_id", '=', "{$pivotTable}.id")
-                        ->on("{$discountTable}.category_id", '=', 'user_category.id');
+        foreach ($days as $day) {
+            $dayRecords = DB::table("{$day}_records")
+                ->join("{$day}_daily_meal", "{$day}_daily_meal.id", "=", "{$day}_records.{$day}_daily_meal_id")
+                ->join('week_schedule', 'week_schedule.id', '=', "{$day}_daily_meal.week_schedule_id")
+                ->join('daily_meals', 'daily_meals.id', '=', "{$day}_daily_meal.daily_meal_id")
+                ->join('badges', 'badges.id', '=', "{$day}_records.badge_id")
+                ->join('users', 'users.id', '=', 'badges.user_id')
+                ->join('user_category', 'user_category.id', '=', 'users.category_id')
+                ->leftJoin("{$day}_discounts", function($join) use ($day) {
+                    $join->on("{$day}_discounts.meal_id", "=", "{$day}_daily_meal.id")
+                        ->on("{$day}_discounts.category_id", "=", "user_category.id");
                 })
-                ->whereDate('week_schedule.created_at', $date)
+                ->whereBetween("{$day}_records.created_at", [$startDate, $endDate])
+                ->when($userCategory, function ($query) use ($userCategory) {
+                    return $query->where('user_category.id', $userCategory);
+                })
+                ->when($search, function ($query) use ($search) {
+                    return $query->where(function ($q) use ($search) {
+                        $q->where('users.name', 'like', "%{$search}%")
+                            ->orWhere('users.matriculation_number', 'like', "%{$search}%");
+                    });
+                })
                 ->select(
+                    DB::raw("DATE({$day}_records.created_at) as date"),
+                    'week_schedule.mode_name as week_schedule_name',
                     'daily_meals.name as meal_name',
-                    "{$pivotTable}.start_time",
-                    "{$pivotTable}.end_time",
-                    "{$pivotTable}.price",
-                    DB::raw("COUNT(DISTINCT {$recordTable}.id) as persons_count"),
-                    DB::raw("SUM({$pivotTable}.price) as total_no_discount"),
-                    DB::raw("SUM({$pivotTable}.price * (1 - COALESCE({$discountTable}.discount, 0) / 100)) as total_with_discount")
+                    "{$day}_daily_meal.start_time",
+                    "{$day}_daily_meal.end_time",
+                    "{$day}_daily_meal.price",
+                    DB::raw('COUNT(DISTINCT badges.id) as badge_count'),
+                    DB::raw('JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        \'email\', users.email,
+                        \'badge_id\', badges.rfid,
+                        \'category_discount\', COALESCE('.$day.'_discounts.discount, 0),
+                        \'user_category_name\', user_category.name
+                    )
+                ) as users'),
+                    DB::raw('SUM('.$day.'_daily_meal.price) as total_without_discount'),
+                    DB::raw('SUM('.$day.'_daily_meal.price * (1 - COALESCE('.$day.'_discounts.discount, 0) / 100)) as total_with_discount')
                 )
-                ->groupBy('daily_meals.id', "{$pivotTable}.id", "{$pivotTable}.start_time", "{$pivotTable}.end_time", "{$pivotTable}.price");
+                ->groupBy(
+                    DB::raw("DATE({$day}_records.created_at)"),
+                    'week_schedule.mode_name',
+                    'daily_meals.name',
+                    "{$day}_daily_meal.start_time",
+                    "{$day}_daily_meal.end_time",
+                    "{$day}_daily_meal.price"
+                )
+                ->get();
 
-            if ($userCategory) {
-                $dayRecords->where('user_category.id', $userCategory);
-            }
+            foreach ($dayRecords as $record) {
+                $date = $record->date;
+                if (!isset($records[$date])) {
+                    $records[$date] = [];
+                }
+                $records[$date][] = $record;
 
-            if ($search) {
-                $dayRecords->where(function ($query) use ($search) {
-                    $query->where('users.name', 'like', "%{$search}%")
-                        ->orWhere('users.matriculation_number', 'like', "%{$search}%");
-                });
-            }
-
-            \Log::info("Query for $date: " . $dayRecords->toSql());
-            \Log::info("Bindings: " . json_encode($dayRecords->getBindings()));
-
-            $dayRecords = $dayRecords->get();
-
-            \Log::info("Number of records for $date: " . $dayRecords->count());
-
-            if ($dayRecords->isNotEmpty()) {
-                $records[] = [
-                    'date' => $date,
-                    'meals' => $dayRecords
-                ];
+                // Calculate monthly totals
+                $users = json_decode($record->users);
+                foreach ($users as $user) {
+                    $userId = $user->email; // Using email as unique identifier
+                    if (!isset($monthlyTotals[$userId])) {
+                        $monthlyTotals[$userId] = [
+                            'email' => $user->email,
+                            'total_without_discount' => 0,
+                            'total_with_discount' => 0
+                        ];
+                    }
+                    $monthlyTotals[$userId]['total_without_discount'] += $record->price;
+                    $monthlyTotals[$userId]['total_with_discount'] += $record->price * (1 - $user->category_discount / 100);
+                }
             }
         }
 
-        return response()->json($records);
+        // Sort records by date
+        ksort($records);
+
+        // Convert records to the desired format
+        $formattedRecords = [];
+        foreach ($records as $date => $dayRecords) {
+            $formattedRecords[] = [
+                'date' => $date,
+                'meals' => $dayRecords
+            ];
+        }
+
+        // Convert monthly totals to indexed array
+        $monthlyTotals = array_values($monthlyTotals);
+
+        \Log::info('API Response', [
+            'records' => $formattedRecords,
+            'monthlyTotals' => $monthlyTotals
+        ]);
+
+        return response()->json([
+            'records' => $formattedRecords,
+            'monthlyTotals' => $monthlyTotals
+        ]);
     }
+
 }

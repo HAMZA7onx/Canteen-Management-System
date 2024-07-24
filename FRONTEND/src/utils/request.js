@@ -19,4 +19,3 @@ request.interceptors.request.use(config => {
 })
 
 export default request
-
