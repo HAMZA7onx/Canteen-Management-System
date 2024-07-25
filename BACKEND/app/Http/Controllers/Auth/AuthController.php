@@ -107,7 +107,7 @@ class AuthController extends Controller
         }
 
         $admin = $badge->admin;
-        if (!$admin->hasPermissionTo('open_pos_device')) {
+        if (!$admin->hasPermissionTo('ouvrir_interface_de_pointage_sur_POS')) {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'You do not have permission to access this device'

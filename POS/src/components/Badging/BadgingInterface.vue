@@ -132,6 +132,19 @@ export default {
       }
     };
 
+    // const handleKeyPress = (event) => {
+    //   const currentTime = Date.now();
+    //   if (currentTime - lastKeyTime > 100) {
+    //     badgeId = '';
+    //   }
+    //   lastKeyTime = currentTime;
+
+    //   if (event.key !== 'Enter') {
+    //     badgeId += event.key;
+    //   } else {
+    //     processBadge();
+    //   }
+    // };
     const handleKeyPress = (event) => {
       const currentTime = Date.now();
       if (currentTime - lastKeyTime > 100) {
@@ -140,7 +153,12 @@ export default {
       lastKeyTime = currentTime;
 
       if (event.key !== 'Enter') {
-        badgeId += event.key;
+        const keyMap = {
+          '&': '1', 'é': '2', '"': '3', "'": '4', '(': '5', '-': '6',
+          'è': '7', '_': '8', 'ç': '9', 'à': '0'
+        };
+        const mappedKey = keyMap[event.key] || event.key;
+        badgeId += mappedKey.toUpperCase();
       } else {
         processBadge();
       }
