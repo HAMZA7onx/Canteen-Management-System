@@ -22,10 +22,7 @@ use App\Http\Controllers\Admin\AdminReportSubscriptionController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware(['check.allowed.ip'])->group(function () {
-});
 Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge']);
-
 
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -33,14 +30,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Managing Collaborators
-    Route::prefix('users')->group(function () {
+    Route::prefix('users')->middleware('check.permission:voir_collaborateurs')->group(function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
+        Route::post('/', [UserController::class, 'store'])->middleware('check.permission:creer_collaborateurs');
         Route::get('/{id}', [UserController::class, 'getUserDetails']);
-        Route::put('/{id}', [UserController::class, 'update']);
-        Route::delete('/{id}', [UserController::class, 'destroy']);
-
-        Route::post('/import', [UserController::class, 'import']);
+        Route::put('/{id}', [UserController::class, 'update'])->middleware('check.permission:modifier_collaborateurs');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->middleware('check.permission:supprimer_collaborateurs');
+        Route::post('/import', [UserController::class, 'import'])->middleware('check.permission:importer_collaborateurs');
     });
 
     // Managing Admins
@@ -76,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('permissions')->group(function () {
+        Route::get('/refresh-permissions', [PermissionController::class, 'refreshPermissions']);
         Route::get('/', [PermissionController::class, 'index']);
         Route::post('/', [PermissionController::class, 'store']);
         Route::get('/{permission}', [PermissionController::class, 'show']);

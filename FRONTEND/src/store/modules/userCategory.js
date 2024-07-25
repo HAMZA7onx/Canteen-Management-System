@@ -13,7 +13,7 @@ const actions = {
   fetchUserCategories({ commit }) {
     return UserCategoryService.getUserCategories()
       .then((response) => {
-        console.log('response.data: ', response.data);
+        // console.log('response.data: ', response.data);
         commit('SET_USER_CATEGORIES', response.data);
         return response;
       })
