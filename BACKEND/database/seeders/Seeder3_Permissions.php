@@ -1,86 +1,84 @@
 <?php
-
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-
 class Seeder3_Permissions extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-//        // User Permissions
-//        Permission::create(['name' => 'view_users', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_user', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_user', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_user', 'guard_name' => 'sanctum']);
-//
-//        // Admin Permissions
-//        Permission::create(['name' => 'view_admins', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'assign_role_to_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'remove_role_from_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'assign_permission_to_admin', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'remove_permission_from_admin', 'guard_name' => 'sanctum']);
-//
-//        // Role Permissions
-//        Permission::create(['name' => 'view_roles', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_role', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_role', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_role', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'assign_permission_to_role', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'remove_permission_from_role', 'guard_name' => 'sanctum']);
-//
-//        // Permission Permissions
-//        Permission::create(['name' => 'view_permissions', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_permission', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_permission', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_permission', 'guard_name' => 'sanctum']);
-//
-//        // User Category Permissions
-//        Permission::create(['name' => 'view_user_categories', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_user_category', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_user_category', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_user_category', 'guard_name' => 'sanctum']);
-//
-//        // Badge Permissions
-//        Permission::create(['name' => 'view_badges', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_badge', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_badge', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_badge', 'guard_name' => 'sanctum']);
-//
-//        // Meal Menu Permissions
-//        Permission::create(['name' => 'view_meal_menus', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_meal_menu', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_meal_menu', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_meal_menu', 'guard_name' => 'sanctum']);
-//
-//        // Meal Schedule Permissions
-//        Permission::create(['name' => 'view_meal_schedules', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_meal_schedule', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_meal_schedule', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_meal_schedule', 'guard_name' => 'sanctum']);
-//
-//        // Category Discount Permissions
-//        Permission::create(['name' => 'view_category_discounts', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_category_discount', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_category_discount', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_category_discount', 'guard_name' => 'sanctum']);
-//
-//        // Meal Record Permissions
-//        Permission::create(['name' => 'view_meal_records', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'create_meal_record', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'update_meal_record', 'guard_name' => 'sanctum']);
-//        Permission::create(['name' => 'delete_meal_record', 'guard_name' => 'sanctum']);
+        // Collaborateur Permissions
+        Permission::create(['name' => 'voir_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'importer_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_collaborateurs', 'guard_name' => 'sanctum']);
+
+        // Role Permissions
+        Permission::create(['name' => 'voir_roles', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_roles', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_roles', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_roles', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'assigner_permission_a_roles', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'desassigner_permission_des_roles', 'guard_name' => 'sanctum']);
+
+        // User Category Permissions
+        Permission::create(['name' => 'voir_categorie_de_collaborateur', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_categorie_de_collaborateur', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_categorie_de_collaborateur', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_categorie_de_collaborateur', 'guard_name' => 'sanctum']);
+
+        // Permissions des badges des collaborateurs
+        Permission::create(['name' => 'voir_badges_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'importer_badges_collaborateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'gerer_badges_collaborateurs', 'guard_name' => 'sanctum']);
+
+        // Permissions des badges des administrateurs
+        Permission::create(['name' => 'voir_badges_administrateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'importer_badges_administrateurs', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'gerer_badges_administrateurs', 'guard_name' => 'sanctum']);
+
+        // Les composants des menus Permissions
+        Permission::create(['name' => 'voir_composants_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_composants_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_composants_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_composants_menus', 'guard_name' => 'sanctum']);
+
+        // Les categories des menus Permissions
+        Permission::create(['name' => 'voir_categories_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_categories_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_categories_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_categories_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'assigner_composants_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'desassigner_composants_menus', 'guard_name' => 'sanctum']);
+
+        // Les repas Permissions
+        Permission::create(['name' => 'voir_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'assigner_categories_menus', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'desassigner_categories_menus', 'guard_name' => 'sanctum']);
+
+        // Les profils des repas Permissions
+        Permission::create(['name' => 'voir_profils_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_profils_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_profils_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_profils_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'assigner_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'desassigner_repas', 'guard_name' => 'sanctum']);
+
+        // Meal Record Permissions
+        Permission::create(['name' => 'voir_enregistrements_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_enregistrement_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_enregistrement_repas', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_enregistrement_repas', 'guard_name' => 'sanctum']);
+
+        // gestion des POS (permission)
+        Permission::create(['name' => 'voir_POS', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'creer_POS', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'modifier_POS', 'guard_name' => 'sanctum']);
 
         // Open POS device permission
-        Permission::create(['name' => 'open_pos_device', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'ouvrir_interface_de_pointage_sur_POS', 'guard_name' => 'sanctum']);
     }
 }
