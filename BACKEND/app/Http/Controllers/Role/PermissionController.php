@@ -71,4 +71,13 @@ class PermissionController extends Controller
             return response()->json(['error' => 'Failed to delete permission'], 500);
         }
     }
+
+    public function refreshPermissions(Request $request)
+    {
+        $user = $request->user();
+        \Log::info('user: ', ['user' => $user]);
+        $permissions = $user->getAllPermissions()->pluck('name');
+        return response()->json(['permissions' => $permissions]);
+    }
+
 }

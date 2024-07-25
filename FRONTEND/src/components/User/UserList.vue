@@ -50,12 +50,14 @@
       <div class="mb-6 flex flex-wrap justify-between items-center">
         <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
         <button
+          v-if="$can('creer_collaborateurs')"
           class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
           @click="openCreateUserModal"
         >
           <span class="mr-2">+</span> Créer un Utilisateur
         </button>
         <button
+          v-if="$can('importer_collaborateurs')"
           class="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
           @click="openImportUsersModal"
         >
@@ -130,12 +132,14 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium hidden md:table-cell">
                   <button
+                    v-if="$can('modifier_collaborateurs')"
                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
                     @click="openEditUserModal(user)"
                   >
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('supprimer_collaborateurs')"
                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
                     @click="deleteUser(user)"
                   >
@@ -164,6 +168,7 @@
                       Détails
                     </button>
                     <button
+                    v-if="$can('modifier_collaborateurs')"
                       class="w-full text-left text-yellow-600 hover:text-yellow-900                       dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                       @click="openEditUserModal(user)"
                     >
@@ -171,6 +176,7 @@
                       Modifier
                     </button>
                     <button
+                    v-if="$can('supprimer_collaborateurs')"
                       class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                       @click="deleteUser(user)"
                     >
@@ -469,6 +475,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import permissionMixin from '@/mixins/permissionMixin';
 import UserForm from '@/components/User/UserForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
@@ -479,6 +486,7 @@ import Toast from '@/components/shared/Toast.vue';
 
 export default {
   name: 'UserList',
+  mixins: [permissionMixin],
   components: {
     UserForm,
     Modal,
@@ -590,6 +598,7 @@ export default {
     },
   },
   created() {
+    console.log('Component created');
     this.loadUsers();
     this.fetchUserCategories();
   },
@@ -598,26 +607,34 @@ export default {
     ...mapActions('userCategory', ['fetchUserCategories']),
     
     async loadUsers() {
+    if (this.$can('voir_collaborateurs')) {
       this.isLoading = true;
       this.error = null;
       try {
         await this.fetchUsers();
       } catch (error) {
-        console.error('Error fetching users:', error);
         this.error = 'Failed to load users. Please try again.';
       } finally {
         this.isLoading = false;
       }
-    },
+    } else {
+      this.error = 'You do not have permission to view users.';
+    }
+  },
+
     openCreateUserModal() {
-      this.showCreateUserModal = true;
+      if (this.$can('creer_collaborateurs')) {
+        this.showCreateUserModal = true;
+      }
     },
     closeCreateUserModal() {
       this.showCreateUserModal = false;
     },
     openEditUserModal(user) {
-      this.selectedUser = { ...user };
-      this.showEditUserModal = true;
+      if (this.$can('modifier_collaborateurs')) {
+        this.selectedUser = { ...user };
+        this.showEditUserModal = true;
+      }
     },
     closeEditUserModal() {
       this.showEditUserModal = false;
@@ -637,9 +654,12 @@ export default {
         });
     },
     deleteUser(user) {
-      this.userToDelete = user;
-      this.showDeleteConfirmation = true;
+      if (this.$can('supprimer_collaborateurs')) {
+        this.userToDelete = user;
+        this.showDeleteConfirmation = true;
+      }
     },
+
     confirmDeleteUser() {
       this.$store
         .dispatch('user/deleteUser', this.userToDelete.id)
@@ -656,7 +676,9 @@ export default {
         });
     },
     openImportUsersModal() {
-      this.showImportUsersModal = true;
+      if (this.$can('importer_collaborateurs')) {
+        this.showImportUsersModal = true;
+      }
     },
     closeImportUsersModal() {
       this.showImportUsersModal = false;

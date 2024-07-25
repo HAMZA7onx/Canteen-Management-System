@@ -10,9 +10,10 @@ const getters = {
 
 const actions = {
   fetchUsers({ commit }) { 
+    console.log('fetchUsers action started');
     return UserService.getUsers()
       .then((response) => {
-        console.log('response.data: ', response.data);
+        console.log('response.data: ', response.data); 
         commit('SET_USERS', response.data);
       })
       .catch((error) => {
@@ -33,7 +34,7 @@ const actions = {
         throw error;
       });
   },
-
+ 
   updateUser({ commit, state }, user) { // Access the state via the second argument
     console.log('user: ', user); // Correctly log the user object
     console.log('state users: ', state.users); // Correctly log the users state

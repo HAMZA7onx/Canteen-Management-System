@@ -19,11 +19,12 @@ import AdminBadgeList from '@/components/AdminBadge/BadgeList.vue'
 import PosDeviceList from '@/components/POS/PosDeviceList.vue'
 import AdvancedRecordsDashboard from '@/components/Record/AdvancedRecordsDashboard.vue';
 import AdminReportSubscriptionDashboard from '@/components/Admin/AdminReportSubscriptionDashboard.vue';
- 
+import Unauthorized from '@/views/Unauthorized.vue';
+
 const routes = [
   { path: '/', component: Home },
   { path: '/admins', component: AdminListView },
-  {path: '/login', component: Login},
+  { path: '/login', component: Login },
   { path: '/users', component: UserList },
   { path: '/roles', component: RoleList },
   { path: '/permissions', component: PermissionList },
@@ -39,8 +40,8 @@ const routes = [
   { path: '/pos-devices', component: PosDeviceList },
   { path: '/records-audit', component: AdvancedRecordsDashboard },
   { path: '/admins-report-subscriptions', component: AdminReportSubscriptionDashboard },
+  { path: '/unauthorized', name: 'unauthorized', component: Unauthorized },
 ];
-
 
 const router = createRouter({
   history: createWebHistory(),
@@ -50,9 +51,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters['auth/isLoggedIn'];
   if (to.meta.requiresAuth && !isLoggedIn) {
-      next({ path: '/login' });
+    next({ path: '/login' });
   } else {
-      next();
+    next();
   }
 });
 

@@ -1,11 +1,12 @@
 import AuthService from '@/services/auth.service';
+import PermissionService from '@/services/permission.service';
 
 const state = {
   user: null,
   isLoggedIn: false,
   token: null,
   userRoles: [],
-  userPermissions: [],
+  userPermissions: [], 
   availableRoles: [],
   availablePermissions: [],
 };
@@ -49,6 +50,17 @@ const actions = {
       commit('setAvailablePermissions', []);
     } catch (error) {
       console.error(error);
+    }
+  },
+
+  async refreshPermissions({ commit }) {
+    try {
+      const response = await PermissionService.refreshPermissions();
+      console.log('refresh permissions: ', response);
+      commit('setUserPermissions', response.data.permissions);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
   },
 };
