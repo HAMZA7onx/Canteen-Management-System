@@ -142,23 +142,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu']);
     });
 
-    Route::prefix('menus')->group(function () {
+    Route::prefix('menus')->middleware('check.permission:voir_categories_menus')->group(function () {
         Route::get('/', [MenuController::class, 'index']);
-        Route::post('/', [MenuController::class, 'store']);
+        Route::post('/', [MenuController::class, 'store'])->middleware('check.permission:creer_categories_menus');
         Route::get('/{menu}', [MenuController::class, 'show']);
-        Route::put('/{menu}', [MenuController::class, 'update']);
-        Route::delete('/{menu}', [MenuController::class, 'destroy']);
+        Route::put('/{menu}', [MenuController::class, 'update'])->middleware('check.permission:modifier_categories_menus');
+        Route::delete('/{menu}', [MenuController::class, 'destroy'])->middleware('check.permission:supprimer_categories_menus');
 
-        Route::post('/{menu}/food-composants/{foodComposantId}', [MenuController::class, 'attachFoodComposant']);
-        Route::delete('/{menu}/food-composants/{foodComposant}', [MenuController::class, 'detachFoodComposant']);
+        Route::post('/{menu}/food-composants/{foodComposantId}', [MenuController::class, 'attachFoodComposant'])->middleware('check.permission:assigner_composants_menus');
+        Route::delete('/{menu}/food-composants/{foodComposant}', [MenuController::class, 'detachFoodComposant'])->middleware('check.permission:desassigner_composants_menus');
     });
 
-    Route::prefix('food-composants')->group(function () {
+    Route::prefix('food-composants')->middleware('check.permission:voir_composants_menus')->group(function () {
         Route::get('/', [FoodComposantsController::class, 'index']);
-        Route::post('/', [FoodComposantsController::class, 'store']);
+        Route::post('/', [FoodComposantsController::class, 'store'])->middleware('check.permission:creer_composants_menus');
         Route::get('/{foodComposant}', [FoodComposantsController::class, 'show']);
-        Route::put('/{foodComposant}', [FoodComposantsController::class, 'update']);
-        Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy']);
+        Route::put('/{foodComposant}', [FoodComposantsController::class, 'update'])->middleware('check.permission:modifier_composants_menus');
+        Route::delete('/{foodComposant}', [FoodComposantsController::class, 'destroy'])->middleware('check.permission:supprimer_composants_menus');
     });
 
     Route::prefix('badging')->group(function () {
@@ -178,20 +178,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/advanced', [RecordsDashboardController::class, 'getAdvancedRecords']);
     });
 
-    Route::prefix('admins-badges')->group(function () {
+    Route::prefix('admins-badges')->middleware('check.permission:voir_badges_administrateurs')->group(function () {
         Route::get('/', [AdminBadgeController::class, 'index']);
         Route::post('/', [AdminBadgeController::class, 'store']);
         Route::get('/{id}', [AdminBadgeController::class, 'show']);
         Route::put('/{id}', [AdminBadgeController::class, 'update']);
         Route::delete('/{id}', [AdminBadgeController::class, 'destroy']);
 
-        Route::post('/import', [AdminBadgeController::class, 'importRfids']);
+        Route::post('/import', [AdminBadgeController::class, 'importRfids'])->middleware('check.permission:importer_badges_administrateurs');
 
         Route::get('/admins/all-rfids-lost', [AdminBadgeController::class, 'getUsersWithAllRfidsLost']);
         Route::get('/admins/without-rfids', [AdminBadgeController::class, 'getUsersWithoutRfids']);
 
-        Route::put('/{badgeId}/status', [AdminBadgeController::class, 'updateBadgeStatus']);
-        Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser']);
+        Route::put('/{badgeId}/status', [AdminBadgeController::class, 'updateBadgeStatus'])->middleware('check.permission:gerer_badges_administrateurs');
+        Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser'])->middleware('check.permission:gerer_badges_administrateurs');
     });
 
     Route::prefix('pos-devices')->middleware('auth:sanctum')->group(function () {

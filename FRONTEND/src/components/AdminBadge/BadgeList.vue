@@ -18,6 +18,7 @@
       <!-- Boutons d'action et barre de recherche -->
       <div class="mb-6 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <button
+          v-if="$can('importer_badges_administrateurs')"
           class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="showImportModal = true"
         >
@@ -103,6 +104,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
+                    v-if="$can('gerer_badges_administrateurs')"
                     class="text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 mr-3 transition-colors duration-300"
                     @click="editBadge(badge)"
                     :disabled="badge.status === 'lost'"
@@ -110,6 +112,7 @@
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('gerer_badges_administrateurs')"
                     :class="[
                       'transition-colors duration-300',
                       badge.status === 'available'
@@ -150,6 +153,7 @@
                   Voir les détails
                 </button>
                 <button
+                  v-if="$can('gerer_badges_administrateurs')"
                   class="w-full text-left text-cyan-600 hover:text-cyan-900 dark:text-cyan-400 dark:hover:text-cyan-200 transition-colors duration-300 flex items-center"
                   @click="editBadge(badge)"
                   :disabled="badge.status === 'lost'"
@@ -158,6 +162,7 @@
                   Modifier
                 </button>
                 <button
+                  v-if="$can('gerer_badges_administrateurs')"
                   class="w-full text-left transition-colors duration-300 flex items-center"
                   :class="[
                     badge.status === 'available'
@@ -300,6 +305,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import permissionMixin from '@/mixins/permissionMixin'; 
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import ImportRfidsForm from '@/components/AdminBadge/ImportRfidsForm.vue';
@@ -308,6 +314,7 @@ import AssignRfidModal from '@/components/AdminBadge/AssignRfidModal.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     Modal,
     Overlay,
@@ -423,17 +430,19 @@ export default {
   methods: {
     ...mapActions('adminBadge', ['fetchBadges', 'deleteBadge', 'updateBadge']),
     editBadge(badge) {
-      this.selectedBadge = badge;
-      this.showEditModal = true;
+      if (this.$can('gerer_badges_administrateurs')) {
+        this.selectedBadge = badge;
+        this.showEditModal = true;
+      }
     },
     deleteBadge(badge) {
-      if (badge.status === 'available') {
+      if (this.$can('gerer_badges_administrateurs') && badge.status === 'available') {
         this.badgeToDelete = badge;
         this.showDeleteConfirmation = true;
       }
     },
     confirmDelete() {
-      if (this.badgeToDelete) {
+      if (this.$can('gerer_badges_administrateurs') && this.badgeToDelete) {
         this.$store.dispatch('adminBadge/deleteBadge', this.badgeToDelete.id)
           .then(() => {
             console.log('Badge deleted successfully');

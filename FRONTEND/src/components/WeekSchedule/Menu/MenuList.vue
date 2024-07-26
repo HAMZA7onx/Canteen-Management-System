@@ -13,6 +13,7 @@
         </p>
         <div class="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
           <button
+            v-if="$can('creer_categories_menus')"
             class="w-full sm:w-auto bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             @click="openCreateModal"
           >
@@ -48,6 +49,7 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                     <button
+                      v-if="$can('assigner_composants_menus') || $can('desassigner_composants_menus')"
                       class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
                       @click="openFoodComposantModal(menu)"
                     >
@@ -56,12 +58,14 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                     <button
+                      v-if="$can('modifier_categories_menus')"
                       class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-300 ease-in-out"
                       @click="openEditModal(menu)"
                     >
                       <font-awesome-icon icon="edit" />
                     </button>
                     <button
+                      v-if="$can('supprimer_categories_menus')"
                       class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
                       @click="openDeleteConfirmation(menu)"
                     >
@@ -87,6 +91,7 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ menu.description !== null ? menu.description : '-' }}</p>
                 <div v-if="menu.showActions" class="mt-4 space-y-2">
                   <button
+                    v-if="$can('assigner_composants_menus') || $can('desassigner_composants_menus')"
                     class="w-full text-left text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-300 flex items-center"
                     @click="openFoodComposantModal(menu)"
                   >
@@ -94,6 +99,7 @@
                     Gérer les Composants
                   </button>
                   <button
+                    v-if="$can('modifier_categories_menus')"
                     class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                     @click="openEditModal(menu)"
                   >
@@ -101,6 +107,7 @@
                     Modifier
                   </button>
                   <button
+                    v-if="$can('supprimer_categories_menus')"
                     class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                     @click="openDeleteConfirmation(menu)"
                   >
@@ -202,8 +209,10 @@ import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
 import Toast from '@/components/shared/Toast.vue';
+import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     MenuForm,
     MenuFoodComposantForm,
