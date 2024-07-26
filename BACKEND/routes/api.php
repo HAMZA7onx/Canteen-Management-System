@@ -56,6 +56,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{admin}/permissions/{permissionId}', [AdminRolePermissionController::class, 'removePermission']);
     });
 
+//    Route::prefix('roles')->middleware('check.permission:voir_roles')->group(function () {
+//        Route::get('/', [RoleController::class, 'index']);
+//        Route::post('/', [RoleController::class, 'store'])->middleware('check.permission:creer_roles');
+//        Route::get('/{role}', [RoleController::class, 'show']);
+//        Route::put('/{role}', [RoleController::class, 'update'])->middleware('check.permission:modifier_roles');
+//        Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('check.permission:supprimer_roles');
+//
+//        // Get permissions assigned to a role
+//        Route::get('/{role}/permissions', [RoleController::class, 'getRolePermissions']);
+//
+//        // Assign permissions to a role
+//        Route::post('/{role}/permissions/{permissionId}', [RoleController::class, 'assignPermission'])->middleware('check.permission:assigner_permission_a_roles');
+//        Route::delete('/{role}/permissions/{permissionId}', [RoleController::class, 'removePermission'])->middleware('check.permission:desassigner_permission_des_roles');
+//    });
     Route::prefix('roles')->group(function () {
         Route::get('/', [RoleController::class, 'index']);
         Route::post('/', [RoleController::class, 'store']);
@@ -88,20 +102,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [UserCategoryController::class, 'destroy']);
     });
 
-    Route::prefix('badges')->group(function () {
+    Route::prefix('badges')->middleware('check.permission:voir_badges_collaborateurs')->group(function () {
         Route::get('/', [BadgeController::class, 'index']);
         Route::post('/', [BadgeController::class, 'store']);
         Route::get('/{id}', [BadgeController::class, 'show']);
         Route::put('/{id}', [BadgeController::class, 'update']);
         Route::delete('/{id}', [BadgeController::class, 'destroy']);
 
-        Route::post('/import', [BadgeController::class, 'importRfids']);
+        Route::post('/import', [BadgeController::class, 'importRfids'])->middleware('check.permission:importer_badges_collaborateurs');
 
         Route::get('/users/all-rfids-lost', [BadgeController::class, 'getUsersWithAllRfidsLost']);
         Route::get('/users/without-rfids', [BadgeController::class, 'getUsersWithoutRfids']);
 
-        Route::put('/{badgeId}/status', [BadgeController::class, 'updateBadgeStatus']);
-        Route::put('/{badgeId}/assign', [BadgeController::class, 'assignRfidToUser']);
+        Route::put('/{badgeId}/status', [BadgeController::class, 'updateBadgeStatus'])->middleware('check.permission:gerer_badges_collaborateurs');
+        Route::put('/{badgeId}/assign', [BadgeController::class, 'assignRfidToUser'])->middleware('check.permission:gerer_badges_collaborateurs');
     });
 
     Route::prefix('week-schedules')->group(function () {

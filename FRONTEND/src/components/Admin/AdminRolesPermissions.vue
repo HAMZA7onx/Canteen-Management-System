@@ -71,6 +71,7 @@ export default {
   },
   methods: {
     ...mapActions('admin', ['fetchAdminRoles', 'fetchAvailableRoles', 'assignRole', 'removeRole']),
+    ...mapActions('auth', ['refreshPermissions']),
     fetchAdminRolesPermissions() {
       this.fetchAdminRoles(this.admin.id)
         .then((response) => {
@@ -86,7 +87,8 @@ export default {
           .dispatch('admin/assignRole', { adminId: this.admin.id, roleId: this.selectedRole })
           .then(() => {
             this.selectedRole = '';
-            this.fetchAdminRolesPermissions(); // Fetch updated assigned roles
+            this.fetchAdminRolesPermissions(); 
+            this.$store.dispatch('auth/refreshPermissions');
           })
           .catch((error) => {
             console.error('Error assigning role:', error);
@@ -97,7 +99,8 @@ export default {
       this.$store
         .dispatch('admin/removeRole', { adminId: this.admin.id, roleId: role.id })
         .then(() => {
-          this.fetchAdminRolesPermissions(); // Fetch updated assigned roles
+          this.fetchAdminRolesPermissions(); 
+          this.$store.dispatch('auth/refreshPermissions');
         })
         .catch((error) => {
           console.error('Error removing role:', error);

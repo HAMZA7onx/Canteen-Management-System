@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-teal-100 to-cyan-200 dark:from-gray-900 dark:to-cyan-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+  <div  class="min-h-screen bg-gradient-to-br from-teal-100 to-cyan-200 dark:from-gray-900 dark:to-cyan-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
     <div class="max-w-7xl mx-auto">
       <!-- Section d'en-tête -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 transform hover:scale-105 transition-all duration-300">
@@ -18,6 +18,7 @@
       <!-- Boutons d'action et barre de recherche -->
       <div class="mb-6 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
         <button
+          v-if="$can('importer_badges_collaborateurs')"
           class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="showImportModal = true"
         >
@@ -89,6 +90,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
+                    v-if="$can('gerer_badges_collaborateurs')"
                     :class="[
                       'mr-3 transition-colors duration-300',
                       badge.status === 'lost'
@@ -101,6 +103,7 @@
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('gerer_badges_collaborateurs')"
                     :class="[
                       'transition-colors duration-300',
                       badge.status === 'available'
@@ -142,6 +145,7 @@
                   Voir les détails
                 </button>
                 <button
+                  v-if="$can('gerer_badges_collaborateurs')"
                   :class="[
                     'w-full text-left transition-colors duration-300 flex items-center',
                     badge.status === 'lost'
@@ -155,6 +159,7 @@
                   Modifier
                 </button>
                 <button
+                 v-if="$can('gerer_badges_collaborateurs')"
                   class="w-full text-left transition-colors duration-300 flex items-center"
                   :class="[
                     badge.status === 'available'
@@ -297,6 +302,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import permissionMixin from '@/mixins/permissionMixin';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import ImportRfidsForm from '@/components/Badge/ImportRfidsForm.vue';
@@ -305,6 +311,7 @@ import AssignRfidModal from '@/components/Badge/AssignRfidModal.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     Modal,
     Overlay,
@@ -393,11 +400,13 @@ export default {
   methods: {
     ...mapActions('badge', ['fetchBadges', 'deleteBadge', 'updateBadge']),
     editBadge(badge) {
-      this.selectedBadge = badge;
-      this.showEditModal = true;
+      if (this.$can('gerer_badges_collaborateurs')) {
+        this.selectedBadge = badge;
+        this.showEditModal = true;
+      }
     },
     deleteBadge(badge) {
-      if (badge.status === 'available') {
+      if (this.$can('gerer_badges_collaborateurs') && badge.status === 'available') {
         this.badgeToDelete = badge;
         this.showDeleteConfirmation = true;
       }
