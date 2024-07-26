@@ -118,28 +118,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{badgeId}/assign', [BadgeController::class, 'assignRfidToUser'])->middleware('check.permission:gerer_badges_collaborateurs');
     });
 
-    Route::prefix('week-schedules')->group(function () {
+    Route::prefix('week-schedules')->middleware('check.permission:voir_profils_repas')->group(function () {
         Route::get('/', [WeekScheduleController::class, 'index']);
-        Route::post('/', [WeekScheduleController::class, 'store']);
+        Route::post('/', [WeekScheduleController::class, 'store'])->middleware('check.permission:creer_profils_repas');
         Route::get('/{weekSchedule}', [WeekScheduleController::class, 'show']);
-        Route::put('/{weekSchedule}', [WeekScheduleController::class, 'update']);
-        Route::delete('/{weekSchedule}', [WeekScheduleController::class, 'destroy']);
-        Route::post('/{weekSchedule}/daily-meals/{day}', [WeekScheduleController::class, 'attachDailyMeal']);
-        Route::delete('/{weekSchedule}/daily-meals/{dailyMeal}/{day}', [WeekScheduleController::class, 'detachDailyMeal']);
+        Route::put('/{weekSchedule}', [WeekScheduleController::class, 'update'])->middleware('check.permission:modifier_profils_repas');
+        Route::delete('/{weekSchedule}', [WeekScheduleController::class, 'destroy'])->middleware('check.permission:supprimer_profils_repas');
+        Route::post('/{weekSchedule}/daily-meals/{day}', [WeekScheduleController::class, 'attachDailyMeal'])->middleware('check.permission:assigner_repas');
+        Route::delete('/{weekSchedule}/daily-meals/{dailyMeal}/{day}', [WeekScheduleController::class, 'detachDailyMeal'])->middleware('check.permission:desassigner_repas');
         Route::get('/{weekSchedule}/daily-meals/{day}/{dailyMeal}/discounts', [WeekScheduleController::class, 'getDailyMealDiscounts']);
     });
 
-    Route::prefix('daily-meals')->group(function () {
+    Route::prefix('daily-meals')->middleware('check.permission:voir_repas')->group(function () {
         Route::get('/', [DailyMealController::class, 'index']);
-        Route::post('/', [DailyMealController::class, 'store']);
+        Route::post('/', [DailyMealController::class, 'store'])->middleware('check.permission:creer_repas');
         Route::get('/{dailyMeal}', [DailyMealController::class, 'show']);
-        Route::put('/{dailyMeal}', [DailyMealController::class, 'update']);
-        Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy']);
+        Route::put('/{dailyMeal}', [DailyMealController::class, 'update'])->middleware('check.permission:modifier_repas');
+        Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy'])->middleware('check.permission:supprimer_repas');
 
         // Attach a menu to a daily meal
-        Route::post('/{dailyMeal}/menus/{menuId}', [DailyMealController::class, 'attachMenu']);
+        Route::post('/{dailyMeal}/menus/{menuId}', [DailyMealController::class, 'attachMenu'])->middleware('check.permission:assigner_categories_menus');
         // Detach a menu from a daily meal
-        Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu']);
+        Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu'])->middleware('check.permission:desassigner_categories_menus');
     });
 
     Route::prefix('menus')->middleware('check.permission:voir_categories_menus')->group(function () {
@@ -169,7 +169,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{day}', [DailyRecordController::class, 'store']);
     });
 
-    Route::prefix('records')->group(function () {
+    Route::prefix('records')->middleware('check.permission:voir_enregistrements_repas')->group(function () {
         Route::get('/years', [RecordsDashboardController::class, 'getYears']);
         Route::get('/{year}/months', [RecordsDashboardController::class, 'getMonths']);
         Route::get('/{year}/{month}/monthly-totals', [RecordsDashboardController::class, 'getMonthlyTotals']);
@@ -194,12 +194,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser'])->middleware('check.permission:gerer_badges_administrateurs');
     });
 
-    Route::prefix('pos-devices')->middleware('auth:sanctum')->group(function () {
+    Route::prefix('pos-devices')->middleware('check.permission:voir_POS')->middleware('auth:sanctum')->group(function () {
         Route::get('/', [PosDeviceController::class, 'index']);
-        Route::post('/', [PosDeviceController::class, 'store']);
+        Route::post('/', [PosDeviceController::class, 'store'])->middleware('check.permission:creer_POS');
         Route::get('/{id}', [PosDeviceController::class, 'show']);
-        Route::put('/{id}', [PosDeviceController::class, 'update']);
-        Route::delete('/{id}', [PosDeviceController::class, 'destroy']);
+        Route::put('/{id}', [PosDeviceController::class, 'update'])->middleware('check.permission:modifier_POS');
+        Route::delete('/{id}', [PosDeviceController::class, 'destroy'])->middleware('check.permission:supprimer_POS');
     });
 
     Route::get('discounts/{day}/{mealId}', [CategoryDiscountController::class, 'getDiscountsForMeal']);

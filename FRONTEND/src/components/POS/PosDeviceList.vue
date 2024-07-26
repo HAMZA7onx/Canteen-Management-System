@@ -19,6 +19,7 @@
       <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-center">
         <div class="w-full sm:w-auto mb-4 sm:mb-0">
           <button
+            v-if="$can('creer_POS')"
             class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
             @click="openAddPosDeviceModal"
           >
@@ -32,13 +33,14 @@
 
       <!-- Liste des Appareils POS -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
-        <div class="overflow-x-auto">
-          <loading-wheel v-if="isLoading" />
-          <div v-else-if="error" class="p-4 text-red-600 dark:text-red-400 text-sm sm:text-base">
-            {{ error }}
-            <button @click="loadPosDevices" class="ml-2 underline">Réessayer</button>
-          </div>
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <loading-wheel v-if="isLoading" />
+    <div v-else>
+      <div v-if="error" class="p-4 text-red-600 dark:text-red-400 text-sm sm:text-base">
+        {{ error }}
+        <button @click="loadPosDevices" class="ml-2 underline">Réessayer</button>
+      </div>
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
               <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
@@ -64,12 +66,14 @@
                     <font-awesome-icon icon="info-circle" />
                   </button>
                   <button
+                    v-if="$can('modifier_POS')"
                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
                     @click="openEditPosDeviceModal(device)"
                   >
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('supprimer_POS')"
                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
                     @click="deletePosDevice(device)"
                   >
@@ -82,7 +86,7 @@
                   </button>
                 </td>
               </tr>
-              <tr v-if="device.showActions" class="sm:hidden bg-gray-50 dark:bg-gray-700">
+              <div v-if="device.showActions" class="sm:hidden bg-gray-50 dark:bg-gray-700">
                 <td colspan="4" class="px-4 py-4">
                   <div class="flex flex-col justify-around">
                     <button
@@ -93,6 +97,7 @@
                       Détails
                     </button>
                     <button
+                      v-if="$can('modifier_POS')"
                       @click="openEditPosDeviceModal(device)"
                       class="flex items-center text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300"
                     >
@@ -100,6 +105,7 @@
                       Modifier
                     </button>
                     <button
+                      v-if="$can('supprimer_POS')"
                       @click="deletePosDevice(device)"
                       class="flex items-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
                     >
@@ -108,12 +114,13 @@
                     </button>
                   </div>
                 </td>
-              </tr>
+              </div>
             </template>
           </tbody>
         </table>
-        </div>
       </div>
+    </div>
+  </div>
 
       <!-- Modals -->
       <Overlay v-if="showAddPosDeviceModal">
@@ -254,8 +261,10 @@ import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 import Toast from '@/components/shared/Toast.vue';
+import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
+  mixins: [permissionMixin],
   name: 'PosDeviceList',
   components: {
     PosDeviceForm,

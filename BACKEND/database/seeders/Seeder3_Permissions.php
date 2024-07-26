@@ -69,14 +69,12 @@ class Seeder3_Permissions extends Seeder
 
         // Meal Record Permissions
         Permission::create(['name' => 'voir_enregistrements_repas', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'creer_enregistrement_repas', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'modifier_enregistrement_repas', 'guard_name' => 'sanctum']);
-        Permission::create(['name' => 'supprimer_enregistrement_repas', 'guard_name' => 'sanctum']);
 
         // gestion des POS (permission)
         Permission::create(['name' => 'voir_POS', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'creer_POS', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'modifier_POS', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'supprimer_POS', 'guard_name' => 'sanctum']);
 
         // Open POS device permission
         Permission::create(['name' => 'ouvrir_interface_de_pointage_sur_POS', 'guard_name' => 'sanctum']);
