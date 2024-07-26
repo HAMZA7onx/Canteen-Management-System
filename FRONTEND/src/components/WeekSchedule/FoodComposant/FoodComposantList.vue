@@ -8,6 +8,7 @@
           Gérez efficacement vos composants alimentaires. Créez, modifiez et organisez les éléments de base de vos délicieux menus !
         </p>
         <button
+          v-if="$can('creer_composants_menus')"
           class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
           @click="openCreateModal"
         >
@@ -41,12 +42,14 @@
                 </td>
                 <td class="py-3 px-6 text-center">
                   <button
+                    v-if="$can('modifier_composants_menus')"
                     class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full mr-2 transition-colors duration-300"
                     @click="openEditModal(foodComposant)"
                   >
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('supprimer_composants_menus')"
                     class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
                     @click="openDeleteConfirmation(foodComposant)"
                   >
@@ -63,6 +66,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
                 <button
+                  v-if="$can('creer_composants_menus')"
                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200"
                   @click="toggleFoodComposantActions(foodComposant)"
                 >
@@ -72,6 +76,7 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">{{ foodComposant.description !== null ? foodComposant.description : '-' }}</p>
               <div v-if="foodComposant.showActions" class="mt-2 space-y-2">
                 <button
+                  v-if="$can('modifier_composants_menus')"
                   class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                   @click="openEditModal(foodComposant)"
                 >
@@ -79,6 +84,7 @@
                   Modifier
                 </button>
                 <button
+                  v-if="$can('supprimer_composants_menus')"
                   class="w-full text-left text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300 flex items-center"
                   @click="openDeleteConfirmation(foodComposant)"
                 >
@@ -170,13 +176,15 @@ import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
 import Toast from '@/components/shared/Toast.vue';
+import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     FoodComposantForm,
     Modal,
     Overlay,
-    LoadingWheel, 
+    LoadingWheel,
     Toast
   },
   data() {
@@ -186,7 +194,7 @@ export default {
       showDeleteConfirmation: false,
       selectedFoodComposant: null,
       isLoading: true,
-      showToast: false, 
+      showToast: false,
       toastMessage: '',
     }
   },
@@ -194,8 +202,10 @@ export default {
     ...mapGetters('foodComposant', ['foodComposants'])
   },
   created() {
-    this.fetchFoodComposants()
-    this.loadFoodComposants()
+    if (this.$can('voir_composants_menus')) {
+      this.fetchFoodComposants()
+      this.loadFoodComposants()
+    }
   },
   watch: {
     foodComposants(newValue) {
@@ -212,38 +222,46 @@ export default {
       'deleteFoodComposant'
     ]),
     openCreateModal() {
-      this.showCreateModal = true
+      if (this.$can('creer_composants_menus')) {
+        this.showCreateModal = true
+      }
     },
     closeCreateModal() {
       this.showCreateModal = false
     },
     openEditModal(foodComposant) {
-      this.selectedFoodComposant = { ...foodComposant }
-      this.showEditModal = true
+      if (this.$can('modifier_composants_menus')) {
+        this.selectedFoodComposant = { ...foodComposant }
+        this.showEditModal = true
+      }
     },
     closeEditModal() {
       this.showEditModal = false
       this.selectedFoodComposant = null
     },
     openDeleteConfirmation(foodComposant) {
-      this.selectedFoodComposant = { ...foodComposant }
-      this.showDeleteConfirmation = true
+      if (this.$can('supprimer_composants_menus')) {
+        this.selectedFoodComposant = { ...foodComposant }
+        this.showDeleteConfirmation = true
+      }
     },
     closeDeleteConfirmation() {
       this.showDeleteConfirmation = false
       this.selectedFoodComposant = null
     },
     handleDeleteFoodComposant() {
-      this.deleteFoodComposant(this.selectedFoodComposant)
-        .then(() => {
-          this.closeDeleteConfirmation()
-          this.loadFoodComposants()
-          this.showSuccessToast('Composant deleted successfully!');
-        })
-        .catch(error => {
-          console.error('Error deleting food composant:', error)
-          // Handle error if needed
-        })
+      if (this.$can('supprimer_composants_menus')) {
+        this.deleteFoodComposant(this.selectedFoodComposant)
+          .then(() => {
+            this.closeDeleteConfirmation()
+            this.loadFoodComposants()
+            this.showSuccessToast('Composant deleted successfully!');
+          })
+          .catch(error => {
+            console.error('Error deleting food composant:', error)
+            // Handle error if needed
+          })
+      }
     },
     async loadFoodComposants() {
       this.isLoading = true
@@ -267,30 +285,35 @@ export default {
       }, 3000);
     },
     handleCreateFoodComposant(formData) {
-      this.createFoodComposant(formData)
-        .then(() => {
-          this.closeCreateModal()
-          this.loadFoodComposants()
-          this.showSuccessToast('Food component created successfully')
-        })
-        .catch(error => {
-          console.error('Error creating food composant:', error)
-        })
+      if (this.$can('creer_composants_menus')) {
+        this.createFoodComposant(formData)
+          .then(() => {
+            this.closeCreateModal()
+            this.loadFoodComposants()
+            this.showSuccessToast('Food component created successfully')
+          })
+          .catch(error => {
+            console.error('Error creating food composant:', error)
+          })
+      }
     },
     handleUpdateFoodComposant(formData) {
-      this.updateFoodComposant(formData)
-        .then(() => {
-          this.closeEditModal()
-          this.loadFoodComposants()
-          this.showSuccessToast('Food component updated successfully')
-        })
-        .catch(error => {
-          console.error('Error updating food composant:', error)
-        })
+      if (this.$can('modifier_composants_menus')) {
+        this.updateFoodComposant(formData)
+          .then(() => {
+            this.closeEditModal()
+            this.loadFoodComposants()
+            this.showSuccessToast('Food component updated successfully')
+          })
+          .catch(error => {
+            console.error('Error updating food composant:', error)
+          })
+      }
     },
   }
 }
 </script>
+
 
 <style>
 .bg-food-ingredients {

@@ -1,24 +1,24 @@
 <template>
-  <nav class="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-gray-900 dark:to-indigo-900 shadow-lg fixed left-0 right-0 top-0 z-50 transition-all duration-300">
+  <nav :class="[
+    'fixed left-0 right-0 top-0 z-50 transition-all duration-300 shadow-lg',
+    'bg-[#040f8c] dark:bg-gradient-to-r dark:from-gray-900 dark:to-indigo-900'
+  ]">
     <div class="container mx-auto px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <button @click="toggleSidebar" class="mr-2 text-white sm:hidden">
-            <font-awesome-icon icon="bars" />
+          <button @click="toggleSidebar" class="mr-2 text-white sm:hidden hover:text-indigo-200 transition-colors duration-300">
+            <font-awesome-icon icon="bars" class="text-xl" />
           </button>
-          <router-link to="/" class="text-white font-bold text-xl sm:text-2xl tracking-wider hover:text-indigo-200 transition-colors duration-300">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">TABLEAU DE BORD</span>
+          <router-link to="/" class="flex items-center space-x-2">
+            <img src="@/assets/logo.png" class="w-[100px] h-auto invert brightness-0" alt="Logo">
           </router-link>
         </div>
-       
         <div class="hidden sm:flex items-center space-x-6">
           <router-link to="/profile" class="group relative font-semibold text-white hover:text-indigo-200 transition-colors duration-300">
             PROFILE
             <span class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
           </router-link>
-         
-          <DarkModeToggle class="transform hover:scale-110 transition-transform duration-300" />
-         
+          <DarkModeToggle class="transform hover:scale-110 transition-transform duration-300 text-white dark:text-current" />
           <button
             @click="handleLogout"
             class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
@@ -31,30 +31,38 @@
             </span>
           </button>
         </div>
-
         <div class="sm:hidden">
-          <button @click="toggleMobileMenu" class="text-white">
-            <font-awesome-icon icon="ellipsis-v" />
+          <button @click="toggleMobileMenu" class="text-white hover:text-indigo-200 transition-colors duration-300">
+            <font-awesome-icon icon="ellipsis-v" class="text-xl" />
           </button>
         </div>
       </div>
     </div>
 
     <!-- Mobile Menu -->
-    <div v-if="mobileMenuOpen" class="sm:hidden bg-indigo-700 dark:bg-gray-800">
-      <div class="px-2 pt-2 pb-3 space-y-1">
-        <router-link to="/profile" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-600 dark:hover:bg-gray-700">
-          profile
-        </router-link>
-        <DarkModeToggle class="block px-3 py-2" />
-        <button
-          @click="handleLogout"
-          class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:bg-red-600 dark:hover:bg-red-700"
-        >
-          logout
-        </button>
+    <transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-150"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div v-if="mobileMenuOpen" class="sm:hidden bg-[#040f8c] dark:bg-gray-800">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+          <router-link to="/profile" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-600 dark:hover:bg-gray-700 transition-colors duration-300">
+            Profile
+          </router-link>
+          <DarkModeToggle class="block px-3 py-2" />
+          <button
+            @click="handleLogout"
+            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:bg-red-600 dark:hover:bg-red-700 transition-colors duration-300"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
   </nav>
 </template>
 
@@ -101,20 +109,24 @@ export default {
 </script>
  
 <style scoped>
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 nav {
   background-size: 200% 200%;
   animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.dark nav {
+  animation: darkGradientAnimation 15s ease infinite;
+}
+
+@keyframes darkGradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 </style>
