@@ -26,6 +26,7 @@
         </div>
         <div class="mt-6 flex justify-center">
           <button
+            v-if="$can('creer_repas')"
             @click="openCreateModal"
             class="group relative inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 overflow-hidden text-base sm:text-lg font-medium text-indigo-600 border-2 border-indigo-600 rounded-full hover:text-white w-full sm:w-auto"
           >
@@ -49,6 +50,7 @@
       <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto text-sm">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
       <div class="flex flex-col space-y-3">
         <button
+          v-if="$can('assigner_categories_menus')"
           @click="openAssignMenuModal(dailyMeal)"
           class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-300 text-sm flex items-center justify-center"
         >
@@ -57,6 +59,7 @@
         </button>
         <div class="flex justify-between">
           <button
+            v-if="$can('modifier_repas')"
             @click="openEditModal(dailyMeal)"
             class="flex-1 mr-2 bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
           >
@@ -64,6 +67,7 @@
             Modifier
           </button>
           <button
+            v-if="$can('supprimer_repas')"
             @click="openDeleteConfirmation(dailyMeal)"
             class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
           >
@@ -169,8 +173,10 @@ import DailyMealMenuForm from './DailyMealMenuForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import Toast from '@/components/shared/Toast.vue';
+import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     DailyMealForm,
     DailyMealMenuForm,

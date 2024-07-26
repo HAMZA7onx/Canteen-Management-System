@@ -7,6 +7,7 @@
 
     <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
       <button
+        v-if="$can('creer_profils_repas')"
         class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out flex items-center mb-4 sm:mb-0"
         @click="openCreateModal"
       >
@@ -57,6 +58,7 @@
                 <td class="py-3 px-6 text-center">
                   <div class="flex justify-center space-x-2">
                     <button
+                      v-if="$can('modifier_profils_repas')"
                       class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                       @click="openEditModal(weekSchedule)"
                       title="Edit"
@@ -64,6 +66,7 @@
                       <font-awesome-icon icon="edit" />
                     </button>
                     <button
+                      v-if="$can('supprimer_profils_repas')"
                       class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                       @click="openDeleteConfirmation(weekSchedule)"
                       title="Delete"
@@ -74,6 +77,7 @@
                 </td>
                 <td v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="py-3 px-6 text-center">
                   <button
+                    v-if="$can('assigner_repas')"
                     class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
                     @click="openAssignModal(weekSchedule, day)"
                   >
@@ -108,12 +112,14 @@
               <div v-if="expandedRows.includes(weekSchedule.id)" class="p-4 bg-gray-50 dark:bg-gray-800">
                 <div class="flex justify-center space-x-2 mb-4">
                   <button
+                    v-if="$can('modifier_profils_repas')"
                     class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                     @click="openEditModal(weekSchedule)"
                   >
                     <font-awesome-icon icon="edit" /> Edit
                   </button>
                   <button
+                    v-if="$can('supprimer_profils_repas')"
                     class="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300"
                     @click="openDeleteConfirmation(weekSchedule)"
                   >
@@ -122,6 +128,7 @@
                 </div>
                 <div class="grid grid-cols-7 gap-2">
                   <button
+                    v-if="$can('assigner_repas')"
                     v-for="(day, index) in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
                     :key="day"
                     class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 text-xs"
@@ -222,8 +229,10 @@ import EditWeekScheduleForm from './EditWeekScheduleForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
 import LoadingWheel from '@/components/shared/LoadingWheel.vue'
+import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     WeekScheduleForm,
     CreateWeekScheduleForm,
