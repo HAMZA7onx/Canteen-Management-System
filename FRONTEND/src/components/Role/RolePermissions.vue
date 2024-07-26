@@ -101,7 +101,7 @@ methods: {
         .then(() => {
           this.selectedPermission = '';
           this.fetchRolePermissions();
-        this.$store.dispatch('auth/refreshPermissions');
+          this.$store.dispatch('auth/refreshPermissions');
         })
         .catch((error) => {
           console.error('Error assigning permission:', error);
