@@ -178,20 +178,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/advanced', [RecordsDashboardController::class, 'getAdvancedRecords']);
     });
 
-    Route::prefix('admins-badges')->group(function () {
+    Route::prefix('admins-badges')->middleware('check.permission:voir_badges_administrateurs')->group(function () {
         Route::get('/', [AdminBadgeController::class, 'index']);
         Route::post('/', [AdminBadgeController::class, 'store']);
         Route::get('/{id}', [AdminBadgeController::class, 'show']);
         Route::put('/{id}', [AdminBadgeController::class, 'update']);
         Route::delete('/{id}', [AdminBadgeController::class, 'destroy']);
 
-        Route::post('/import', [AdminBadgeController::class, 'importRfids']);
+        Route::post('/import', [AdminBadgeController::class, 'importRfids'])->middleware('check.permission:importer_badges_administrateurs');
 
         Route::get('/admins/all-rfids-lost', [AdminBadgeController::class, 'getUsersWithAllRfidsLost']);
         Route::get('/admins/without-rfids', [AdminBadgeController::class, 'getUsersWithoutRfids']);
 
-        Route::put('/{badgeId}/status', [AdminBadgeController::class, 'updateBadgeStatus']);
-        Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser']);
+        Route::put('/{badgeId}/status', [AdminBadgeController::class, 'updateBadgeStatus'])->middleware('check.permission:gerer_badges_administrateurs');
+        Route::put('/{badgeId}/assign', [AdminBadgeController::class, 'assignRfidToUser'])->middleware('check.permission:gerer_badges_administrateurs');
     });
 
     Route::prefix('pos-devices')->middleware('auth:sanctum')->group(function () {
