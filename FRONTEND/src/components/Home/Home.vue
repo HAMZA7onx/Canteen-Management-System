@@ -27,31 +27,6 @@
       </div>
     </div>
     <Descriptive />
-    <!-- <section class="system-overview">
-      <h2>System Overview</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <font-awesome-icon icon="user" />
-          <h3>Total Users</h3>
-          <p>{{ totalUsers }}</p>
-        </div>
-        <div class="stat-card">
-          <font-awesome-icon icon="utensils" />
-          <h3>Active Menus</h3>
-          <p>{{ activeMenus }}</p>
-        </div>
-        <div class="stat-card">
-          <font-awesome-icon icon="id-badge" />
-          <h3>Assigned Badges</h3>
-          <p>{{ assignedBadges }}</p>
-        </div>
-        <div class="stat-card">
-          <font-awesome-icon icon="calendar-check" />
-          <h3>Weekly Schedules</h3>
-          <p>{{ weeklySchedules }}</p>
-        </div>
-      </div>
-    </section> -->
   </div>
 </template>
 
@@ -82,16 +57,16 @@ export default {
 
     onMounted(async () => {
       await Promise.all([
-        store.dispatch('user/fetchUsers'),
-        store.dispatch('menu/fetchMenus'),
-        store.dispatch('badge/fetchBadges'),
-        store.dispatch('weekSchedule/fetchWeekSchedules')
+        store.dispatch('home/fetchUsers'),
+        store.dispatch('home/fetchMenus'),
+        store.dispatch('home/fetchBadges'),
+        store.dispatch('home/fetchWeekSchedules')
       ]);
 
-      const userData = store.state.user.users;
-      const menuData = store.state.menu.menus;
-      const badgeData = store.state.badge.badges;
-      const weekScheduleData = store.state.weekSchedule.weekSchedules;
+      const userData = store.state.home.users;
+      const menuData = store.state.home.menus;
+      const badgeData = store.state.home.badges;
+      const weekScheduleData = store.state.home.weekSchedules;
 
       totalUsers.value = userData.length;
       activeMenus.value = menuData.length;
