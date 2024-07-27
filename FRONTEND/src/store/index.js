@@ -19,6 +19,7 @@ import sidebar from './modules/sidebar';
 import advancedRecord from './modules/advancedRecord';
 import adminReportSubscription from './modules/adminReportSubscription';
 import permission from './modules/permission';
+import home from './modules/home'
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -44,7 +45,8 @@ const store = createStore({
     sidebar,
     advancedRecord,
     adminReportSubscription,
-    permission
+    permission,
+    home
   },
   plugins: [vuexLocal.plugin]
 });

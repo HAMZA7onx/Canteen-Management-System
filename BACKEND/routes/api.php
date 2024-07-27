@@ -18,6 +18,7 @@ use App\Http\Controllers\Badge\AdminBadgeController;
 use App\Http\Controllers\PosDeviceController;
 use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Admin\AdminReportSubscriptionController;
+use App\Http\Controllers\HomeController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -209,6 +210,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [AdminReportSubscriptionController::class, 'store']);
         Route::put('/{subscription}', [AdminReportSubscriptionController::class, 'update']);
         Route::delete('/{subscription}', [AdminReportSubscriptionController::class, 'destroy']);
+    });
+
+    Route::prefix('home')->group(function () {
+        Route::get('/users', [HomeController::class, 'get_users']);
+        Route::get('/menus', [HomeController::class, 'get_menus']);
+        Route::get('/badges', [HomeController::class, 'get_badges']);
+        Route::get('/week-schedules', [HomeController::class, 'get_week_schedules']);
     });
 });
 

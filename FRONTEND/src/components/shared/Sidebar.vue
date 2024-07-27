@@ -27,10 +27,18 @@
                   <li v-for="item in group.items" :key="item.label"
                     :class="['flex items-center rounded-md transition-all duration-200 cursor-pointer', { 'bg-indigo-100 dark:bg-indigo-900': activeItem === item }]"
                     @click="setActiveItem(item)">
-                    <router-link :to="item.route" class="flex items-center w-full p-2 text-sm font-medium hover:text-indigo-600 dark:hover:text-indigo-400">
-                      <font-awesome-icon :icon="item.icon" class="w-5 h-5 icon" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" />
-                      <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100 w-0 overflow-hidden']">{{ item.label }}</span>
-                    </router-link>
+                    <div v-if="!item.permission">
+                      <router-link :to="item.route" class="flex items-center w-full p-2 text-sm font-medium hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <font-awesome-icon :icon="item.icon" class="w-5 h-5 icon" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" />
+                        <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100 w-0 overflow-hidden']">{{ item.label }}</span>
+                      </router-link>
+                    </div>
+                    <div v-else-if="$can(item.permission)">
+                      <router-link :to="item.route" class="flex items-center w-full p-2 text-sm font-medium hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <font-awesome-icon :icon="item.icon" class="w-5 h-5 icon" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" />
+                        <span :class="['transition-opacity duration-300', sidebarOpen ? 'opacity-100' : 'opacity-0 sm:opacity-100 w-0 overflow-hidden']">{{ item.label }}</span>
+                      </router-link>
+                    </div>
                   </li>
                 </ul>
               </transition>
@@ -69,8 +77,11 @@ library.add(
   faCog, faLock, faUserCog, faClock
 );
 
+import permissionMixin from '@/mixins/permissionMixin';
+
 export default {
   name: 'Sidebar',
+  mixins: [permissionMixin],
   setup() {
     const store = useStore();
     const sidebarOpen = computed(() => store.state.sidebar.isOpen);
@@ -98,28 +109,28 @@ export default {
         title: 'Utilisateurs',
         expanded: false,
         items: [
-          { label: 'Les collaborateurs', icon: 'users', route: '/users' },
-          { label: 'Les badges des collabs', icon: 'id-badge', route: '/badges' },
-          { label: 'Les badges des admins', icon: 'id-badge', route: '/admins-badges' },
+          { label: 'Les collaborateurs', icon: 'users', route: '/users', permission: 'voir_collaborateurs' },
+          { label: 'Les badges des collabs', icon: 'id-badge', route: '/badges', permission: 'voir_badges_collaborateurs' },
+          { label: 'Les badges des admins', icon: 'id-badge', route: '/admins-badges', permission: 'voir_badges_administrateurs' },
         ]
       },
       {
         title: 'Restauration',
         expanded: false,
         items: [
-          { label: 'Les composants du menus', icon: 'utensils', route: '/food-composants' },
-          { label: 'Les menus', icon: 'clipboard-list', route: '/menus' },
-          { label: 'Gestion des repats', icon: 'clock', route: '/daily' },
-          { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules' },
+          { label: 'Les composants du menus', icon: 'utensils', route: '/food-composants', permission: 'voir_composants_menus' },
+          { label: 'Les menus', icon: 'clipboard-list', route: '/menus', permission: 'voir_categories_menus' },
+          { label: 'Gestion des repats', icon: 'clock', route: '/daily', permission: 'voir_repas' },
+          { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules', permission: 'voir_profils_repas' },
         ]
       },
       {
         title: 'Rapports et Gestion',
         expanded: false,
         items: [
-          { label: 'Records', icon: 'chart-bar', route: '/records' },
-          { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit' },
-          { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices' },
+          { label: 'Records', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
+          { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit', permission: 'voir_enregistrements_repas' },
+          { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices', permission: 'voir_POS' },
         ]
       },
     ]);

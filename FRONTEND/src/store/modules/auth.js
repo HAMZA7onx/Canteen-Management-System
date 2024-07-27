@@ -22,8 +22,16 @@ const getters = {
 };
 
 const actions = {
-  async login({ commit }, credentials) {
+  async login({ commit, dispatch }, credentials) {
     try {
+      /**
+       * Logs the user in using the provided credentials.
+       *
+       * @param {Object} credentials - The user's login credentials.
+       * @param {string} credentials.username - The user's username.
+       * @param {string} credentials.password - The user's password.
+       * @returns {Promise<Object>} - The user data and authentication token from the server.
+       */
       const response = await AuthService.login(credentials);
       commit('setUser', response.data.data.admin);
       commit('setToken', response.data.data.token);
@@ -32,6 +40,10 @@ const actions = {
       commit('setUserPermissions', response.data.data.permissions);
       commit('setAvailableRoles', response.data.data.availableRoles);
       commit('setAvailablePermissions', response.data.data.availablePermissions);
+
+      // Dispatch the refreshPermissions action after successful login
+      await dispatch('refreshPermissions');
+
       return Promise.resolve(response.data);
     } catch (error) {
       return Promise.reject(error);
