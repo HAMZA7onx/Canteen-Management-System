@@ -274,10 +274,11 @@ export default {
     ...mapGetters('role', ['roles']),
     filteredRoles() {
       return this.roles
-        .filter(role =>
-          role.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
-        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      .filter(role => 
+        role.name !== 'SUPER_ADMIN' &&
+        role.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
+      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     },
 
     paginatedRoles() {

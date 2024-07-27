@@ -46,79 +46,79 @@
         <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
-  <tr>
-    <th v-for="column in columns" :key="column.key" scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hidden sm:table-cell" @click="sortBy(column.key)">
-      {{ column.label }}
-      <span v-if="sortKey === column.key">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
-    </th>
-    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sm:hidden">
-      Admin
-    </th>
-  </tr>
-</thead>
+              <tr>
+                <th v-for="column in columns" :key="column.key" scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hidden sm:table-cell" @click="sortBy(column.key)">
+                  {{ column.label }}
+                  <span v-if="sortKey === column.key">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                </th>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider sm:hidden">
+                  Admin
+                </th>
+              </tr>
+            </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-  <template v-for="admin in paginatedAdmins" :key="admin.id">
-    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-      <td class="px-3 py-4 whitespace-nowrap">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 h-10 w-10">
-            <img class="h-10 w-10 rounded-full" :src="admin.avatar || 'https://via.placeholder.com/40'" alt="">
-          </div>
-          <div class="ml-4">
-            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ admin.name }}</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400 sm:hidden">{{ admin.email }}</div>
-          </div>
-        </div>
-      </td>
-      <td class="px-3 py-4 whitespace-nowrap hidden sm:table-cell">
-        <div class="text-sm text-gray-900 dark:text-gray-100">{{ admin.email }}</div>
-      </td>
-      <td class="px-3 py-4 whitespace-nowrap hidden sm:table-cell">
-        <div class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(admin.updated_at) }}</div>
-      </td>
-      <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
-        <div class="flex space-x-2 sm:hidden">
-          <button @click="toggleExpandRow(admin.id)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-200">
-            <font-awesome-icon :icon="expandedRows.includes(admin.id) ? 'chevron-up' : 'chevron-down'" />
-          </button>
-        </div>
-        <div class="hidden sm:flex space-x-2">
-          <button @click="openEditAdminModal(admin)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-200">
-            <font-awesome-icon icon="edit" />
-          </button>
-          <button @click="deleteAdmin(admin)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-200">
-            <font-awesome-icon icon="trash" />
-          </button>
-          <button @click="openManageRolesPermissionsModal(admin)" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-200">
-            <font-awesome-icon icon="user-cog" />
-          </button>
-        </div>
-      </td>
-    </tr>
-    <tr v-if="expandedRows.includes(admin.id)" class="bg-gray-50 dark:bg-gray-700 sm:hidden">
-      <td colspan="4" class="px-3 py-4">
-        <div class="flex flex-col space-y-2">
-          <div class="text-sm text-gray-900 dark:text-gray-100">
-            <span class="font-medium">Last Updated:</span> {{ formatDate(admin.updated_at) }}
-          </div>
-          <button @click="openEditAdminModal(admin)" class="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
-            <font-awesome-icon icon="edit" class="mr-2" />
-            Edit
-          </button>
-          <button @click="deleteAdmin(admin)" class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
-            <font-awesome-icon icon="trash" class="mr-2" />
-            Delete
-          </button>
-          <button @click="openManageRolesPermissionsModal(admin)" class="flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
-            <font-awesome-icon icon="user-cog" class="mr-2" />
-            Manage Roles
-          </button>
-        </div>
-      </td>
-    </tr>
-  </template>
-</tbody>
-
+              <template v-for="admin in paginatedAdmins" :key="admin.id">
+                
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                  <td class="px-3 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" :src="admin.avatar || 'https://via.placeholder.com/40'" alt="">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ admin.name }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 sm:hidden">{{ admin.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-3 py-4 whitespace-nowrap hidden sm:table-cell">
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ admin.email }}</div>
+                  </td>
+                  <td class="px-3 py-4 whitespace-nowrap hidden sm:table-cell">
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(admin.updated_at) }}</div>
+                  </td>
+                  <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2 sm:hidden">
+                      <button @click="toggleExpandRow(admin.id)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-200">
+                        <font-awesome-icon :icon="expandedRows.includes(admin.id) ? 'chevron-up' : 'chevron-down'" />
+                      </button>
+                    </div>
+                    <div class="hidden sm:flex space-x-2">
+                      <button @click="openEditAdminModal(admin)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-200">
+                        <font-awesome-icon icon="edit" />
+                      </button>
+                      <button @click="deleteAdmin(admin)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-200">
+                        <font-awesome-icon icon="trash" />
+                      </button>
+                      <button @click="openManageRolesPermissionsModal(admin)" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200 transition-colors duration-200">
+                        <font-awesome-icon icon="user-cog" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="expandedRows.includes(admin.id)" class="bg-gray-50 dark:bg-gray-700 sm:hidden">
+                  <td colspan="4" class="px-3 py-4">
+                    <div class="flex flex-col space-y-2">
+                      <div class="text-sm text-gray-900 dark:text-gray-100">
+                        <span class="font-medium">Last Updated:</span> {{ formatDate(admin.updated_at) }}
+                      </div>
+                      <button @click="openEditAdminModal(admin)" class="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="edit" class="mr-2" />
+                        Edit
+                      </button>
+                      <button @click="deleteAdmin(admin)" class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="trash" class="mr-2" />
+                        Delete
+                      </button>
+                      <button @click="openManageRolesPermissionsModal(admin)" class="flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-2 rounded-md transition-colors duration-300">
+                        <font-awesome-icon icon="user-cog" class="mr-2" />
+                        Manage Roles
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
           </table>
         </div>
         <!-- Pagination -->
@@ -287,8 +287,9 @@ export default {
     filteredAdmins() {
       return this.admins
         .filter(admin =>
-          admin.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          admin.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+          admin.email !== 'meskihamza5@gmail.com' &&
+          (admin.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          admin.email.toLowerCase().includes(this.searchQuery.toLowerCase()))
         )
         .sort((a, b) => {
           if (this.sortKey === 'updated_at') {
