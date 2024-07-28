@@ -28,7 +28,7 @@
       class="w-full sm:w-2/3 px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 appearance-none"
     >
       <option value="">Select a permission</option>
-      <option v-for="permission in availablePermissions" :key="permission.id" :value="permission.id">
+      <option v-for="permission in filteredAvailablePermissions" :key="permission.id" :value="permission.id">
         {{ permission.name }}
       </option>
     </select>
@@ -62,6 +62,9 @@ data() {
 },
 computed: {
   ...mapGetters('role', ['assignedPermissions', 'availablePermissions']),
+  filteredAvailablePermissions() {
+    return this.availablePermissions.filter(permission => permission.name !== 'SUPER_ADMIN_PERMISSION');
+  }
 },
 mounted() {
   this.fetchRolePermissions();

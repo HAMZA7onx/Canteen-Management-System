@@ -79,5 +79,8 @@ class Seeder0_Permissions extends Seeder
 
         // Open POS device permission
         Permission::create(['name' => 'ouvrir_interface_de_pointage_sur_POS', 'guard_name' => 'sanctum']);
+
+        // Gestion des subscribtions permissions
+        Permission::create(['name' => 'gerer_subscribtions_des_admin', 'guard_name' => 'sanctum']);
     }
 }

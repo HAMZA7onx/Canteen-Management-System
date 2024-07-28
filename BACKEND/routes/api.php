@@ -95,12 +95,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{permission}', [PermissionController::class, 'destroy']);
     });
 
-    Route::prefix('user-categories')->group(function () {
+    Route::prefix('user-categories')->middleware('check.permission:voir_categorie_de_collaborateur')->group(function () {
         Route::get('/', [UserCategoryController::class, 'index']);
-        Route::post('/', [UserCategoryController::class, 'store']);
+        Route::post('/', [UserCategoryController::class, 'store'])->middleware('check.permission:creer_categorie_de_collaborateur');
         Route::get('/{id}', [UserCategoryController::class, 'show']);
-        Route::put('/{id}', [UserCategoryController::class, 'update']);
-        Route::delete('/{id}', [UserCategoryController::class, 'destroy']);
+        Route::put('/{id}', [UserCategoryController::class, 'update'])->middleware('check.permission:modifier_categorie_de_collaborateur');
+        Route::delete('/{id}', [UserCategoryController::class, 'destroy'])->middleware('check.permission:supprimer_categorie_de_collaborateur');
     });
 
     Route::prefix('badges')->middleware('check.permission:voir_badges_collaborateurs')->group(function () {
@@ -205,7 +205,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('discounts/{day}/{mealId}', [CategoryDiscountController::class, 'getDiscountsForMeal']);
 
-    Route::prefix('admin-report-subscriptions')->group(function () {
+    Route::prefix('admin-report-subscriptions')->middleware('check.permission:gerer_subscribtions_des_admin')->group(function () {
         Route::get('/', [AdminReportSubscriptionController::class, 'index']);
         Route::post('/', [AdminReportSubscriptionController::class, 'store']);
         Route::put('/{subscription}', [AdminReportSubscriptionController::class, 'update']);

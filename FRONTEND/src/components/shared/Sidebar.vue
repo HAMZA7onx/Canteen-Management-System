@@ -66,7 +66,7 @@ import {
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock
+  faCog, faLock, faUserCog, faClock, faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -74,7 +74,7 @@ library.add(
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock
+  faCog, faLock, faUserCog, faClock, faClipboardCheck
 );
 
 import permissionMixin from '@/mixins/permissionMixin';
@@ -99,10 +99,10 @@ export default {
         title: 'Administration',
         expanded: true,
         items: [
-        { label: 'Les admins', icon: 'user-shield', route: '/admins' },
-        { label: 'Les subscriptions des admins', icon: 'user-shield', route: '/admins-report-subscriptions' },
-        { label: 'Les roles', icon: 'user-tag', route: '/roles' },
-          { label: 'Les user-Categories', icon: 'user-friends', route: '/user-categories' },
+          { label: 'Les admins', icon: 'user-shield', route: '/admins', permission: 'SUPER_ADMIN_PERMISSION' },
+          { label: 'Les roles', icon: 'user-tag', route: '/roles', permission: 'SUPER_ADMIN_PERMISSION'  },
+          { label: 'Les subscriptions des admins', icon: 'user-shield', route: '/admins-report-subscriptions', permission: 'gerer_subscribtions_des_admin'},
+          { label: 'Les Categories des collaborateurs', icon: 'user-friends', route: '/user-categories', permission: 'voir_categorie_de_collaborateur' },
         ]
       },
       {
@@ -110,7 +110,7 @@ export default {
         expanded: false,
         items: [
           { label: 'Les collaborateurs', icon: 'users', route: '/users', permission: 'voir_collaborateurs' },
-          { label: 'Les badges des collabs', icon: 'id-badge', route: '/badges', permission: 'voir_badges_collaborateurs' },
+          { label: 'Les badges des collaborateurs', icon: 'id-badge', route: '/badges', permission: 'voir_badges_collaborateurs' },
           { label: 'Les badges des admins', icon: 'id-badge', route: '/admins-badges', permission: 'voir_badges_administrateurs' },
         ]
       },
@@ -129,7 +129,7 @@ export default {
         expanded: false,
         items: [
           { label: 'Records', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
-          { label: 'Audit de Records', icon: 'chart-bar', route: '/records-audit', permission: 'voir_enregistrements_repas' },
+          { label: 'Audit de Records', icon: 'clipboard-check', route: '/records-audit', permission: 'voir_enregistrements_repas' },
           { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices', permission: 'voir_POS' },
         ]
       },
