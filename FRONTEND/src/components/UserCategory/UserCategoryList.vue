@@ -33,6 +33,7 @@
   </div>
   <div class="order-1 sm:order-2">
     <button
+      v-if="$can('creer_categorie_de_collaborateur')"
       class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
       @click="openCreateModal"
     >
@@ -74,12 +75,14 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
+                    v-if="$can('modifier_categorie_de_collaborateur')"
                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
                     @click="openEditModal(category)"
                   >
                     <font-awesome-icon icon="edit" />
                   </button>
                   <button
+                    v-if="$can('supprimer_categorie_de_collaborateur')"
                     :class="[
                       'transition-colors duration-300',
                       category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
@@ -115,6 +118,7 @@
                   Voir les Détails
                 </button>
                 <button
+                  v-if="$can('modifier_categorie_de_collaborateur')"
                   class="w-full text-left text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 transition-colors duration-300 flex items-center"
                   @click="openEditModal(category)"
                 >
@@ -122,6 +126,7 @@
                   Modifier
                 </button>
                 <button
+                  v-if="$can('supprimer_categorie_de_collaborateur')"
                   class="w-full text-left transition-colors duration-300 flex items-center"
                   :class="[
                     category.is_assigned ? 'text-gray-400 cursor-not-allowed' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
@@ -282,6 +287,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import permissionMixin from '@/mixins/permissionMixin';
 import UserCategoryForm from '@/components/UserCategory/UserCategoryForm.vue';
 import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
@@ -289,6 +295,7 @@ import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 import Toast from '@/components/shared/Toast.vue';
 
 export default {
+  mixins: [permissionMixin],
   components: {
     UserCategoryForm,
     Modal,
@@ -356,14 +363,18 @@ export default {
       }
     },
     openCreateModal() {
-      this.selectedCategory = {};
-      this.isEditMode = false;
-      this.showModal = true;
+      if (this.$can('creer_categorie_de_collaborateur')) {
+        this.selectedCategory = {};
+        this.isEditMode = false;
+        this.showModal = true;
+      }
     },
     openEditModal(category) {
-      this.selectedCategory = { ...category };
-      this.isEditMode = true;
-      this.showModal = true;
+      if (this.$can('modifier_categorie_de_collaborateur')) {
+        this.selectedCategory = { ...category };
+        this.isEditMode = true;
+        this.showModal = true;
+      }
     },
     closeModal() {
       this.showModal = false;
@@ -390,7 +401,7 @@ export default {
         });
     },
     deleteCategory(category) {
-      if (!category.is_assigned) {
+      if (this.$can('supprimer_categorie_de_collaborateur') && !category.is_assigned) {
         this.categoryToDelete = category;
         this.showDeleteConfirmation = true;
       }

@@ -29,6 +29,11 @@ class Seeder1_Admin extends Seeder
 
         $role->syncPermissions($allPermissions);
 
+        $adminPermission = Permission::create(['name' => 'SUPER_ADMIN_PERMISSION', 'guard_name' => 'sanctum']);
+
+        $role->givePermissionTo($adminPermission);
+
+
         $admin->assignRole($role);
 
         $this->command->info('All permissions have been assigned to the SUPER ADMIN role and the role its self assigned to meskihamza5@gmail.com.');
