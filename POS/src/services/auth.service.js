@@ -7,8 +7,6 @@ class AuthService {
     loginWithBadge(rfid) {
         return axios.post(`${API_URL}/login-with-badge`, { rfid });
     }
-    
-
     logout() {
         return request.post(`${API_URL}/logout`);
     }

@@ -117,7 +117,11 @@ export default {
           const result = await store.dispatch('badging/verifyAndScanBadge', { rfid: badgeId, day: currentDay });
           setMessage(result.message, 'success');
         } catch (error) {
-          handleError(error);
+          if (error.response && error.response.data) {
+            setMessage(error.response.data.error, 'error');
+          } else {
+            setMessage('An unexpected error occurred', 'error');
+          }
         }
         badgeId = '';
       }

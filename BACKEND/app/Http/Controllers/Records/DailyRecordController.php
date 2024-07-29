@@ -56,7 +56,16 @@ class DailyRecordController extends Controller
 
     public function verifyBadge($rfid)
     {
-        $badge = Badge::where('rfid', $rfid)->first();
+        $badge = Badge::where('rfid', $rfid)
+            ->where('status', '!=', 'lost')
+            ->first();
+
+        \Log::info('Badge verification attempt', [
+            'rfid' => $rfid,
+            'found' => $badge !== null,
+            'badge_id' => $badge ? $badge->id : null,
+        ]);
+
         return response()->json([
             'exists' => $badge !== null,
             'message' => $badge ? 'Badge found' : 'Badge not found',
@@ -72,6 +81,15 @@ class DailyRecordController extends Controller
         $validatedData = $request->validate([
             'rfid' => 'required|exists:badges,rfid',
         ]);
+
+        // Verify the badge
+        $badge = Badge::where('rfid', $validatedData['rfid'])
+            ->where('status', '!=', 'lost')
+            ->first();
+
+        if (!$badge) {
+            return response()->json(['error' => "Badge not allowed", 'badgeOwner' => 'Unknown'], 403);
+        }
 
         $badge = Badge::where('rfid', $validatedData['rfid'])->firstOrFail();
         $user = $badge->user;
@@ -132,53 +150,6 @@ class DailyRecordController extends Controller
         }
     }
 
-//    public function getCurrentMeal()
-//    {
-//        $serverTime = date('Y-m-d H:i:s');
-//        $carbonTime = Carbon::now('Europe/Paris')->format('Y-m-d H:i:s');
-//        $phpTime = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('Y-m-d H:i:s');
-//
-//        \Log::info("Server time: $serverTime");
-//        \Log::info("Carbon time: $carbonTime");
-//        \Log::info("PHP time: $phpTime");
-//
-//        \Log::info('getCurrentMeal method called');
-//
-//        $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
-//        $currentTime = Carbon::now('Europe/Paris')->format('H:i:s');
-//        \Log::info("Current day: $currentDay, Current time: $currentTime");
-//
-//        $activeSchedule = WeekSchedule::where('status', 'active')->first();
-//        if (!$activeSchedule) {
-//            \Log::warning('No active schedule found');
-//            return response()->json(['message' => 'No active schedule found'], 404);
-//        }
-//        \Log::info("Active schedule found with ID: " . $activeSchedule->id);
-//
-//        $pivotTable = $currentDay . '_daily_meal';
-//        \Log::info("Pivot table: $pivotTable");
-//
-//        try {
-//            $currentMeal = DB::table($pivotTable)
-//                ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
-//                ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
-//                ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
-//                ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
-//                ->first();
-//
-//            \Log::info("Query executed. Result: " . json_encode($currentMeal));
-//
-//            if ($currentMeal) {
-//                return response()->json($currentMeal);
-//            } else {
-//                \Log::info('No meal assigned at the current time');
-//                return response()->json(['message' => 'No meal assigned at the current time'], 404);
-//            }
-//        } catch (\Exception $e) {
-//            \Log::error('Error in getCurrentMeal: ' . $e->getMessage());
-//            return response()->json(['message' => 'An error occurred while fetching the current meal'], 500);
-//        }
-//    }
     public function getCurrentMeal()
     {
         $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
