@@ -14,6 +14,7 @@ class PosDevice extends Model
     ];
 
     protected $fillable = [
+        'name',
         'ip_address',
         'status',
         'editors',

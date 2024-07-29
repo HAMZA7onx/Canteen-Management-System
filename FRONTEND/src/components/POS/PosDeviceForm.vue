@@ -8,6 +8,23 @@
       <div class="space-y-4">
         <div class="relative">
           <input
+            id="name"
+            v-model="formData.name"
+            type="text"
+            required
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300 placeholder-transparent"
+            placeholder="Device Name"
+          />
+          <label
+            for="name"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-500 dark:peer-focus:text-cyan-400"
+          >
+            Device Name
+          </label>
+        </div>
+
+        <div class="relative">
+          <input
             id="ip_address"
             v-model="formData.ip_address"
             @input="validateInput"
@@ -56,39 +73,41 @@
   </div>
 </template>
 
-  
-  <script>
-  export default {
-    name: 'PosDeviceForm',
-    props: {
-      device: {
-        type: Object,
-        default: () => ({
-          ip_address: '',
-          status: 'unauthorized'
-        })
-      }
-    },
-    data() {
-      return {
-        formData: { ...this.device },
-        isValidIP: true
-      }
-    },
-    methods: {
-      validateIPAddress(ip) {
-        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipRegex.test(ip);
+<script>
+export default {
+  name: 'PosDeviceForm',
+  props: {
+    device: {
+      type: Object,
+      default: () => ({
+        ip_address: '',
+        status: 'unauthorized'
+      })
+    }
+  },
+  data() {
+    return {
+      formData: {
+        name: this.device.name || '',
+        ip_address: this.device.ip_address || '',
+        status: this.device.status || 'unauthorized'
       },
-      validateInput() {
-        this.isValidIP = this.validateIPAddress(this.formData.ip_address);
-      },
-      submitForm() {
-        if (this.isValidIP) {
-          this.$emit('update:device', this.formData);
-        }
+      isValidIP: true
+    }
+  },
+  methods: {
+    validateIPAddress(ip) {
+      const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      return ipRegex.test(ip);
+    },
+    validateInput() {
+      this.isValidIP = this.validateIPAddress(this.formData.ip_address);
+    },
+    submitForm() {
+      if (this.isValidIP) {
+        this.$emit('update:device', this.formData);
       }
     }
   }
-  </script>
-  
+}
+</script>

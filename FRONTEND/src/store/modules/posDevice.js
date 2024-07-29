@@ -31,6 +31,7 @@ const actions = {
       });
   },
   updatePosDevice({ commit }, posDevice) {
+    console.log('updatePosDevice', posDevice);
     return PosDeviceService.updatePosDevice(posDevice.id, posDevice)
       .then((response) => {
         commit('UPDATE_POS_DEVICE', response.data);

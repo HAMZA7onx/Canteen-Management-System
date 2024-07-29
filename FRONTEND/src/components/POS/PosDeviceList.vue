@@ -43,6 +43,7 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
+              <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
               <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
               <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
               <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
@@ -52,6 +53,7 @@
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             <template v-for="device in posDevices" :key="device.id">
               <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ device.name }}</td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ device.ip_address }}</td>
                 <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   <span :class="{'text-green-600 dark:text-green-400': device.status === 'allowed', 'text-red-600 dark:text-red-400': device.status === 'unauthorized'}">
@@ -199,6 +201,10 @@
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>Nom:</strong></p>
+                    <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.name }}</p>
+                  </div>
+                  <div>
                     <p class="text-gray-500 dark:text-gray-400"><strong>Adresse IP :</strong></p>
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.ip_address }}</p>
                   </div>
@@ -343,7 +349,12 @@ export default {
         });
     },
     updatePosDevice(updatedDevice) {
-      this.$store.dispatch('posDevice/updatePosDevice', updatedDevice)
+      const deviceToUpdate = {
+        ...updatedDevice,
+        id: this.selectedDevice.id
+      };
+
+      this.$store.dispatch('posDevice/updatePosDevice', deviceToUpdate)
         .then(() => {
           this.closeEditPosDeviceModal();
           this.loadPosDevices();

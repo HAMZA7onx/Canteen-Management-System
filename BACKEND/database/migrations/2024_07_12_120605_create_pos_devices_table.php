@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pos_devices', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('ip_address');
             $table->enum('status', ['allowed', 'unauthorized'])->default('unauthorized');
             $table->string('creator');

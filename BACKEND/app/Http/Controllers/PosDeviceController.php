@@ -17,11 +17,13 @@ class PosDeviceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required',
             'ip_address' => 'required|ip|unique:pos_devices,ip_address',
             'status' => 'required|in:allowed,unauthorized',
         ]);
 
         $posDevice = PosDevice::create([
+            'name' => $request->name,
             'ip_address' => $request->ip_address,
             'status' => $request->status,
             'creator' => Auth::user()->email,
@@ -42,10 +44,12 @@ class PosDeviceController extends Controller
         $posDevice = PosDevice::findOrFail($id);
 
         $request->validate([
-            'ip_address' => 'required|ip|unique:pos_devices,ip_address,' . $id,
-            'status' => 'required|in:allowed,unauthorized',
+            'name' => '',
+            'ip_address' => 'ip|unique:pos_devices,ip_address,' . $id,
+            'status' => 'in:allowed,unauthorized',
         ]);
 
+        $posDevice->name = $request->name;
         $posDevice->ip_address = $request->ip_address;
         $posDevice->status = $request->status;
 
