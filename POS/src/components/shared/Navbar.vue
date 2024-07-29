@@ -1,14 +1,11 @@
 <template>
-    <nav class="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-gray-900 dark:to-indigo-900 shadow-lg fixed left-0 right-0 top-0 z-50 transition-all duration-300">
+    <nav class="fixed left-0 right-0 top-0 z-50 transition-all duration-300">
       <div class="container mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
           <router-link to="/" class="text-white font-bold text-2xl tracking-wider hover:text-indigo-200 transition-colors duration-300">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">POS @IP: 127.0.0.1</span>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">POS </span>
           </router-link>
-          
           <div class="flex items-center space-x-6">
-           
-            
             <button
               @click="handleLogout"
               class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"

@@ -112,19 +112,21 @@
 
       <div v-if="userCategories.length > 0">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Discounts</h3>
-        <div v-for="category in userCategories" :key="category.id" class="mb-2">
-          <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ category.name }} Discount (DH)
-          </label>
-          <input
-            :id="`discount-${category.id}`"
-            v-model="discounts[category.id]"
-            type="number"
-            min="0"
-            max="100"
-            step="0.01"
-            class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
-          />
+        <div class="max-h-60 overflow-y-auto pr-2 border border-gray-600 p-2">
+          <div v-for="category in userCategories" :key="category.id" class="mb-2">
+            <label :for="`discount-${category.id}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ category.name }} Discount (DH)
+            </label>
+            <input
+              :id="`discount-${category.id}`"
+              v-model="discounts[category.id]"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -185,7 +187,18 @@ export default {
     onMounted(() => {
       store.dispatch('dailyMeal/fetchDailyMeals')
       store.dispatch('userCategory/fetchUserCategories')
+      .then(() => {
+        userCategories.value.forEach(category => {
+          discounts.value[category.id] = 0
+        })
+      })
     })
+
+    const resetDiscounts = () => {
+      userCategories.value.forEach(category => {
+        discounts.value[category.id] = 0
+      })
+    }
 
     const getDailyMealName = (dailyMealId) => {
       const dailyMeal = dailyMeals.value.find((meal) => meal.id === dailyMealId)
@@ -221,7 +234,10 @@ export default {
         startTime.value = ''
         endTime.value = ''
         price.value = ''
-        discounts.value = {}
+        userCategories.value.forEach(category => {
+          discounts.value[category.id] = 0
+        })
+
         errorMessage.value = ''
         store.dispatch('weekSchedule/fetchWeekSchedules')
       })
