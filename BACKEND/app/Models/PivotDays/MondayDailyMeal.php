@@ -16,7 +16,9 @@ class MondayDailyMeal extends Pivot
         'week_schedule_id',
         'start_time',
         'end_time',
-        'price'
+        'price',
+        'created_at',
+        'updated_at'
     ];
 
     public function dailyMeal()

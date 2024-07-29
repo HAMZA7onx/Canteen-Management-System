@@ -223,7 +223,7 @@
 
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
@@ -263,6 +263,10 @@ export default {
       return activeRecord.users.filter(user => 
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
       );
+    });
+
+    watch(filteredUsers, (newValue) => {
+      console.log('filteredUsers:', newValue);
     });
 
     const expandYear = async (year) => {
