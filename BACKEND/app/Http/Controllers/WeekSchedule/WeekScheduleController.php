@@ -176,8 +176,8 @@ class WeekScheduleController extends Controller
                     'meal_id' => $pivotId,
                     'category_id' => $categoryId,
                     'discount' => $discount,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at' => now('Europe/Paris'),
+                    'updated_at' => now('Europe/Paris'),
                 ]);
             }
 

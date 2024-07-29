@@ -14,7 +14,7 @@ const getters = {
       start_time: dailyMealData.pivot?.start_time,
       end_time: dailyMealData.pivot?.end_time,
       price: dailyMealData.pivot?.price,
-      discounts: dailyMealData.discounts || {}  // Change this to an object
+      discounts: dailyMealData.discounts || {}
     }))
   },  
   activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
@@ -59,6 +59,9 @@ const actions = {
       .catch((error) => {
         console.error('Error updating week schedule:', error)
         throw error
+      })
+      .finally(() => {
+        return dispatch('fetchWeekSchedules')
       })
   },
 
