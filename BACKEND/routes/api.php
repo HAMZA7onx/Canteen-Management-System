@@ -163,7 +163,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('badging')->group(function () {
-        Route::get('/verify/{rfid}', [DailyRecordController::class, 'verifyBadge']);
         Route::get('/current-meal', [DailyRecordController::class, 'getCurrentMeal']);
         Route::get('/{day}', [DailyRecordController::class, 'index']);
         Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);
