@@ -1,36 +1,53 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="w-full max-w-md">
-      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form @submit.prevent="handleLogin">
-          <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2" for="email">
+  <div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-sky-400 to-blue-500 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <div class="absolute top-4 right-4 flex items-center space-x-4">
+      <button @click="toggleDarkMode" class="p-2 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg hover:shadow-xl transition-all duration-300">
+        <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="w-full max-w-md px-4">
+      <div class="absolute top-3 left-4">
+        <img src="@/assets/logo.png" alt="Logo" class="w-[100px] h-auto invert brightness-0">
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-lg px-8 pt-6 pb-8 mb-4 transform hover:scale-105 transition-all duration-300">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Login</h2>
+        <form @submit.prevent="handleLogin" class="space-y-6">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2" for="email">
               Email
             </label>
             <input
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 dark:text-white dark:bg-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 transition-all duration-300"
               id="email"
               type="email"
               v-model="credentials.email"
               required
+              placeholder="Enter your email"
             />
           </div>
-          <div class="mb-6">
-            <label class="block text-gray-700 font-bold mb-2" for="password">
+          <div>
+            <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2" for="password">
               Password
             </label>
             <input
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 dark:text-white dark:bg-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 transition-all duration-300"
               id="password"
               type="password"
               v-model="credentials.password"
               required
+              placeholder="Enter your password"
             />
           </div>
-          <div class="flex items-center justify-between">
+          <div>
             <button
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transform hover:scale-105 transition-all duration-300"
               type="submit"
             >
               Login
@@ -38,6 +55,7 @@
           </div>
         </form>
       </div>
+    
     </div>
   </div>
 </template>
@@ -51,8 +69,9 @@ export default {
         email: '',
         password: '',
       },
+      isDarkMode: false,
     };
-  }, 
+  },
   methods: {
     handleLogin() {
       this.$store
@@ -62,6 +81,25 @@ export default {
           // Handle login error
         });
     },
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
+      document.documentElement.classList.toggle('dark');
+    },
+  },
+  mounted() {
+    // Check user's preference for dark mode
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      this.isDarkMode = true;
+      document.documentElement.classList.add('dark');
+    }
   },
 };
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
