@@ -52,6 +52,11 @@
     <!-- Error and success messages -->
     <div v-if="error" class="mt-4 text-sm text-red-600 dark:text-red-400">{{ error }}</div>
     <div v-if="success" class="mt-4 text-sm text-green-600 dark:text-green-400">{{ success }}</div>
+    <div v-if="importResult" class="mt-4 text-sm text-green-600 dark:text-green-400">
+      Import completed: {{ importResult.inserted }} RFIDs inserted, 
+      {{ importResult.ignored }} RFIDs ignored (already exist), 
+      out of {{ importResult.total }} total RFIDs.
+    </div>
   </div>
 </template>
 
@@ -67,6 +72,7 @@ export default {
       error: null,
       success: null,
       fileName: '',
+      importResult: null,
     };
   },
   methods: {
@@ -75,6 +81,7 @@ export default {
       this.fileName = this.file ? this.file.name : '';
       this.error = null;
       this.success = null;
+      this.importResult = null;
     },
     importRfids() {
       const formData = new FormData();
@@ -82,13 +89,13 @@ export default {
 
       this.error = null;
       this.success = null;
+      this.importResult = null;
 
       BadgeService.importRfids(formData)
         .then((response) => {
+          this.importResult = response.data.result;
           this.success = 'RFIDs imported successfully';
           this.$emit('import-success', response.data);
-          this.file = null;
-          this.fileName = '';
         })
         .catch((error) => {
           console.error('Error importing RFIDs:', error);

@@ -98,12 +98,15 @@ class BadgeController extends Controller
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
         ]);
-
         $file = $request->file('file');
-
         try {
-            Excel::import(new RfidImport, $file);
-            return response()->json(['message' => 'RFIDs imported successfully']);
+            $import = new RfidImport();
+            Excel::import($import, $file);
+            $result = $import->getResult();
+            return response()->json([
+                'message' => 'RFIDs imported successfully',
+                'result' => $result
+            ]);
         } catch (\Exception $e) {
             \Log::error('Error importing RFIDs: ' . $e->getMessage());
             return response()->json(['error' => 'Error importing RFIDs'], 500);

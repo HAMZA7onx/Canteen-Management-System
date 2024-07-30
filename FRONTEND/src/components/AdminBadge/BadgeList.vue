@@ -461,7 +461,7 @@ export default {
       this.badgeToDelete = null;
     },
     handleImportSuccess() {
-      this.showImportModal = false;
+      // this.showImportModal = false;
       this.fetchBadges();
       this.loadBadges();
     },
