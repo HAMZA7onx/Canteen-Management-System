@@ -35,6 +35,17 @@ class BadgingService {
     }
   }
 
+  async getCurrentMealBadgeCount() {
+    try {
+      const response = await request.get(`${API_URL}/badging/current-meal-count`);
+      return response.data.count;
+    } catch (error) {
+      console.error('Error fetching current meal badge count:', error);
+      throw error;
+    }
+  }
+  
+
 }
 
 export default new BadgingService();

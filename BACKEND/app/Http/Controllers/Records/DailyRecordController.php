@@ -154,4 +154,34 @@ class DailyRecordController extends Controller
             return response()->json(['message' => 'No meal assigned at the current time'], 404);
         }
     }
+
+    public function getCurrentMealBadgeCount()
+    {
+        $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
+        $currentTime = Carbon::now('Europe/Paris')->format('H:i:s');
+        $activeSchedule = WeekSchedule::where('status', 'active')->first();
+
+        if (!$activeSchedule) {
+            return response()->json(['count' => 0]);
+        }
+
+        $pivotTable = $currentDay . '_daily_meal';
+        $recordTable = $currentDay . '_records';
+
+        $currentMeal = DB::table($pivotTable)
+            ->where('week_schedule_id', $activeSchedule->id)
+            ->whereRaw("?::time BETWEEN start_time AND end_time", [$currentTime])
+            ->first();
+
+        if (!$currentMeal) {
+            return response()->json(['count' => 0]);
+        }
+
+        $count = DB::table($recordTable)
+            ->where($currentDay . '_daily_meal_id', $currentMeal->id)
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
 }
