@@ -32,6 +32,26 @@
         <div class="px-4 py-5 sm:p-6">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Liste des Menus</h2>
           <loading-wheel v-if="isLoading" />
+          <div v-else-if="menus.length === 0" class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Aucun menu</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Commencez par créer un nouveau menu pour votre restaurant.</p>
+            <div class="mt-6">
+              <button
+                v-if="$can('creer_categories_menus')"
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                @click="openCreateModal"
+              >
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Créer un menu
+              </button>
+            </div>
+          </div>
           <div v-else>
             <!-- Desktop view -->
             <table class="w-full table-auto hidden md:table">
