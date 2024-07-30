@@ -26,13 +26,15 @@ const actions = {
       return result;
     } catch (error) {
       commit('SET_ERROR', error.response ? error.response.data.error : error.message);
-      if (error.response && error.response.data.badgeOwner) {
+      if (error.response && error.response.data.error === "Badge not allowed") {
+        commit('SET_LAST_SCANNED_PERSON', null);
+      } else if (error.response && error.response.data.badgeOwner) {
         commit('SET_LAST_SCANNED_PERSON', error.response.data.badgeOwner);
       }
       throw error;
     }
   },
-
+  
   async fetchCurrentMeal({ commit }) {
     try {
       const meal = await BadgingService.getCurrentMeal();

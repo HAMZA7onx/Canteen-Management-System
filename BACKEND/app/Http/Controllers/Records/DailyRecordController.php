@@ -54,25 +54,6 @@ class DailyRecordController extends Controller
         return $this->models[$day];
     }
 
-    public function verifyBadge($rfid)
-    {
-        $badge = Badge::where('rfid', $rfid)
-            ->where('status', '!=', 'lost')
-            ->first();
-
-        \Log::info('Badge verification attempt', [
-            'rfid' => $rfid,
-            'found' => $badge !== null,
-            'badge_id' => $badge ? $badge->id : null,
-        ]);
-
-        return response()->json([
-            'exists' => $badge !== null,
-            'message' => $badge ? 'Badge found' : 'Badge not found',
-            'badge_id' => $badge ? $badge->id : null,
-        ]);
-    }
-
     public function store(Request $request, $day)
     {
         DB::enableQueryLog();
@@ -85,6 +66,7 @@ class DailyRecordController extends Controller
         // Verify the badge
         $badge = Badge::where('rfid', $validatedData['rfid'])
             ->where('status', '!=', 'lost')
+            ->where('status', '!=', 'available')
             ->first();
 
         if (!$badge) {
