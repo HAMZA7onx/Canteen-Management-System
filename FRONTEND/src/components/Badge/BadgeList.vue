@@ -108,7 +108,7 @@
                       'transition-colors duration-300',
                       badge.status === 'available'
                         ? 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200'
-                        : 'text-white dark:text-gray-600 cursor-not-allowed'
+                        : 'text-red-200 dark:text-gray-600 cursor-not-allowed'
                     ]"
                     @click="deleteBadge(badge)"
                     :disabled="badge.status !== 'available'"

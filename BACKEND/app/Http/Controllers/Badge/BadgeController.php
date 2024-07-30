@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Badge;
-
 use App\Http\Controllers\Controller;
 use App\Models\Badge;
 use App\Models\User;
@@ -100,61 +98,16 @@ class BadgeController extends Controller
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
         ]);
+
         $file = $request->file('file');
+
         try {
-            $rfids = Excel::toArray(new RfidImport, $file)[0];
-            \Log::info('Imported RFIDs:', $rfids);
+            Excel::import(new RfidImport, $file);
+            return response()->json(['message' => 'RFIDs imported successfully']);
         } catch (\Exception $e) {
-            \Log::error('Error reading RFIDs from file: ' . $e->getMessage());
-            return response()->json(['error' => 'Error reading RFIDs from file'], 500);
+            \Log::error('Error importing RFIDs: ' . $e->getMessage());
+            return response()->json(['error' => 'Error importing RFIDs'], 500);
         }
-
-        $usersWithoutBadge = User::whereDoesntHave('badge')->get()->pluck('id');
-        $existingRfids = Badge::pluck('rfid')->toArray();
-        foreach ($rfids as $rfidData) {
-            try {
-                $rfid = $rfidData['rfid'];
-                // Check if the RFID already exists in the badges table
-                if (in_array($rfid, $existingRfids)) {
-                    \Log::info("RFID $rfid already exists, skipping.");
-                    continue;
-                }
-
-                if ($usersWithoutBadge->isNotEmpty()) {
-                    $userId = $usersWithoutBadge->shift();
-                    $context = [
-                        'userId' => $userId,
-                        'rfid' => $rfid,
-                    ];
-                    \Log::info('Creating badge with user ID and RFID', $context);
-                    $badge = Badge::create([
-                        'user_id' => $userId,
-                        'rfid' => $rfid,
-                        'status' => 'assigned',
-                        'creator' => auth()->user()->email, // Assuming you want to set the creator to the currently authenticated user's email
-                        'editors' => [], // Initialize the editors column as an empty array
-                    ]);
-                    \Log::info('Created badge:', $badge->toArray());
-                } else {
-                    $context = [
-                        'rfid' => $rfid,
-                    ];
-                    \Log::info('Creating badge with RFID', $context);
-                    $badge = Badge::create([
-                        'rfid' => $rfid,
-                        'status' => 'available',
-                        'creator' => auth()->user()->email, // Assuming you want to set the creator to the currently authenticated user's email
-                        'editors' => [], // Initialize the editors column as an empty array
-                    ]);
-                    \Log::info('Created badge:', $badge->toArray());
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error creating badge: ' . $e->getMessage());
-                return response()->json(['error' => 'Error creating badges'], 500);
-            }
-        }
-
-        return response()->json(['message' => 'RFIDs imported successfully']);
     }
 
     public function getUsersWithAllRfidsLost()
@@ -175,60 +128,55 @@ class BadgeController extends Controller
         return response()->json($users);
     }
 
-    public function updateBadgeStatus(Request $request, $badgeId)
+    public function updateBadgeStatus(Request $request, $id)
     {
-        try {
-            $badge = Badge::with('user')->findOrFail($badgeId);
-            $validatedData = $request->validate([
-                'status' => 'required|in:available,assigned,lost',
-            ]);
+        $badge = Badge::findOrFail($id);
+        $newStatus = $request->input('status');
 
-            // Get the current authenticated user's email
-            $currentUserEmail = auth()->user()->email;
-
-            // Update the status
-            $badge->status = $validatedData['status'];
-
-            // Update the editors array
-            $editors = $badge->editors;
-            if (!in_array($currentUserEmail, $editors)) {
-                $editors[] = $currentUserEmail;
-            }
-            $badge->editors = $editors;
-
-            $badge->save();
-            Log::info('Updated badge data:', $badge->toArray());
-
-            // Load the user relationship and return the updated badge data
-            return response()->json($badge->load('user'));
-        } catch (\Exception $e) {
-            \Log::error('Error updating badge status: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while updating the badge status.'], 500);
+        if (!in_array($newStatus, ['available', 'assigned', 'lost'])) {
+            return response()->json(['error' => 'Invalid status'], 400);
         }
+
+        $badge->status = $newStatus;
+
+        // Decode the editors JSON string to an array
+        $editors = json_decode($badge->editors, true) ?? [];
+
+        // Add the current user's email to the editors array if it's not already there
+        if (!in_array(auth()->user()->email, $editors)) {
+            $editors[] = auth()->user()->email;
+        }
+
+        // Encode the editors array back to JSON
+        $badge->editors = json_encode($editors);
+
+        $badge->save();
+
+        return response()->json($badge);
     }
 
-
-    public function assignRfidToUser(Request $request, $badgeId)
+    public function assignRfidToUser(Request $request, $id)
     {
-        $badge = Badge::findOrFail($badgeId);
-        $validatedData = $request->validate([
-            'userId' => 'required|exists:users,id',
-        ]);
-        $userId = $validatedData['userId'];
+        $badge = Badge::findOrFail($id);
+        $user = User::findOrFail($request->input('userId'));
 
-        // Get the current authenticated user's email
-        $currentUserEmail = auth()->user()->email;
+        if ($badge->status !== 'available') {
+            return response()->json(['error' => 'This badge is not available for assignment'], 400);
+        }
 
-        // Update the user_id and status
-        $badge->user_id = $userId;
+        $badge->user_id = $user->id;
         $badge->status = 'assigned';
 
-        // Update the editors array
-        $editors = $badge->editors;
-        if (!in_array($currentUserEmail, $editors)) {
-            $editors[] = $currentUserEmail;
+        // Decode the editors JSON string to an array
+        $editors = json_decode($badge->editors, true) ?? [];
+
+        // Add the current user's email to the editors array if it's not already there
+        if (!in_array(auth()->user()->email, $editors)) {
+            $editors[] = auth()->user()->email;
         }
-        $badge->editors = $editors;
+
+        // Encode the editors array back to JSON
+        $badge->editors = json_encode($editors);
 
         $badge->save();
 
