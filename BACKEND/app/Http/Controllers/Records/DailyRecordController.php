@@ -172,5 +172,4 @@ class DailyRecordController extends Controller
             return response()->json(['message' => 'No meal assigned at the current time'], 404);
         }
     }
-
 }
