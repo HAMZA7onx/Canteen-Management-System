@@ -6,6 +6,7 @@ const state = {
   currentMeal: null,
   lastScannedPerson: null,
   discounts: [],
+  currentMealBadgeCount: 0
 };
 
 const getters = {
@@ -14,6 +15,7 @@ const getters = {
   getCurrentMeal: (state) => state.currentMeal,
   getLastScannedPerson: (state) => state.lastScannedPerson,
   getDiscounts: (state) => state.discounts,
+  getCurrentMealBadgeCount: (state) => state.currentMealBadgeCount,
 };
  
 const actions = {
@@ -58,6 +60,15 @@ const actions = {
       throw error;
     }
   },
+
+  async fetchCurrentMealBadgeCount({ commit }) {
+    try {
+      const count = await BadgingService.getCurrentMealBadgeCount();
+      commit('SET_CURRENT_MEAL_BADGE_COUNT', count);
+    } catch (error) {
+      console.error('Error fetching current meal badge count:', error);
+    }
+  },
 };
 
 const mutations = {
@@ -75,6 +86,12 @@ const mutations = {
   },
   SET_DISCOUNTS(state, discounts) {
     state.discounts = discounts;
+  },
+  SET_CURRENT_MEAL_BADGE_COUNT(state, count) {
+    state.currentMealBadgeCount = count;
+  },
+  INCREMENT_CURRENT_MEAL_BADGE_COUNT(state) {
+    state.currentMealBadgeCount++;
   },
 };
 

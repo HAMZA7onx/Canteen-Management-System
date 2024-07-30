@@ -163,6 +163,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('badging')->group(function () {
+        Route::get('/current-meal-count', [DailyRecordController::class, 'getCurrentMealBadgeCount']);
         Route::get('/current-meal', [DailyRecordController::class, 'getCurrentMeal']);
         Route::get('/{day}', [DailyRecordController::class, 'index']);
         Route::get('/{day}/{id}', [DailyRecordController::class, 'show']);

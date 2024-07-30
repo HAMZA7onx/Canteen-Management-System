@@ -8,6 +8,7 @@
           <p class="text-2xl font-semibold text-indigo-600">{{ currentMeal.name }}</p>
           <p class="text-xl text-gray-600">{{ currentMeal.start_time }} - {{ currentMeal.end_time }}</p>
           <p class="text-xl font-bold text-green-600 mt-2">{{ currentMeal.price }} DH</p>
+          <p class="text-xl text-gray-600 mt-2">Badges scannés: {{ currentMealBadgeCount }}</p>
           <button @click="showDiscounts" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Afficher les Réductions
           </button>
@@ -81,7 +82,6 @@
   </div>
 </template>
 
-
 <script>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useStore } from 'vuex';
@@ -96,6 +96,7 @@ export default {
     const lastScannedBadge = computed(() => store.getters['badging/getLastScannedBadge']);
     const currentMeal = computed(() => store.getters['badging/getCurrentMeal']);
     const lastScannedPerson = computed(() => store.getters['badging/getLastScannedPerson']);
+    const currentMealBadgeCount = computed(() => store.getters['badging/getCurrentMealBadgeCount']);
     const showWelcomeMessage = ref(false);
     const isDiscountModalOpen = ref(false);
     const discounts = ref([]);
@@ -105,7 +106,7 @@ export default {
     let messageTimer = null;
 
     const filteredDiscounts = computed(() => {
-      return discounts.value.filter(discount => 
+      return discounts.value.filter(discount =>
         discount.toLowerCase().includes(searchTerm.value.toLowerCase())
       );
     });
@@ -116,6 +117,9 @@ export default {
           const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
           const result = await store.dispatch('badging/verifyAndScanBadge', { rfid: badgeId, day: currentDay });
           setMessage(result.message, 'success');
+          
+          // Increment the badge count locally
+          store.commit('badging/INCREMENT_CURRENT_MEAL_BADGE_COUNT');
         } catch (error) {
           if (error.response && error.response.data) {
             setMessage(error.response.data.error, 'error');
@@ -127,28 +131,6 @@ export default {
       }
     };
 
-    const handleError = (error) => {
-      if (error.response) {
-        const { data } = error.response;
-        setMessage(data.error, 'error');
-      } else {
-        setMessage('An error occurred while processing your badge.', 'error');
-      }
-    };
-
-    // const handleKeyPress = (event) => {
-    //   const currentTime = Date.now();
-    //   if (currentTime - lastKeyTime > 100) {
-    //     badgeId = '';
-    //   }
-    //   lastKeyTime = currentTime;
-
-    //   if (event.key !== 'Enter') {
-    //     badgeId += event.key;
-    //   } else {
-    //     processBadge();
-    //   }
-    // };
     const handleKeyPress = (event) => {
       const currentTime = Date.now();
       if (currentTime - lastKeyTime > 100) {
@@ -187,9 +169,12 @@ export default {
       }, 5000);
     };
 
-
     const fetchCurrentMeal = () => {
       store.dispatch('badging/fetchCurrentMeal');
+    };
+
+    const fetchCurrentMealBadgeCount = () => {
+      store.dispatch('badging/fetchCurrentMealBadgeCount');
     };
 
     const showDiscounts = async () => {
@@ -213,11 +198,14 @@ export default {
     onMounted(() => {
       document.addEventListener('keypress', handleKeyPress);
       fetchCurrentMeal();
-      const intervalId = setInterval(fetchCurrentMeal, 60000);
+      fetchCurrentMealBadgeCount();
+      const mealIntervalId = setInterval(fetchCurrentMeal, 60000);
+      const badgeCountIntervalId = setInterval(fetchCurrentMealBadgeCount, 60000);
       
       onUnmounted(() => {
         document.removeEventListener('keypress', handleKeyPress);
-        clearInterval(intervalId);
+        clearInterval(mealIntervalId);
+        clearInterval(badgeCountIntervalId);
         if (messageTimer) {
           clearTimeout(messageTimer);
         }
@@ -230,6 +218,7 @@ export default {
       lastScannedBadge,
       currentMeal,
       lastScannedPerson,
+      currentMealBadgeCount,
       foodBackground,
       showWelcomeMessage,
       isDiscountModalOpen,
