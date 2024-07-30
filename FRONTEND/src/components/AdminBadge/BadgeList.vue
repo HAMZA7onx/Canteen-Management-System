@@ -238,8 +238,8 @@
             <div v-if="selectedBadge" class="text-gray-700 dark:text-gray-300">
               <p><strong>Créateur :</strong> {{ selectedBadge.creator }}</p>
               <p class="mt-2"><strong>Éditeurs :</strong></p>
-              <ul v-if="selectedBadge.editors && selectedBadge.editors.length > 0" class="list-disc list-inside">
-                <li v-for="editor in selectedBadge.editors" :key="editor">{{ editor }}</li>
+              <ul v-if="selectedBadge.editors && JSON.parse(selectedBadge.editors).length > 0" class="list-disc list-inside">
+                <li v-for="editor in JSON.parse(selectedBadge.editors)" :key="editor">{{ editor }}</li>
               </ul>
               <p v-else class="text-gray-500 dark:text-gray-400">Aucun éditeur</p>
               <p class="mt-2"><strong>Créé le :</strong> {{ formatDate(selectedBadge.created_at) }}</p>
@@ -461,7 +461,7 @@ export default {
       this.badgeToDelete = null;
     },
     handleImportSuccess() {
-      this.showImportModal = false;
+      // this.showImportModal = false;
       this.fetchBadges();
       this.loadBadges();
     },
