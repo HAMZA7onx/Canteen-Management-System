@@ -50,9 +50,9 @@
               </p>
             </div>
           </div>
-          
-          <div v-if="message"
-               :class="['mt-6 p-4 rounded-lg text-xl font-medium text-center', messageClass]">
+
+          <div v-if="message && showWelcomeMessage"
+              :class="['mt-6 p-4 rounded-lg text-xl font-medium text-center', messageClass]">
             {{ message }}
           </div>
         </div>
@@ -171,20 +171,22 @@ export default {
     const setMessage = (text, type) => {
       message.value = text;
       messageClass.value = type === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                           type === 'warning' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                           'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                          type === 'warning' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       showWelcomeMessage.value = true;
-      
+    
       if (messageTimer) {
         clearTimeout(messageTimer);
       }
-      
+    
       messageTimer = setTimeout(() => {
         message.value = '';
         messageClass.value = '';
         showWelcomeMessage.value = false;
+        store.commit('badging/SET_LAST_SCANNED_PERSON', null);
       }, 5000);
     };
+
 
     const fetchCurrentMeal = () => {
       store.dispatch('badging/fetchCurrentMeal');
