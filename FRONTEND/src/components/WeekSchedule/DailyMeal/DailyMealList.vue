@@ -42,43 +42,62 @@
 
     <!-- Liste des Repas Quotidiens -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-  <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
-       class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-gray-200 dark:border-gray-700">
-    <div class="p-5">
-      <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ dailyMeal.name }}</h3>
-      <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto text-sm">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
-      <div class="flex flex-col space-y-3">
-        <button
-          v-if="$can('assigner_categories_menus')"
-          @click="openAssignMenuModal(dailyMeal)"
-          class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-300 text-sm flex items-center justify-center"
-        >
-          <font-awesome-icon icon="utensils" class="mr-2" />
-          Assigner des Menus
-        </button>
-        <div class="flex justify-between">
+      <div v-if="sortedDailyMeals.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Aucun repas quotidien</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Commencez par créer un nouveau repas quotidien pour votre journée.</p>
+        <div class="mt-6">
           <button
-            v-if="$can('modifier_repas')"
-            @click="openEditModal(dailyMeal)"
-            class="flex-1 mr-2 bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
+            v-if="$can('creer_repas')"
+            @click="openCreateModal"
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
           >
-            <font-awesome-icon icon="edit" class="mr-2" />
-            Modifier
-          </button>
-          <button
-            v-if="$can('supprimer_repas')"
-            @click="openDeleteConfirmation(dailyMeal)"
-            class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
-          >
-            <font-awesome-icon icon="trash" class="mr-2" />
-            Supprimer
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Créer un repas quotidien
           </button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div v-for="dailyMeal in sortedDailyMeals" :key="dailyMeal.id"
+            class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-gray-200 dark:border-gray-700">
+          <div class="p-5">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ dailyMeal.name }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 h-20 overflow-y-auto text-sm">{{ dailyMeal.description !== null ? dailyMeal.description : 'Pas de description' }}</p>
+            <div class="flex flex-col space-y-3">
+              <button
+                v-if="$can('assigner_categories_menus')"
+                @click="openAssignMenuModal(dailyMeal)"
+                class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-300 text-sm flex items-center justify-center"
+              >
+                <font-awesome-icon icon="utensils" class="mr-2" />
+                Assigner des Menus
+              </button>
+              <div class="flex justify-between">
+                <button
+                  v-if="$can('modifier_repas')"
+                  @click="openEditModal(dailyMeal)"
+                  class="flex-1 mr-2 bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
+                >
+                  <font-awesome-icon icon="edit" class="mr-2" />
+                  Modifier
+                </button>
+                <button
+                  v-if="$can('supprimer_repas')"
+                  @click="openDeleteConfirmation(dailyMeal)"
+                  class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition-colors duration-300 text-sm flex items-center justify-center"
+                >
+                  <font-awesome-icon icon="trash" class="mr-2" />
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
 
