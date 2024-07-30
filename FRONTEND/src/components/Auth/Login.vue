@@ -29,12 +29,12 @@
               type="email"
               v-model="credentials.email"
               required
-              placeholder="Enter your email"
+              placeholder="Saizez votre email"
             />
           </div>
           <div>
             <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2" for="password">
-              Password
+              Mot de pass
             </label>
             <input
               class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 dark:text-white dark:bg-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 transition-all duration-300"
@@ -42,7 +42,7 @@
               type="password"
               v-model="credentials.password"
               required
-              placeholder="Enter your password"
+              placeholder="Saizez votre mot de pass"
             />
           </div>
           <div>
@@ -50,7 +50,7 @@
               class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transform hover:scale-105 transition-all duration-300"
               type="submit"
             >
-              Login
+              Se connecter
             </button>
           </div>
         </form>
