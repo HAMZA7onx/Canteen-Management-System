@@ -103,7 +103,9 @@ export default {
       BadgeService.importRfids(formData)
         .then((response) => {
           this.importResult = response.data.result;
-          this.success = 'RFIDs imported successfully';
+          if (this.importResult.inserted > 0) {
+            this.success = 'RFIDs imported successfully';
+          }
           this.$emit('import-success', response.data);
         })
         .catch((error) => {
