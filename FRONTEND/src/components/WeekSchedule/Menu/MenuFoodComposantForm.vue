@@ -1,12 +1,11 @@
 <template>
-  <div class="bg-gradient-to-br from-teal-400 to-indigo-500 dark:from-teal-800 dark:to-indigo-900 p-1 rounded-2xl shadow-xl">
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
       <h3 class="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-indigo-600 dark:from-teal-300 dark:to-indigo-400">
-        Assign Food Components for Menu: {{ menuName }}
+        Attribuer des composants alimentaires au menu: {{ menuName }}
       </h3>
 
       <div v-if="assignedFoodComposants.length === 0" class="text-sm text-gray-500 dark:text-gray-400 text-center italic">
-        No food components assigned yet.
+        Aucun composant alimentaire attribué pour l'instant.
       </div>
 
       <ul v-else role="list" class="space-y-3">
@@ -29,11 +28,11 @@
       </ul>
 
       <div class="space-y-2">
-        <label for="foodComposantSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Food Component</label>
+        <label for="foodComposantSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sélectionnez le composant alimentaire</label>
         <select
           id="foodComposantSelect"
           v-model="selectedFoodComposantId"
-          class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-teal-500 dark:focus:border-teal-400 focus:outline-none transition duration-300"
+          class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-teal-500 dark:focus:border-teal-400 focus:outline-none transition duration-300"
         >
           <option value="" disabled selected>Select a food component</option>
           <option
@@ -54,7 +53,6 @@
         </button>
       </div>
     </div>
-  </div>
 </template>
 
   
