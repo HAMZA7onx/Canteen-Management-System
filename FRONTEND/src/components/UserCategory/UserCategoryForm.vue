@@ -1,6 +1,6 @@
 <template>
     <h2 class="text-3xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-      {{ isEditMode ? 'Update Category' : 'Create Category' }}
+      {{ isEditMode ? 'Modifier la catégorie' : 'Créer une catégorie' }}
     </h2>
     
     <form @submit.prevent="submitForm" class="space-y-8">
@@ -17,7 +17,7 @@
           for="name" 
           class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400"
         >
-          Name
+          Nom
         </label>
       </div>
 
@@ -40,7 +40,7 @@
         type="submit"
         class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800"
       >
-        {{ isEditMode ? 'Update' : 'Create' }}
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
       </button>
     </form>
 </template>

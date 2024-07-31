@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="submitForm" class="space-y-6">
     <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-      {{ isEditMode ? 'Update Admin' : 'Create Admin' }}
+      {{ isEditMode ? 'Modifier Admin' : 'Créer Admin' }}
     </h2>
     
     <div class="relative group">
@@ -15,7 +15,7 @@
         placeholder=" "
       />
       <label for="name" class="absolute left-4 top-2 text-gray-500 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-        Name
+        Nom
       </label>
       <div class="absolute right-3 top-2 transition-all duration-300 group-hover:scale-110">
         <svg class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,7 +72,7 @@
         type="submit"
         class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
       >
-        {{ isEditMode ? 'Update' : 'Create' }}
+        {{ isEditMode ? 'Modifier' : 'Créer' }}
       </button>
     </div>
   </form>
