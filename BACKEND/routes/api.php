@@ -138,7 +138,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy'])->middleware('check.permission:supprimer_repas');
 
         // Attach a menu to a daily meal
-        Route::post('/{dailyMeal}/menus/{menuId}', [DailyMealController::class, 'attachMenu'])->middleware('check.permission:assigner_categories_menus');
+        Route::post('/{dailyMeal}/menus', [DailyMealController::class, 'attachMenus'])->middleware('check.permission:assigner_categories_menus');
+
         // Detach a menu from a daily meal
         Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu'])->middleware('check.permission:desassigner_categories_menus');
     });
@@ -150,7 +151,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{menu}', [MenuController::class, 'update'])->middleware('check.permission:modifier_categories_menus');
         Route::delete('/{menu}', [MenuController::class, 'destroy'])->middleware('check.permission:supprimer_categories_menus');
 
-        Route::post('/{menu}/food-composants/{foodComposantId}', [MenuController::class, 'attachFoodComposant'])->middleware('check.permission:assigner_composants_menus');
+        Route::post('/{menu}/food-composants', [MenuController::class, 'attachFoodComposants'])->middleware('check.permission:assigner_composants_menus');
         Route::delete('/{menu}/food-composants/{foodComposant}', [MenuController::class, 'detachFoodComposant'])->middleware('check.permission:desassigner_composants_menus');
     });
 

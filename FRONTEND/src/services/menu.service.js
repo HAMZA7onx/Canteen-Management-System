@@ -24,9 +24,9 @@ class MenuService {
     return request.delete(`${API_URL}/${id}`)
   }
 
-  attachFoodComposant(menuId, foodComposantId) {
-    return request.post(`${API_URL}/${menuId}/food-composants/${foodComposantId}`)
-  }
+  attachFoodComposants(menuId, foodComposantIds) {
+    return request.post(`${API_URL}/${menuId}/food-composants`, { foodComposantIds })
+  }  
 
   detachFoodComposant(menuId, foodComposantId) {
     return request.delete(`${API_URL}/${menuId}/food-composants/${foodComposantId}`)

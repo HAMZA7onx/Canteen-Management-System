@@ -55,13 +55,14 @@ const actions = {
       })
   },
 
-  attachFoodComposant({ commit }, { menuId, foodComposantId }) {
-    return MenuService.attachFoodComposant(menuId, foodComposantId)
+  attachFoodComposants({ commit }, { menuId, foodComposantIds }) {
+    return MenuService.attachFoodComposants(menuId, foodComposantIds)
       .then(response => {
         commit('UPDATE_MENU', response.data)
         return response.data
       })
   },
+    
   detachFoodComposant({ commit }, { menuId, foodComposantId }) {
     return MenuService.detachFoodComposant(menuId, foodComposantId)
       .then(response => {
