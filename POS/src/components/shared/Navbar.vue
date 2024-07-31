@@ -2,9 +2,14 @@
     <nav class="fixed left-0 right-0 top-0 z-50 transition-all duration-300">
       <div class="container mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
-          <router-link to="/" class="text-white font-bold text-2xl tracking-wider hover:text-indigo-200 transition-colors duration-300">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">POS </span>
-          </router-link>
+          <div class="flex space-x-4">
+            <router-link to="/" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+              <span class="text-white font-bold text-xl">Interface de Pointage</span>
+            </router-link>
+            <router-link to="/daily-meal-stats" class="px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+              <span class="text-white font-bold text-xl">Statistiques</span>
+            </router-link>
+          </div>
           <div class="flex items-center space-x-6">
             <button
               @click="handleLogout"

@@ -44,8 +44,6 @@ class BadgingService {
       throw error;
     }
   }
-  
-
 }
 
 export default new BadgingService();
