@@ -1,12 +1,11 @@
 <template>
-  <div class="bg-gradient-to-br from-purple-400 to-indigo-500 dark:from-purple-800 dark:to-indigo-900 p-1 rounded-2xl shadow-xl">
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
       <h3 class="text-2xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 dark:from-purple-300 dark:to-indigo-400">
-        Assign Menus for Daily Meal: {{ dailyMealName }}
+        Attribuer des menus pour le repas quotidien: {{ dailyMealName }}
       </h3>
 
       <div v-if="assignedMenus.length === 0" class="text-sm text-gray-500 dark:text-gray-400 text-center italic">
-        No menus assigned yet.
+        Aucun menu attribué pour l'instant.
       </div>
 
       <ul v-else role="list" class="space-y-3">
@@ -29,11 +28,11 @@
       </ul>
 
       <div class="space-y-2">
-        <label for="menuSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Menu</label>
+        <label for="menuSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Selectionner un Menu</label>
         <select
           id="menuSelect"
           v-model="selectedMenuId"
-          class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition duration-300"
+          class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition duration-300"
         >
           <option value="" disabled selected>Select a menu</option>
           <option
@@ -54,7 +53,6 @@
         </button>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
