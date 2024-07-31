@@ -10,7 +10,7 @@
   <script>
   import Navbar from './Navbar.vue';
   import { mapState } from 'vuex';
-  import foodBackground from '@/assets/food.jpg';
+  import foodBackground from '@/assets/food.webp';
   
   export default {
     name: 'AuthenticatedLayout',
