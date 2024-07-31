@@ -1,7 +1,6 @@
-// src/services/badging.service.js
 import request from '@/utils/request';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+import { API_URL } from '@/config/config';
 
 class BadgingService {
   async scanBadge(rfid, day) {
