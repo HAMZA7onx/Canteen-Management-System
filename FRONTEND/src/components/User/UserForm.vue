@@ -1,6 +1,6 @@
 <template>
     <h2 class="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent animate-pulse">
-      {{ isEditMode ? 'Update User' : 'Create User' }}
+      {{ isEditMode ? 'Modifier le collaborateur' : 'Créer un collaborateur' }}
     </h2>
     
     <form @submit.prevent="submitForm" class="space-y-6">
@@ -14,7 +14,7 @@
           placeholder=" "
         />
         <label for="name" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Name
+          Nom
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@
           placeholder=" "
         />
         <label for="phone_number" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Phone Number
+          Numéro de téléphone
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -66,12 +66,12 @@
           v-model="user.gender"
           class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 appearance-none"
         >
-          <option value="">Select Gender</option>
+          <option value="">Sélectionnez le genre</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
         <label for="gender" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Gender
+          Genre
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500 pointer-events-none">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,13 +87,13 @@
           required
           class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 appearance-none"
         >
-          <option value="">Select Category</option>
+          <option value="">Choisir une catégorie</option>
           <option v-for="category in userCategories" :key="category.id" :value="category.id">
             {{ category.name }}
           </option>
         </select>
         <label for="category_id" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          User Category
+          Catégorie de collaborateur
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500 pointer-events-none">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +107,7 @@
           type="submit"
           class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800"
         >
-          {{ isEditMode ? 'Update' : 'Create' }}
+          {{ isEditMode ? 'Modifier' : 'Créer' }}
         </button>
       </div>
     </form>

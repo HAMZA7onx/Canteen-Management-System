@@ -120,16 +120,16 @@ export default {
         items: [
           { label: 'Les composants du menus', icon: 'utensils', route: '/food-composants', permission: 'voir_composants_menus' },
           { label: 'Les menus', icon: 'clipboard-list', route: '/menus', permission: 'voir_categories_menus' },
-          { label: 'Gestion des repats', icon: 'clock', route: '/daily', permission: 'voir_repas' },
-          { label: 'Le profiles repats', icon: 'calendar-alt', route: '/week-schedules', permission: 'voir_profils_repas' },
+          { label: 'Gestion des repas', icon: 'clock', route: '/daily', permission: 'voir_repas' },
+          { label: 'Le profiles repas', icon: 'calendar-alt', route: '/week-schedules', permission: 'voir_profils_repas' },
         ]
       },
       {
         title: 'Rapports et Gestion',
         expanded: false,
         items: [
-          { label: 'Records', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
-          { label: 'Audit de Records', icon: 'clipboard-check', route: '/records-audit', permission: 'voir_enregistrements_repas' },
+          { label: 'Enregistrements', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
+          { label: 'Audit des Enregistrements ', icon: 'clipboard-check', route: '/records-audit', permission: 'voir_enregistrements_repas' },
           { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices', permission: 'voir_POS' },
         ]
       },
