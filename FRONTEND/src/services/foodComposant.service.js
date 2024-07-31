@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
-const API_URL = 'http://127.0.0.1:8000/api/food-composants'
+import { API_URL as BASE_API_URL } from '@/config/config';
+const API_URL = `${BASE_API_URL}/food-composants`;
 
 class FoodComposantService {
   getFoodComposants() {
