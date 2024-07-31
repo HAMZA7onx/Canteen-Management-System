@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed" :style="{ backgroundImage: `url(${foodBackground})` }">
-    <div class="flex-grow flex items-center justify-center p-4 backdrop-blur-sm bg-black bg-opacity-50">
+  <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed">
+    <div class="flex-grow flex items-center justify-center p-4 ">
       <div class="w-full max-w-6xl flex gap-8">
         <!-- Carte d'information du repas -->
         <div v-if="currentMeal" class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
@@ -219,7 +219,7 @@ export default {
       currentMeal,
       lastScannedPerson,
       currentMealBadgeCount,
-      foodBackground,
+      foodBackground, 
       showWelcomeMessage,
       isDiscountModalOpen,
       discounts,

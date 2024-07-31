@@ -19,7 +19,7 @@ use App\Http\Controllers\PosDeviceController;
 use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Admin\AdminReportSubscriptionController;
 use App\Http\Controllers\HomeController;
-
+use App\Http\Controllers\DailyMealStatsController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -218,6 +218,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/badges', [HomeController::class, 'get_badges']);
         Route::get('/week-schedules', [HomeController::class, 'get_week_schedules']);
     });
+
+    Route::get('/daily-meal-stats', [DailyMealStatsController::class, 'getDailyStats']);
 });
 
 
