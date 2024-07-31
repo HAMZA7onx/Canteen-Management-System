@@ -51,22 +51,29 @@ class DailyMealController extends Controller
         return response()->json(null, 204);
     }
 
-    public function attachMenu(Request $request, DailyMeal $dailyMeal, $menuId)
+    public function attachMenus(Request $request, DailyMeal $dailyMeal)
     {
-        $menu = Menu::findOrFail($menuId);
+        $request->validate([
+            'menuIds' => 'required|array',
+            'menuIds.*' => 'exists:menu,id'
+        ]);
 
-        if (!$dailyMeal->menus()->where('menu.id', $menuId)->exists()) {
-            $dailyMeal->menus()->attach($menuId);
-            return response()->json([
-                'message' => 'Menu attached to the daily meal successfully',
-                'daily_meal' => $dailyMeal->load('menus')
-            ], 200);
+        $menuIds = $request->input('menuIds');
+        $attachedMenus = [];
+
+        foreach ($menuIds as $menuId) {
+            if (!$dailyMeal->menus()->where('menu.id', $menuId)->exists()) {
+                $dailyMeal->menus()->attach($menuId);
+                $attachedMenus[] = $menuId;
+            }
         }
 
         return response()->json([
-            'message' => 'Menu is already attached to this daily meal'
-        ], 422);
+            'message' => count($attachedMenus) . ' menu(s) attached to the daily meal successfully',
+            'daily_meal' => $dailyMeal->load('menus')
+        ], 200);
     }
+
 
     public function detachMenu(DailyMeal $dailyMeal, Menu $menu)
     {

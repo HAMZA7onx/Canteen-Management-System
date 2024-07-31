@@ -24,9 +24,9 @@ class DailyMealService {
     return request.delete(`${API_URL}/${id}`)
   }
 
-  attachMenu(dailyMealId, menuId) {
-    return request.post(`${API_URL}/${dailyMealId}/menus/${menuId}`)
-  }
+  attachMenus(dailyMealId, menuIds) {
+    return request.post(`${API_URL}/${dailyMealId}/menus`, { menuIds })
+  }  
 
   detachMenu(dailyMealId, menuId) {
     return request.delete(`${API_URL}/${dailyMealId}/menus/${menuId}`)

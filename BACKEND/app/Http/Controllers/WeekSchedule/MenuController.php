@@ -53,12 +53,19 @@ class MenuController extends Controller
         return response()->json(null, 204);
     }
 
-    public function attachFoodComposant(Menu $menu, $foodComposantId)
+    public function attachFoodComposants(Menu $menu, Request $request)
     {
-        $foodComposant = FoodComposant::findOrFail($foodComposantId);
-        $menu->foodComposants()->attach($foodComposant);
-        return response()->json(['message' => 'Food composant attached to the menu']);
+        $request->validate([
+            'foodComposantIds' => 'required|array',
+            'foodComposantIds.*' => 'exists:food_composants,id'
+        ]);
+
+        $foodComposantIds = $request->input('foodComposantIds');
+        $menu->foodComposants()->attach($foodComposantIds);
+
+        return response()->json(['message' => 'Food composants attached to the menu']);
     }
+
 
     public function detachFoodComposant(Menu $menu, FoodComposant $foodComposant)
     {
