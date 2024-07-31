@@ -11,6 +11,16 @@
       <span class="block sm:inline">{{ error }}</span>
     </div>
 
+    <div v-else-if="hasMealToday" class="bg-blue-100 border border-blue-400 text-blue-700 px-6 py-4 rounded-lg shadow-md mb-8 flex items-center" role="alert">
+      <svg class="w-6 h-6 mr-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z"/>
+      </svg>
+      <div>
+        <p class="font-bold text-lg mb-1">Information</p>
+        <p class="text-sm">Il n'y a pas de repas assigné pour aujourd'hui.</p>
+      </div>
+    </div>
+
     <div v-else>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 bg-indigo-600 text-white">
@@ -174,10 +184,12 @@ export default {
       console.log('dailyMeals:', newValue);
     }, { immediate: true });
 
+    const hasMealToday = computed(() => dailyMeals.value.length === 0);
     return {
       dailyMeals,
       isLoading,
       error,
+      hasMealToday,
       formatCurrency,
       formatTime,
       getChartData,
