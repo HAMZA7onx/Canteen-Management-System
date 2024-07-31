@@ -16,10 +16,20 @@
         </button>
       </div>
 
+      <!-- Search bar -->
+      <div class="mb-4">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Rechercher un composant alimentaire..."
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
+      </div>
+
       <!-- Liste des Composants Alimentaires -->
       <div class="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
         <loading-wheel v-if="isLoading" />
-        <div v-else-if="foodComposants.length === 0" class="p-8 text-center">
+        <div v-else-if="filteredFoodComposants.length === 0" class="p-8 text-center">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
           </svg>
@@ -50,7 +60,7 @@
             </thead>
             <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
               <tr
-                v-for="foodComposant in foodComposants"
+                v-for="foodComposant in paginatedFoodComposants"
                 :key="foodComposant.id"
                 class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
               >
@@ -79,10 +89,10 @@
               </tr>
             </tbody>
           </table>
-          
+         
           <!-- Mobile view -->
           <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
-            <li v-for="foodComposant in foodComposants" :key="foodComposant.id" class="py-4 px-4">
+            <li v-for="foodComposant in paginatedFoodComposants" :key="foodComposant.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
                 <button
@@ -115,6 +125,27 @@
             </li>
           </ul>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-4 px-6 py-3 bg-gray-50 dark:bg-gray-700">
+          <button
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="px-3 py-1 bg-blue-500 text-white rounded-md disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span class="text-gray-600 dark:text-gray-300">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="px-3 py-1 bg-blue-500 text-white rounded-md disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <!-- Modals -->
@@ -144,7 +175,7 @@
 
       <!-- Modal de Confirmation de Suppression -->
       <Overlay v-if="showDeleteConfirmation">
-        <div class="modal-container" @click.stop>
+        <div class="rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full mx-auto my-auto fixed inset-0 flex items-center justify-center" @click.stop>
           <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
@@ -216,10 +247,27 @@ export default {
       isLoading: true,
       showToast: false,
       toastMessage: '',
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
     }
   },
   computed: {
-    ...mapGetters('foodComposant', ['foodComposants'])
+    ...mapGetters('foodComposant', ['foodComposants']),
+    filteredFoodComposants() {
+      return this.foodComposants.filter(composant => 
+        composant.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        (composant.description && composant.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      )
+    },
+    paginatedFoodComposants() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.filteredFoodComposants.slice(start, end)
+    },
+    totalPages() {
+      return Math.ceil(this.filteredFoodComposants.length / this.itemsPerPage)
+    }
   },
   created() {
     if (this.$can('voir_composants_menus')) {
@@ -232,6 +280,9 @@ export default {
       if (newValue.length > 0) {
         console.log('Food composants loaded:', newValue)
       }
+    },
+    searchQuery() {
+      this.currentPage = 1
     }
   },
   methods: {
@@ -279,7 +330,6 @@ export default {
           })
           .catch(error => {
             console.error('Error deleting food composant:', error)
-            // Handle error if needed
           })
       }
     },
@@ -330,24 +380,16 @@ export default {
           })
       }
     },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
+    }
   }
 }
 </script>
-
-
-<style>
-.bg-food-ingredients {
-  background-image: url('path/to/your/food-ingredients-light.jpg');
-}
-
-.dark .bg-food-ingredients-dark {
-  background-image: url('path/to/your/food-ingredients-dark.jpg');
-}
-
-.modal-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>
