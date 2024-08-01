@@ -1,5 +1,5 @@
 <template>
-    <h2 class="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent animate-pulse">
+    <h2 class="text-xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent animate-pulse">
       {{ isEditMode ? 'Modifier le collaborateur' : 'Créer un collaborateur' }}
     </h2>
     

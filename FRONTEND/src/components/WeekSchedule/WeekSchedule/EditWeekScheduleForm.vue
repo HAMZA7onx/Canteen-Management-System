@@ -1,6 +1,6 @@
 <template>
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
-      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-300 dark:to-indigo-400">
+      <h2 class="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-300 dark:to-indigo-400">
         Modifier le programme hebdomadaire
       </h2>
 

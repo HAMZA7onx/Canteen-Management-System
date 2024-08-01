@@ -31,8 +31,19 @@
       <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden transition-colors duration-300">
         <div class="px-4 py-5 sm:p-6">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Liste des Menus</h2>
+          
+          <!-- Search bar -->
+          <div class="mb-4">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Rechercher un menu..."
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+
           <loading-wheel v-if="isLoading" />
-          <div v-else-if="menus.length === 0" class="text-center py-12">
+          <div v-else-if="filteredMenus.length === 0" class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
             </svg>
@@ -64,7 +75,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <tr v-for="menu in menus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr v-for="menu in paginatedMenus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
@@ -98,7 +109,7 @@
 
             <!-- Mobile view -->
             <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
-              <li v-for="menu in menus" :key="menu.id" class="py-4">
+              <li v-for="menu in paginatedMenus" :key="menu.id" class="py-4">
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</span>
                   <button
@@ -137,6 +148,27 @@
                 </div>
               </li>
             </ul>
+
+            <!-- Pagination -->
+            <div class="mt-4 flex justify-between items-center">
+              <button
+                @click="prevPage"
+                :disabled="currentPage === 1"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span class="text-gray-600 dark:text-gray-300">
+                Page {{ currentPage }} of {{ totalPages }}
+              </span>
+              <button
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-md disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -182,7 +214,7 @@
           <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"                 aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
@@ -251,110 +283,139 @@ export default {
       isLoading: true,
       showToast: false,
       toastMessage: '',
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
     }
   },
   computed: {
-    ...mapGetters('menu', ['menus'])
+    ...mapGetters('menu', ['menus']),
+    filteredMenus() {
+      return this.menus.filter(menu => 
+        menu.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        (menu.description && menu.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      )
+    },
+    paginatedMenus() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.filteredMenus.slice(start, end)
+    },
+    totalPages() {
+      return Math.ceil(this.filteredMenus.length / this.itemsPerPage)
+    }
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1
+    }
   },
   created() {
     this.fetchMenus()
     this.loadMenus()
   },
   methods: {
-  ...mapActions('menu', [
-    'fetchMenus',
-    'createMenu',
-    'updateMenu',
-    'deleteMenu'
-  ]),
-  openCreateModal() {
-    this.showCreateModal = true
-  },
-  closeCreateModal() {
-    this.showCreateModal = false
-  },
-  handleCreateMenu(menuData) {
-    this.createMenu(menuData)
-      .then(() => {
-        this.closeCreateModal()
-        this.loadMenus()
-        this.showSuccessToast('Menu created successfully')
-      })
-      .catch(error => {
-        console.error('Error creating menu:', error)
-        // Handle error if needed
-      })
-  },
-  openEditModal(menu) {
-    this.selectedMenu = { ...menu }
-    this.showEditModal = true
-  },
-  closeEditModal() {
-    this.showEditModal = false
-    this.selectedMenu = null
-  },
-  handleUpdateMenu(menuData) {
-    this.updateMenu(menuData)
-      .then(() => {
-        this.closeEditModal()
-        this.loadMenus()
-        this.showSuccessToast('Menu updated successfully')
-      })
-      .catch(error => {
-        console.error('Error updating menu:', error)
-        // Handle error if needed
-      })
-  },
-  openDeleteConfirmation(menu) {
-    this.selectedMenu = { ...menu }
-    this.showDeleteConfirmation = true
-  },
-  closeDeleteConfirmation() {
-    this.showDeleteConfirmation = false
-    this.selectedMenu = null
-  },
-  handleDeleteMenu() {
-    this.deleteMenu(this.selectedMenu)
-      .then(() => {
-        this.closeDeleteConfirmation()
-        this.loadMenus()
-        this.showSuccessToast('Menu deleted successfully')
-      })
-      .catch(error => {
-        console.error('Error deleting menu:', error)
-      })
-  },
-  openFoodComposantModal(menu) {
-    this.selectedMenu = { ...menu }
-    this.showFoodComposantModal = true
-  },
-  closeFoodComposantModal() {
-    this.showFoodComposantModal = false
-    this.selectedMenu = null
-  },
-  async loadMenus() {
-    this.isLoading = true
-    try {
-      await this.fetchMenus()
-    } catch (error) {
-      console.error('Error fetching menus:', error)
-    } finally {
-      this.isLoading = false
-    }
-  },
-  toggleMenuActions(menu) {
-    menu.showActions = !menu.showActions
-    this.$forceUpdate()
-  },
-  showSuccessToast(message) {
+    ...mapActions('menu', [
+      'fetchMenus',
+      'createMenu',
+      'updateMenu',
+      'deleteMenu'
+    ]),
+    openCreateModal() {
+      this.showCreateModal = true
+    },
+    closeCreateModal() {
+      this.showCreateModal = false
+    },
+    handleCreateMenu(menuData) {
+      this.createMenu(menuData)
+        .then(() => {
+          this.closeCreateModal()
+          this.loadMenus()
+          this.showSuccessToast('Menu created successfully')
+        })
+        .catch(error => {
+          console.error('Error creating menu:', error)
+        })
+    },
+    openEditModal(menu) {
+      this.selectedMenu = { ...menu }
+      this.showEditModal = true
+    },
+    closeEditModal() {
+      this.showEditModal = false
+      this.selectedMenu = null
+    },
+    handleUpdateMenu(menuData) {
+      this.updateMenu(menuData)
+        .then(() => {
+          this.closeEditModal()
+          this.loadMenus()
+          this.showSuccessToast('Menu updated successfully')
+        })
+        .catch(error => {
+          console.error('Error updating menu:', error)
+        })
+    },
+    openDeleteConfirmation(menu) {
+      this.selectedMenu = { ...menu }
+      this.showDeleteConfirmation = true
+    },
+    closeDeleteConfirmation() {
+      this.showDeleteConfirmation = false
+      this.selectedMenu = null
+    },
+    handleDeleteMenu() {
+      this.deleteMenu(this.selectedMenu)
+        .then(() => {
+          this.closeDeleteConfirmation()
+          this.loadMenus()
+          this.showSuccessToast('Menu deleted successfully')
+        })
+        .catch(error => {
+          console.error('Error deleting menu:', error)
+        })
+    },
+    openFoodComposantModal(menu) {
+      this.selectedMenu = { ...menu }
+      this.showFoodComposantModal = true
+    },
+    closeFoodComposantModal() {
+      this.showFoodComposantModal = false
+      this.selectedMenu = null
+    },
+    async loadMenus() {
+      this.isLoading = true
+      try {
+        await this.fetchMenus()
+      } catch (error) {
+        console.error('Error fetching menus:', error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    toggleMenuActions(menu) {
+      menu.showActions = !menu.showActions
+      this.$forceUpdate()
+    },
+    showSuccessToast(message) {
       this.toastMessage = message;
       this.showToast = true;
       setTimeout(() => {
         this.showToast = false;
       }, 3000);
     },
-}
-
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
+    },
+  }
 }
 </script>
 
@@ -370,3 +431,4 @@ html {
   scroll-behavior: smooth;
 }
 </style>
+

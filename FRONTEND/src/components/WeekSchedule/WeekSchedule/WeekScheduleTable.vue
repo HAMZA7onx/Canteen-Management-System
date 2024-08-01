@@ -78,7 +78,7 @@
                 <td v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="py-3 px-6 text-center">
                   <button
                     v-if="$can('assigner_repas')"
-                    class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
+                    class="bg-green-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white py-1 px-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 text-sm"
                     @click="openAssignModal(weekSchedule, day)"
                   >
                     Attribuer

@@ -22,7 +22,9 @@ class WeekScheduleController extends Controller
             'fridayDailyMeals.menus.foodComposants',
             'saturdayDailyMeals.menus.foodComposants',
             'sundayDailyMeals.menus.foodComposants',
-        ])->get();
+        ])
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return response()->json($weekSchedules);
     }

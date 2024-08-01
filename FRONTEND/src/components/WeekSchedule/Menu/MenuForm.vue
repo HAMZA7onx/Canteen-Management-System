@@ -1,6 +1,6 @@
 <template>
     <form @submit.prevent="submitForm" class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
-      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-600 dark:from-emerald-300 dark:to-cyan-400">
+      <h2 class="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-600 dark:from-emerald-300 dark:to-cyan-400">
         {{ isEditMode ? 'Modifier Menu' : 'Créer un nouveau Menu' }}
       </h2>
 
