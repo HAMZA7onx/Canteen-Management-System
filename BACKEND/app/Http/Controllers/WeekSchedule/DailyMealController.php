@@ -13,7 +13,9 @@ class DailyMealController extends Controller
     {
         $dailyMeals = DailyMeal::with([
             "menus.foodComposants"
-        ])->get();
+        ])
+            ->orderBy('updated_at', 'desc')
+            ->get();
         return response()->json($dailyMeals);
     }
 

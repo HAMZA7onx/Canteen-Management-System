@@ -13,7 +13,9 @@ class MenuController extends Controller
     {
         $menus = Menu::with([
             'foodComposants'
-        ])->get();
+        ])
+            ->orderBy('updated_at', 'desc')
+            ->get();
         return response()->json($menus);
     }
 
