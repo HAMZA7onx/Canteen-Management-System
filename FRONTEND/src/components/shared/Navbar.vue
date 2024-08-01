@@ -14,10 +14,6 @@
           </router-link>
         </div>
         <div class="hidden sm:flex items-center space-x-6">
-          <!-- <router-link to="/profile" class="group relative font-semibold text-white hover:text-indigo-200 transition-colors duration-300">
-            PROFILE
-            <span class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-          </router-link> -->
           <DarkModeToggle class="transform hover:scale-110 transition-transform duration-300 text-white dark:text-current" />
           <button
             @click="handleLogout"

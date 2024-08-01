@@ -31,9 +31,9 @@ class RoleService {
     return request.get(`${API_URL}/permissions`);
   }
 
-  assignPermission(roleId, permissionId) {
-    return request.post(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);
-  }
+  assignPermissions(roleId, permissionIds) {
+    return request.post(`${API_URL}/roles/${roleId}/permissions`, { permissionIds });
+  }  
 
   removePermission(roleId, permissionId) {
     return request.delete(`${API_URL}/roles/${roleId}/permissions/${permissionId}`);

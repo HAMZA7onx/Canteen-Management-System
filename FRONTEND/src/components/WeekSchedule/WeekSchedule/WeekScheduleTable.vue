@@ -27,7 +27,7 @@
           <table class="w-full table-auto hidden sm:table">
             <thead>
               <tr class="bg-indigo-600 text-white text-sm leading-normal">
-                <th class="py-3 px-6 text-left">Week Schedule</th>
+                <th class="py-3 px-6 text-left">Mode de semaine</th>
                 <th class="py-3 px-6 text-center">Status</th>
                 <th class="py-3 px-6 text-center">Actions</th>
                 <th v-for="day in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']" :key="day" class="py-3 px-6 text-center">
