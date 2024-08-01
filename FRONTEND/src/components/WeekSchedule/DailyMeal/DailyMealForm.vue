@@ -1,9 +1,5 @@
 <template>
     <form @submit.prevent="submitForm" class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
-      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-600 dark:from-orange-300 dark:to-pink-400">
-        {{ isEditMode ? 'Modifier le repas quotidien' : 'Créer un nouveau repas quotidien' }}
-      </h2>
-
       <div class="relative">
         <input
           id="name"

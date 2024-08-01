@@ -1,8 +1,4 @@
 <template>
-    <h2 class="text-3xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-      {{ isEditMode ? 'Modifier le Role' : 'Créer Nouveau Role' }}
-    </h2>
-    
     <form @submit.prevent="submitForm" class="space-y-8">
       <div class="relative">
         <input

@@ -47,24 +47,29 @@
       </div>
 
       <!-- User Actions -->
-      <div class="mb-6 flex flex-wrap justify-between items-center">
+      <div class="">
         <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
-        <button
-          v-if="$can('creer_collaborateurs')"
-          class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
-          @click="openCreateUserModal"
-        >
-          <span class="mr-2">+</span> Créer un Utilisateur
-        </button>
-        <button
-          v-if="$can('importer_collaborateurs')"
-          class="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
-          @click="openImportUsersModal"
-        >
-          <span class="mr-2">↑</span> Importer des Utilisateurs
-        </button>
-      </div>
+          <button
+            v-if="$can('creer_collaborateurs')"
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 w-full sm:w-auto"
+            @click="openCreateUserModal"
+          >
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Créer un Utilisateur
+            </span>
+          </button>
 
+          <button
+            v-if="$can('importer_collaborateurs')"
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
+            @click="openImportUsersModal"
+          >
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              <span class="mr-2">↑</span> Importer des Utilisateurs
+            </span>
+          </button>
+
+      </div>
       <div class="text-gray-600 dark:text-gray-300">
         Total des Utilisateurs: <span class="font-bold text-blue-600 dark:text-blue-400">{{ sortedUsers.length }}</span>
       </div>
@@ -281,66 +286,72 @@
       </Overlay>
 
       <Overlay v-if="showImportUsersModal">
-        <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Importation en Masse d'Utilisateurs">
-          <form @submit.prevent="importUsers" class="space-y-4">
-            <!-- New section for downloading template -->
-            <div class="mb-4">
-              <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Télécharger le Modèle</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Téléchargez le modèle Excel, remplissez-le avec les données des utilisateurs, puis importez-le.</p>
-              <button
-                @click.prevent="downloadTemplate"
-                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-              >
-                Télécharger le Modèle Excel
-              </button>
-            </div>
+  <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Importation en Masse d'Utilisateurs">
+    <form @submit.prevent="importUsers" class="space-y-4">
+      <!-- New section for downloading template -->
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">Télécharger le Modèle</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Téléchargez le modèle Excel, remplissez-le avec les données des utilisateurs, puis importez-le.</p>
+        <button
+          @click.prevent="downloadTemplate"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Télécharger le Modèle Excel
+        </button>
+      </div>
 
-            <div>
-              <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sélectionner une Catégorie</label>
-              <select
-                id="category"
-                v-model="importCategoryId"
-                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              >
-                <option value="">Sélectionner une Catégorie</option>
-                <option v-for="category in userCategories" :key="category.id" :value="category.id">
-                  {{ category.name }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choisir un Fichier Excel</label>
-              <input
-                type="file"
-                id="file"
-                ref="fileInput"
-                @change="handleFileChange"
-                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                accept=".xlsx,.xls"
-              >
-            </div>
-            <div>
-              <button
-                type="submit"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
-              >
-                Importer les Utilisateurs
-              </button>
-            </div>
-            <div v-if="importResult" class="mt-4">
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
-              <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
-                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Lignes ignorées :</p>
-                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-                  <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
-                    {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </form>
-        </Modal>
-      </Overlay>
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sélectionner une Catégorie</label>
+        <select
+          id="category"
+          v-model="importCategoryId"
+          class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        >
+          <option value="">Sélectionner une Catégorie</option>
+          <option v-for="category in userCategories" :key="category.id" :value="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="file" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Choisir un Fichier Excel</label>
+        <input
+          type="file"
+          id="file"
+          ref="fileInput"
+          @change="handleFileChange"
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          accept=".xlsx,.xls"
+        >
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-300"
+          :disabled="isImporting"
+        >
+          <svg v-if="isImporting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isImporting ? 'Importation en cours...' : 'Importer les Utilisateurs' }}
+        </button>
+      </div>
+      <div v-if="importResult" class="mt-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ importResult.message }}</p>
+        <div v-if="importResult.skipped_rows && importResult.skipped_rows.length > 0" class="mt-2">
+          <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Lignes ignorées :</p>
+          <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
+            <li v-for="(skipped, index) in importResult.skipped_rows" :key="index">
+              {{ skipped.row.name }} ({{ skipped.row.email }}) - {{ skipped.reason }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </Modal>
+</Overlay>
+
 
       <!-- Delete Confirmation Modal -->
       <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showDeleteConfirmation">
@@ -506,6 +517,7 @@ export default {
       importCategoryId: '',
       importFile: null,
       importResult: null,
+      isImporting: false,
       isLoading: true,
       error: null,
       searchQuery: '',
@@ -702,10 +714,13 @@ export default {
       formData.append('file', this.importFile);
       formData.append('category_id', this.importCategoryId);
 
+      this.isImporting = true;
+
       this.$store.dispatch('user/importUsers', formData)
         .then((response) => {
           this.importResult = response;
           this.loadUsers();
+          this.showSuccessToast('Users imported successfully!');
         })
         .catch((error) => {
           console.error('Error importing users:', error);
@@ -713,6 +728,9 @@ export default {
             message: 'An error occurred while importing users. Please try again.',
             skipped_rows: [],
           };
+        })
+        .finally(() => {
+          this.isImporting = false;
         });
     },
     openDetailsPopup(user) {

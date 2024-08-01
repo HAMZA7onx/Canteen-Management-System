@@ -9,10 +9,12 @@
         </p>
         <button
           v-if="$can('creer_composants_menus')"
-          class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 w-full sm:w-auto"
           @click="openCreateModal"
         >
-          Créer un Composant Alimentaire
+          <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Créer un Composant Alimentaire
+          </span>
         </button>
       </div>
 
@@ -55,6 +57,7 @@
               <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
                 <th class="py-3 px-6 text-left">Nom</th>
                 <th class="py-3 px-6 text-left">Description</th>
+                <th class="py-3 px-6 text-left">Dernière mise à jour</th>
                 <th class="py-3 px-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -70,6 +73,10 @@
                 <td class="py-3 px-6 text-left">
                   {{ foodComposant.description !== null ? foodComposant.description : '-' }}
                 </td>
+                <td class="py-3 px-6 text-left">
+                  {{ formattedDates(foodComposant.updated_at) }}
+                </td>
+
                 <td class="py-3 px-6 text-center">
                   <button
                     v-if="$can('modifier_composants_menus')"
@@ -104,6 +111,7 @@
                 </button>
               </div>
               <p class="text-sm text-gray-500 dark:text-gray-400">{{ foodComposant.description !== null ? foodComposant.description : '-' }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Dernière mise à jour: {{ formatDate(foodComposant.updated_at) }}</p>
               <div v-if="foodComposant.showActions" class="mt-2 space-y-2">
                 <button
                   v-if="$can('modifier_composants_menus')"
@@ -255,7 +263,7 @@ export default {
   computed: {
     ...mapGetters('foodComposant', ['foodComposants']),
     filteredFoodComposants() {
-      return this.foodComposants.filter(composant => 
+      return this.foodComposants.filter(composant =>
         composant.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         (composant.description && composant.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
       )
@@ -267,6 +275,12 @@ export default {
     },
     totalPages() {
       return Math.ceil(this.filteredFoodComposants.length / this.itemsPerPage)
+    },
+    formattedDates() {
+      return (date) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleString();
+      };
     }
   },
   created() {
@@ -389,7 +403,12 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
-    }
+    },
+    formatDate(date) {
+      if (!date) return '-';
+      return new Date(date).toLocaleString();
+    },
   }
 }
 </script>
+

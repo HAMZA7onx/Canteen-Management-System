@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('week_schedule', function (Blueprint $table) {
             $table->id();
             $table->string('mode_name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('creator');
             $table->json('editors');
