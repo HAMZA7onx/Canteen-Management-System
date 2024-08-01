@@ -176,7 +176,7 @@ export default {
 </script>
 
 <style>
-.multiselect-custom {
+/* .multiselect-custom {
   @apply bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md shadow-sm;
 }
 .multiselect-custom .multiselect__tags {
@@ -196,7 +196,7 @@ export default {
 }
 .multiselect-custom .multiselect__option--highlight {
   @apply bg-indigo-500 text-white;
-}
+} */
 
 @media (max-width: 640px) {
   .multiselect-custom {

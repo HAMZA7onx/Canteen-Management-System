@@ -1,31 +1,32 @@
 <template>
-    <div class="mb-8">
-      <div class="mb-8 bg-gray-100 dark:bg-gray-700 rounded-lg p-4 shadow-md">
-        <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Fonctionnalités</h3>
-        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-          <li>• Afficher les rôles actuellement attribués à l'administrateur</li>
-          <li>• Ajouter de nouveaux rôles à l'administrateur</li>
-          <li>• Supprimer des rôles existants de l'administrateur</li>
-          <li>• Mise à jour en temps réel des rôles affichés</li>
-        </ul>
-      </div>
+  <div class="mb-8">
+    <div class="mb-8 bg-gray-100 dark:bg-gray-700 rounded-lg p-4 shadow-md">
+      <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Fonctionnalités</h3>
+      <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+        <li>• Afficher les rôles actuellement attribués à l'administrateur</li>
+        <li>• Ajouter de nouveaux rôles à l'administrateur</li>
+        <li>• Supprimer des rôles existants de l'administrateur</li>
+        <li>• Mise à jour en temps réel des rôles affichés</li>
+      </ul>
+    </div>
 
-      <h3 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Rôles assignés</h3>
-      <div v-if="isLoadingRoles" class="flex justify-center items-center h-32">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-      <transition-group v-else name="list" tag="ul" class="space-y-3">
+    <h3 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Rôles assignés</h3>
+    <div v-if="isLoadingRoles" class="flex justify-center items-center h-32">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+    </div>
+    <div v-else class="max-h-60 overflow-auto pr-2 mb-4">
+      <transition-group name="list" tag="ul" class="space-y-2">
         <li
           v-for="role in fetchedAssignedRoles"
           :key="role.id"
-          class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 rounded-xl px-6 py-4 transition-all duration-300 hover:shadow-lg hover:scale-105"
+          class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2 transition-all duration-300 hover:shadow-md hover:scale-102"
         >
-          <span class="text-gray-800 dark:text-gray-200 font-medium">{{ role.name }}</span>
+          <span class="text-gray-800 dark:text-gray-200 text-sm">{{ role.name }}</span>
           <button
             @click="removeRole(role)"
             class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none transition-all duration-300 transform hover:rotate-12"
           >
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
@@ -63,6 +64,7 @@
         </span>
       </button>
     </div>
+  </div>
 </template>
 
 <script>

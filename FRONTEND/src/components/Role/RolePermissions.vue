@@ -119,8 +119,8 @@ export default {
       }));
     },
     isDarkMode() {
-      return document.documentElement.classList.contains('dark');
-    },
+    return document.documentElement.classList.contains('dark');
+  },
   },
   mounted() {
     this.fetchRolePermissions();
@@ -230,7 +230,9 @@ export default {
   transform: translateX(30px);
 }
 
-.custom-multiselect {
+
+
+/* .custom-multiselect {
   @apply bg-white border border-gray-300 rounded-xl shadow-sm transition-all duration-300 text-gray-800;
 }
 
@@ -332,7 +334,7 @@ export default {
 
 .custom-multiselect.dark-mode .multiselect__placeholder {
   @apply text-gray-400;
-}
+} */
 
 /* Custom scrollbar styles */
 .overflow-auto {
