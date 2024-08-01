@@ -174,7 +174,7 @@
 
       <!-- Delete Confirmation Modal -->
       <Overlay v-if="showDeleteConfirmation">
-        <div class="modal-container" @click.stop>
+        <div class="rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full mx-auto my-auto fixed inset-0 flex items-center justify-center" @click.stop> 
           <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
             <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
