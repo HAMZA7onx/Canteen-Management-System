@@ -55,6 +55,7 @@
               <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
                 <th class="py-3 px-6 text-left">Nom</th>
                 <th class="py-3 px-6 text-left">Description</th>
+                <th class="py-3 px-6 text-left">Dernière mise à jour</th>
                 <th class="py-3 px-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -70,6 +71,10 @@
                 <td class="py-3 px-6 text-left">
                   {{ foodComposant.description !== null ? foodComposant.description : '-' }}
                 </td>
+                <td class="py-3 px-6 text-left">
+                  {{ formattedDates(foodComposant.updated_at) }}
+                </td>
+
                 <td class="py-3 px-6 text-center">
                   <button
                     v-if="$can('modifier_composants_menus')"
@@ -104,6 +109,7 @@
                 </button>
               </div>
               <p class="text-sm text-gray-500 dark:text-gray-400">{{ foodComposant.description !== null ? foodComposant.description : '-' }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Dernière mise à jour: {{ formatDate(foodComposant.updated_at) }}</p>
               <div v-if="foodComposant.showActions" class="mt-2 space-y-2">
                 <button
                   v-if="$can('modifier_composants_menus')"
@@ -255,7 +261,7 @@ export default {
   computed: {
     ...mapGetters('foodComposant', ['foodComposants']),
     filteredFoodComposants() {
-      return this.foodComposants.filter(composant => 
+      return this.foodComposants.filter(composant =>
         composant.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         (composant.description && composant.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
       )
@@ -267,6 +273,12 @@ export default {
     },
     totalPages() {
       return Math.ceil(this.filteredFoodComposants.length / this.itemsPerPage)
+    },
+    formattedDates() {
+      return (date) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleString();
+      };
     }
   },
   created() {
@@ -389,7 +401,12 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
-    }
+    },
+    formatDate(date) {
+      if (!date) return '-';
+      return new Date(date).toLocaleString();
+    },
   }
 }
 </script>
+

@@ -70,6 +70,7 @@
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dernière mise à jour</th>
                   <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Composants Alimentaires</th>
                   <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -78,6 +79,9 @@
                 <tr v-for="menu in paginatedMenus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
+                    {{ formatDate(menu.updated_at) }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                     <button
                       v-if="$can('assigner_composants_menus') || $can('desassigner_composants_menus')"
@@ -120,6 +124,7 @@
                   </button>
                 </div>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ menu.description !== null ? menu.description : '-' }}</p>
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Dernière mise à jour: {{ formatDate(menu.updated_at) }}</p>
                 <div v-if="menu.showActions" class="mt-4 space-y-2">
                   <button
                     v-if="$can('assigner_composants_menus') || $can('desassigner_composants_menus')"
@@ -214,7 +219,7 @@
           <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"                 aria-hidden="true">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
@@ -291,7 +296,7 @@ export default {
   computed: {
     ...mapGetters('menu', ['menus']),
     filteredMenus() {
-      return this.menus.filter(menu => 
+      return this.menus.filter(menu =>
         menu.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         (menu.description && menu.description.toLowerCase().includes(this.searchQuery.toLowerCase()))
       )
@@ -415,6 +420,10 @@ export default {
         this.currentPage++
       }
     },
+    formatDate(date) {
+      if (!date) return '-';
+      return new Date(date).toLocaleString();
+    },
   }
 }
 </script>
@@ -431,4 +440,3 @@ html {
   scroll-behavior: smooth;
 }
 </style>
-
