@@ -84,16 +84,16 @@ const actions = {
       });
   },
 
-  assignPermission({ commit }, { roleId, permissionId }) {
-    return RoleService.assignPermission(roleId, permissionId)
+  assignPermissions({ commit }, { roleId, permissionIds }) {
+    return RoleService.assignPermissions(roleId, permissionIds)
       .then(() => {
-        commit('ADD_ASSIGNED_PERMISSION', permissionId);
+        commit('ADD_ASSIGNED_PERMISSIONS', permissionIds);
       })
       .catch((error) => {
-        console.error('Error assigning permission:', error);
+        console.error('Error assigning permissions:', error);
         throw error;
       });
-  },
+  },  
 
   removePermission({ commit }, { roleId, permissionId }) {
     return RoleService.removePermission(roleId, permissionId)
@@ -129,6 +129,12 @@ const mutations = {
   ADD_ASSIGNED_PERMISSION(state, permissionId) {
     state.assignedPermissions.push({ id: permissionId });
   },
+  ADD_ASSIGNED_PERMISSIONS(state, permissionIds) {
+    state.assignedPermissions = [
+      ...state.assignedPermissions,
+      ...permissionIds.map(id => ({ id }))
+    ];
+  },  
   REMOVE_ASSIGNED_PERMISSION(state, permissionId) {
     state.assignedPermissions = state.assignedPermissions.filter((permission) => permission.id !== permissionId);
   },

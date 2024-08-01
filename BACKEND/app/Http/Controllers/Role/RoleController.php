@@ -92,20 +92,15 @@ class RoleController extends Controller
         return response()->json($permissions);
     }
 
-    /**
-     * Assign a permission to a role.
-     */
-    public function assignPermission(Role $role, $permissionId)
+    public function assignPermissions(Request $request, Role $role)
     {
-        $permission = Permission::findOrFail($permissionId);
-        $role->givePermissionTo($permission);
-
-        return response()->json(['message' => 'Permission assigned to role successfully']);
+        $permissionIds = $request->input('permissionIds');
+        $permissions = Permission::whereIn('id', $permissionIds)->get();
+        $role->givePermissionTo($permissions);
+        return response()->json(['message' => 'Permissions assigned to role successfully']);
     }
 
-    /**
-     * Remove a permission from a role.
-     */
+
     public function removePermission(Role $role, $permissionId)
     {
         $permission = Permission::findOrFail($permissionId);
