@@ -20,10 +20,12 @@
         <div class="w-full sm:w-auto mb-4 sm:mb-0">
           <button
             v-if="$can('creer_POS')"
-            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
             @click="openAddPosDeviceModal"
           >
-            <span class="mr-2">+</span> Ajouter un Appareil POS
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
+              <span class="mr-2">+</span> Ajouter un Appareil POS
+            </span>
           </button>
         </div>
         <div class="text-sm sm:text-base text-gray-600 dark:text-gray-300">

@@ -1,8 +1,6 @@
 <template>
   <form @submit.prevent="submitForm" class="space-y-6">
-    <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-      {{ isEditMode ? 'Modifier Admin' : 'Créer Admin' }}
-    </h2>
+  
     
     <div class="relative group">
       <input
@@ -10,7 +8,7 @@
         id="name"
         v-model="admin.name"
         required
-        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 transition-all duration-300 outline-none peer', 
+        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 transition-all duration-300 outline-none peer', 
                  errors && errors.name ? 'border-red-500' : 'border-transparent focus:border-indigo-500 dark:focus:border-indigo-400']"
         placeholder=" "
       />
@@ -31,7 +29,7 @@
         id="email"
         v-model="admin.email"
         required
-        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 transition-all duration-300 outline-none peer', 
+        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 transition-all duration-300 outline-none peer', 
                  errors && errors.email ? 'border-red-500' : 'border-transparent focus:border-indigo-500 dark:focus:border-indigo-400']"
         placeholder=" "
       />
@@ -52,7 +50,7 @@
         id="password"
         v-model="admin.password"
         :required="!isEditMode"
-        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 transition-all duration-300 outline-none peer', 
+        :class="['w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 transition-all duration-300 outline-none peer', 
                  errors && errors.password ? 'border-red-500' : 'border-transparent focus:border-indigo-500 dark:focus:border-indigo-400']"
         placeholder=" "
       />

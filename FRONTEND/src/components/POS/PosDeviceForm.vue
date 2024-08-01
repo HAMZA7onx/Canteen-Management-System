@@ -1,10 +1,5 @@
 <template>
-  <div class="bg-gradient-to-br from-cyan-400 to-blue-500 dark:from-cyan-800 dark:to-blue-900 p-1 rounded-2xl shadow-xl">
     <form @submit.prevent="submitForm" class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
-      <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600 dark:from-cyan-300 dark:to-blue-400">
-        {{ device.id ? 'Update' : 'Create' }} POS Device
-      </h2>
-
       <div class="space-y-4">
         <div class="relative">
           <input
@@ -48,7 +43,7 @@
             id="status"
             v-model="formData.status"
             required
-            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300"
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300"
           >
             <option value="allowed">Allowed</option>
             <option value="unauthorized">Unauthorized</option>
@@ -70,7 +65,6 @@
         {{ device.id ? 'Update' : 'Create' }} POS Device
       </button>
     </form>
-  </div>
 </template>
 
 <script>

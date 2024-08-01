@@ -14,10 +14,12 @@
         <div class="mt-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
           <button
             v-if="$can('creer_categories_menus')"
-            class="w-full sm:w-auto bg-white text-indigo-600 hover:bg-indigo-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 w-full sm:w-auto"
             @click="openCreateModal"
           >
-            Créer un Menu
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Créer un Menu
+            </span>
           </button>
           <a href="#menu-list" class="text-white font-semibold hover:text-indigo-200 transition duration-300">
             Voir les Menus <span aria-hidden="true">→</span>

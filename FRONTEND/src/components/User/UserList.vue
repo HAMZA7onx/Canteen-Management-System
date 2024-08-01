@@ -47,22 +47,28 @@
       </div>
 
       <!-- User Actions -->
-      <div class="mb-6 flex flex-wrap justify-between items-center">
+      <div class="">
         <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
-        <button
-          v-if="$can('creer_collaborateurs')"
-          class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
-          @click="openCreateUserModal"
-        >
-          <span class="mr-2">+</span> Créer un Utilisateur
-        </button>
-        <button
-          v-if="$can('importer_collaborateurs')"
-          class="w-full sm:w-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base"
-          @click="openImportUsersModal"
-        >
-          <span class="mr-2">↑</span> Importer des Utilisateurs
-        </button>
+          <button
+            v-if="$can('creer_collaborateurs')"
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 w-full sm:w-auto"
+            @click="openCreateUserModal"
+          >
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Créer un Utilisateur
+            </span>
+          </button>
+
+          <button
+  v-if="$can('importer_collaborateurs')"
+  class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
+  @click="openImportUsersModal"
+>
+  <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+    <span class="mr-2">↑</span> Importer des Utilisateurs
+  </span>
+</button>
+
       </div>
 
       <div class="text-gray-600 dark:text-gray-300">

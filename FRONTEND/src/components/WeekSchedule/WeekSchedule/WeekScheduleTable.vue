@@ -8,11 +8,13 @@
     <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
       <button
         v-if="$can('creer_profils_repas')"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out flex items-center mb-4 sm:mb-0"
+        class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
         @click="openCreateModal"
       >
-        <font-awesome-icon icon="plus-circle" class="mr-2" />
-        Créer un programme
+        <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
+          <font-awesome-icon icon="plus-circle" class="mr-2" />
+          Créer un programme
+        </span>
       </button>
       <div class="text-gray-600 dark:text-gray-400 italic">
         Total Schedules: {{ weekSchedules.length }}

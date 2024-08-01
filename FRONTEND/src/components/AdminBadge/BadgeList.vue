@@ -19,10 +19,12 @@
       <div class="mb-6 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <button
           v-if="$can('importer_badges_administrateurs')"
-          class="bg-teal-600 hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+          class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-teal-300 to-lime-300 group-hover:from-teal-300 group-hover:to-lime-300 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-lime-200 dark:focus:ring-lime-800 w-full sm:w-auto"
           @click="showImportModal = true"
         >
-          Importer des RFID
+          <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Importer des RFID
+          </span>
         </button>
         <div class="flex-grow flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
           <select
