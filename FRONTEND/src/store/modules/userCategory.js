@@ -23,7 +23,7 @@ const actions = {
       });
   },
   createUserCategory({ commit }, category) {
-    const user = store.getters['auth/user']; // Get the authenticated user from the store
+    const user = store.getters['auth/user'];
     const newCategory = {
       name: category.name,
       description: category.description,
@@ -34,14 +34,11 @@ const actions = {
     return UserCategoryService.createUserCategory(newCategory)
       .then((response) => {
         commit('ADD_USER_CATEGORY', response.data);
-      })
-      .catch((error) => {
-        console.error('Error creating user category:', error);
-        throw error;
+        return response;
       });
   },
   updateUserCategory({ commit }, category) {
-    const user = store.getters['auth/user']; // Get the authenticated user from the store
+    const user = store.getters['auth/user'];
     const updatedCategory = {
       id: category.id,
       name: category.name,
@@ -50,7 +47,6 @@ const actions = {
       editors: category.editors,
     };
 
-    // Add the current user's email to the editors array if not already present
     if (!updatedCategory.editors.includes(user.email)) {
       updatedCategory.editors.push(user.email);
     }
@@ -58,10 +54,7 @@ const actions = {
     return UserCategoryService.updateUserCategory(category.id, updatedCategory)
       .then((response) => {
         commit('UPDATE_USER_CATEGORY', response.data);
-      })
-      .catch((error) => {
-        console.error('Error updating user category:', error);
-        throw error;
+        return response;
       });
   },
   deleteUserCategory({ commit }, id) {

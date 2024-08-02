@@ -18,6 +18,11 @@
 
       <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-lg px-8 pt-6 pb-8 mb-4 transform hover:scale-105 transition-all duration-300">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Login</h2>
+        
+        <div v-if="warningMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {{ warningMessage }}
+        </div>
+
         <form @submit.prevent="handleLogin" class="space-y-6">
           <div>
             <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2" for="email">
@@ -49,13 +54,13 @@
             <button
               class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transform hover:scale-105 transition-all duration-300"
               type="submit"
+              :disabled="isLoading"
             >
-              Se connecter
+              {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
             </button>
           </div>
         </form>
       </div>
-    
     </div>
   </div>
 </template>
@@ -70,16 +75,37 @@ export default {
         password: '',
       },
       isDarkMode: false,
+      warningMessage: '',
+      isLoading: false,
     };
   },
   methods: {
-    handleLogin() {
-      this.$store
-        .dispatch('auth/login', this.credentials)
-        .catch((error) => {
-          console.error(error);
-          // Handle login error
-        });
+    async handleLogin() {
+      this.warningMessage = '';
+      this.isLoading = true;
+
+      try {
+        await this.$store.dispatch('auth/login', this.credentials);
+        this.$router.push({ name: 'dashboard' });
+      } catch (error) {
+        console.error(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 422:
+              this.warningMessage = 'Veuillez vérifier vos informations de connexion.';
+              break;
+            case 401:
+              this.warningMessage = 'Email ou mot de passe incorrect.';
+              break;
+            default:
+              this.warningMessage = 'Une erreur s\'est produite. Veuillez réessayer plus tard.';
+          }
+        } else {
+          this.warningMessage = 'Impossible de se connecter au serveur. Veuillez vérifier votre connexion internet.';
+        }
+      } finally {
+        this.isLoading = false;
+      }
     },
     toggleDarkMode() {
       this.isDarkMode = !this.isDarkMode;
@@ -87,7 +113,6 @@ export default {
     },
   },
   mounted() {
-    // Check user's preference for dark mode
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       this.isDarkMode = true;
       document.documentElement.classList.add('dark');

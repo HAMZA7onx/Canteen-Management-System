@@ -166,7 +166,9 @@
           <Modal :show="showModal" :title="isEditMode ? 'Modifier la Catégorie d\'Utilisateur' : 'Créer une Catégorie d\'Utilisateur'" @close="closeModal">
             <user-category-form
               :category="selectedCategory"
+              :errors="formErrors"
               @submit="handleSubmit"
+              @clear-errors="clearFormErrors"
             />
           </Modal>
         </div>
@@ -315,6 +317,7 @@ export default {
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 10,
+      formErrors: {},
     };
   },
   computed: {
@@ -364,21 +367,27 @@ export default {
       if (this.$can('creer_categorie_de_collaborateur')) {
         this.selectedCategory = {};
         this.isEditMode = false;
+        this.clearFormErrors();
         this.showModal = true;
       }
     },
+
     openEditModal(category) {
       if (this.$can('modifier_categorie_de_collaborateur')) {
         this.selectedCategory = { ...category };
         this.isEditMode = true;
+        this.clearFormErrors();
         this.showModal = true;
       }
     },
+
     closeModal() {
       this.showModal = false;
       this.selectedCategory = null;
       this.isEditMode = false;
+      this.clearFormErrors();
     },
+
     showSuccessToast(message) {
       this.toastMessage = message;
       this.showToast = true;
@@ -388,14 +397,20 @@ export default {
     },
     handleSubmit(category) {
       const action = this.isEditMode ? this.updateUserCategory : this.createUserCategory;
+      
       action(category)
         .then(() => {
           this.closeModal();
           this.loadUserCategories();
-          this.showSuccessToast('Category handled successfully!');
+          this.showSuccessToast(this.isEditMode ? 'Catégorie mise à jour avec succès!' : 'Catégorie créée avec succès!');
         })
         .catch((error) => {
-          console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} user category:`, error);
+          if (error.response && error.response.status === 422) {
+            this.formErrors = error.response.data.errors;
+          } else {
+            console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} user category:`, error);
+            this.showErrorToast('Une erreur est survenue. Veuillez réessayer.');
+          }
         });
     },
     deleteCategory(category) {
@@ -454,6 +469,9 @@ export default {
         this.currentPage++;
       }
     },
+    clearFormErrors() {
+      this.formErrors = {};
+    }
   },
 };
 </script>
