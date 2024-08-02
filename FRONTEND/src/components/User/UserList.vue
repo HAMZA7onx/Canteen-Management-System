@@ -274,16 +274,16 @@
 
       <!-- Modals -->
       <Overlay v-if="showCreateUserModal">
-        <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Créer un Nouvel Utilisateur">
-          <UserForm :user="{}" @create:user="createUser" />
-        </Modal>
-      </Overlay>
+    <Modal :show="showCreateUserModal" @close="closeCreateUserModal" title="Créer un Nouvel Utilisateur">
+      <UserForm :user="{}" @create:user="createUser" :emailError="createEmailError" @clearEmailError="clearCreateEmailError" />
+    </Modal>
+  </Overlay>
 
-      <Overlay v-if="showEditUserModal">
-        <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Modifier le Profil Utilisateur">
-          <UserForm :user="selectedUser" @update:user="updateUser" />
-        </Modal>
-      </Overlay>
+  <Overlay v-if="showEditUserModal">
+    <Modal :show="showEditUserModal" @close="closeEditUserModal" title="Modifier le Profil Utilisateur">
+      <UserForm :user="selectedUser" @update:user="updateUser" :emailError="updateEmailError" @clearEmailError="clearUpdateEmailError" />
+    </Modal>
+  </Overlay>
 
       <Overlay v-if="showImportUsersModal">
   <Modal :show="showImportUsersModal" @close="closeImportUsersModal" title="Importation en Masse d'Utilisateurs">
@@ -526,6 +526,8 @@ export default {
       itemsPerPage: 10,
       showToast: false,
       toastMessage: '',
+      createEmailError: null,
+      updateEmailError: null,
     };
   },
   computed: {
@@ -652,6 +654,20 @@ export default {
       this.showEditUserModal = false;
       this.selectedUser = null;
     },
+    createUser(userData) {
+      this.$store.dispatch('user/createUser', userData)
+        .then(() => {
+          this.closeCreateUserModal();
+          this.loadUsers();
+          this.showSuccessToast('User created successfully!');
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error);
+          if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.email) {
+            this.createEmailError = 'Email déjà existant';
+          }
+        });
+    },
     updateUser(updatedUser) {
       this.$store
         .dispatch('user/updateUser', updatedUser)
@@ -663,7 +679,16 @@ export default {
         })
         .catch((error) => {
           console.error('Error updating user:', error);
+          if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.email) {
+            this.updateEmailError = 'Email déjà existant';
+          }
         });
+    },
+    clearCreateEmailError() {
+      this.createEmailError = null;
+    },
+    clearUpdateEmailError() {
+      this.updateEmailError = null;
     },
     deleteUser(user) {
       if (this.$can('supprimer_collaborateurs')) {
@@ -760,17 +785,7 @@ export default {
       user.showMobileActions = !user.showMobileActions;
       this.$forceUpdate();
     },
-    createUser(userData) {
-      this.$store.dispatch('user/createUser', userData)
-        .then(() => {
-          this.closeCreateUserModal();
-          this.loadUsers();
-          this.showSuccessToast('User created successfully!');
-        })
-        .catch((error) => {
-          console.error('Error creating user:', error);
-        });
-    },
+
     showSuccessToast(message) {
       this.toastMessage = message;
       this.showToast = true;

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
@@ -19,18 +20,33 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $role = Role::create(['name' => $request->name, 'guard_name' => 'sanctum']);
-        return response()->json($role);
-    }
+        $request->validate([
+            'name' => 'required|unique:roles,name'
+        ], [
+            'name.unique' => 'The role name already exists.'
+        ]);
 
-    public function show(Role $role)
-    {
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'sanctum']);
         return response()->json($role);
     }
 
     public function update(Request $request, Role $role)
     {
+        $request->validate([
+            'name' => [
+                'required',
+                Rule::unique('roles', 'name')->ignore($role->id)
+            ]
+        ], [
+            'name.unique' => 'The role name already exists.'
+        ]);
+
         $role->update(['name' => $request->name]);
+        return response()->json($role);
+    }
+
+    public function show(Role $role)
+    {
         return response()->json($role);
     }
 

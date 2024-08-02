@@ -30,7 +30,7 @@ const actions = {
     return RoleService.createRole(role)
       .then((response) => {
         commit('ADD_ROLE', response.data);
-        return response.data; 
+        return response.data;
       })
       .catch((error) => {
         console.error('Error creating role:', error);
@@ -42,13 +42,13 @@ const actions = {
     return RoleService.updateRole(role.id, role)
       .then((response) => {
         commit('UPDATE_ROLE', response.data);
-        return response.data; // Return the updated role data
+        return response.data;
       })
       .catch((error) => {
         console.error('Error updating role:', error);
         throw error;
       });
-  },  
+  },   
 
   deleteRole({ commit }, roleId) {
     return RoleService.deleteRole(roleId)

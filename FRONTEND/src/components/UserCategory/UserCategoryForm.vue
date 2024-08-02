@@ -1,14 +1,10 @@
 <template>
-  <h2 class="text-xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-    {{ isEditMode ? 'Modifier la catégorie' : 'Créer une catégorie' }}
-  </h2>
-
   <form @submit.prevent="submitForm" class="space-y-8">
     <div class="relative group">
       <input
         type="text"
         id="name"
-        v-model="category.name"
+        v-model="localCategory.name"
         required
         class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer"
         placeholder=" "
@@ -20,12 +16,13 @@
         Nom
       </label>
       <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name[0] }}</p>
+
     </div>
 
     <div class="relative group">
       <textarea
         id="description"
-        v-model="category.description"
+        v-model="localCategory.description"
         class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer resize-none h-32"
         placeholder=" "
       ></textarea>
@@ -62,6 +59,7 @@ export default {
   data() {
     return {
       isEditMode: false,
+      localCategory: { ...this.category },
     };
   },
   created() {
@@ -69,26 +67,26 @@ export default {
   },
   methods: {
     submitForm() {
-      this.$emit('clear-errors');
-      const formData = {
-        name: this.category.name,
-        description: this.category.description,
-      };
-
-      if (this.isEditMode) {
-        this.$emit('submit', { ...this.category, ...formData });
-      } else {
-        this.$emit('submit', formData);
+      if (this.validateForm()) {
+        this.$emit('submit', this.localCategory);
       }
     },
-  },
-  watch: {
-    category: {
-      handler() {
-        this.$emit('clear-errors');
-      },
-      deep: true
+    validateForm() {
+      if (!this.localCategory.name.trim()) {
+        this.$emit('update:errors', { name: ['Le nom est requis.'] });
+        return false;
+      }
+      return true;
     }
   },
+
+  watch: {
+  'localCategory.name': function() {
+    if (this.errors.name) {
+      this.$emit('update:errors', { ...this.errors, name: null });
+    }
+  }
+},
+
 };
 </script>

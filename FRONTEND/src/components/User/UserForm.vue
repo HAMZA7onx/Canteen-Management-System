@@ -20,23 +20,26 @@
       </div>
 
       <div class="relative group">
-        <input
-          type="email"
-          id="email"
-          v-model="user.email"
-          required
-          class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer pl-4 pr-10"
-          placeholder=" "
-        />
-        <label for="email" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Email
-        </label>
-        <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500">
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-          </svg>
-        </div>
+      <input
+        type="email"
+        id="email"
+        v-model="user.email"
+        required
+        class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer pl-4 pr-10"
+        :class="{ 'border-red-500': emailError }"
+        placeholder=" "
+        @input="clearError"
+      />
+      <label for="email" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
+        Email
+      </label>
+      <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+        </svg>
       </div>
+      <p v-if="emailError" class="text-red-500 text-sm mt-1">{{ emailError }}</p>
+    </div>
 
       <div class="relative group">
         <input
@@ -119,6 +122,10 @@ export default {
       type: Object,
       required: true,
     },
+    emailError: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -137,7 +144,6 @@ export default {
     ...mapActions('userCategory', ['fetchUserCategories']),
     submitForm() {
       const formData = {
-        id: this.user.id,
         category_id: this.user.category_id,
         name: this.user.name,
         email: this.user.email,
@@ -152,7 +158,10 @@ export default {
       } else {
         this.$emit('create:user', formData);
       }
-    }
+    },
+    clearError() {
+      this.$emit('clearEmailError');
+    },
   },
 };
 </script>
