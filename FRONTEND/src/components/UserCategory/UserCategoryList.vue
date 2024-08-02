@@ -168,7 +168,7 @@
               :category="selectedCategory"
               :errors="formErrors"
               @submit="handleSubmit"
-              @clear-errors="clearFormErrors"
+              @update:errors="updateErrors"
             />
           </Modal>
         </div>
@@ -318,6 +318,7 @@ export default {
       currentPage: 1,
       itemsPerPage: 10,
       formErrors: {},
+      persistentErrors: {},
     };
   },
   computed: {
@@ -365,7 +366,7 @@ export default {
     },
     openCreateModal() {
       if (this.$can('creer_categorie_de_collaborateur')) {
-        this.selectedCategory = {};
+        this.selectedCategory = { name: '', description: '' };
         this.isEditMode = false;
         this.clearFormErrors();
         this.showModal = true;
@@ -397,7 +398,7 @@ export default {
     },
     handleSubmit(category) {
       const action = this.isEditMode ? this.updateUserCategory : this.createUserCategory;
-      
+
       action(category)
         .then(() => {
           this.closeModal();
@@ -406,13 +407,15 @@ export default {
         })
         .catch((error) => {
           if (error.response && error.response.status === 422) {
-            this.formErrors = error.response.data.errors;
+            this.persistentErrors = error.response.data.errors;
+            this.formErrors = { ...this.persistentErrors };
           } else {
             console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} user category:`, error);
             this.showErrorToast('Une erreur est survenue. Veuillez réessayer.');
           }
         });
     },
+
     deleteCategory(category) {
       if (this.$can('supprimer_categorie_de_collaborateur') && !category.is_assigned) {
         this.categoryToDelete = category;
@@ -471,7 +474,11 @@ export default {
     },
     clearFormErrors() {
       this.formErrors = {};
-    }
+      this.persistentErrors = {};
+    },
+    updateErrors(newErrors) {
+      this.formErrors = { ...this.persistentErrors, ...newErrors };
+    },
   },
 };
 </script>

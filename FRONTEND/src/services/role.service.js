@@ -12,11 +12,23 @@ class RoleService {
   }
 
   createRole(role) {
-    return request.post(`${API_URL}/roles`, role);
+    return request.post(`${API_URL}/roles`, role)
+      .catch(error => {
+        if (error.response && error.response.status === 422) {
+          throw error.response;
+        }
+        throw error;
+      });
   }
 
   updateRole(id, role) {
-    return request.put(`${API_URL}/roles/${id}`, role);
+    return request.put(`${API_URL}/roles/${id}`, role)
+      .catch(error => {
+        if (error.response && error.response.status === 422) {
+          throw error.response;
+        }
+        throw error;
+      });
   }
 
   deleteRole(id) {
