@@ -50,7 +50,7 @@
           placeholder=" "
         />
         <label for="phone_number" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Numéro de téléphone
+          Numéro de téléphone (optionnel)
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,7 +70,7 @@
           <option value="female">Female</option>
         </select>
         <label for="gender" class="absolute left-4 top-3 text-gray-500 dark:text-gray-400 transition-all duration-300 transform -translate-y-6 scale-75 origin-[0] peer-focus:text-purple-600 dark:peer-focus:text-purple-400">
-          Genre
+          Genre (optionnel)
         </label>
         <div class="absolute right-3 top-3 text-gray-400 dark:text-gray-500 pointer-events-none">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
