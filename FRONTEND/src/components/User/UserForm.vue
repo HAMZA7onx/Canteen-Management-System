@@ -113,6 +113,7 @@
 </template>
 
 <script>
+console.log('UserForm.vue loaded');
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
