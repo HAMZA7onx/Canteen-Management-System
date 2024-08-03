@@ -79,7 +79,8 @@
                     v-if="foodComposant.image"
                     :src="getImageUrl(foodComposant.image)"
                     alt="Food Composant image"
-                    class="h-16 w-16 object-cover rounded-full"
+                    class="h-16 w-16 object-cover rounded-full cursor-pointer"
+                    @click="openImagePopup(foodComposant.image)"
                   />
                   <span v-else class="text-gray-400">No image</span>
                 </td>
@@ -111,14 +112,18 @@
           <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
             <li v-for="foodComposant in paginatedFoodComposants" :key="foodComposant.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
-                <img
-                  v-if="foodComposant.image"
-                  :src="getImageUrl(foodComposant.image)"
-                  alt="Food Composant image"
-                  class="h-16 w-16 object-cover rounded-full mb-2"
-                />
-                <span v-else class="text-gray-400">No image</span>
+                <div class="flex items-center gap-2">
+                  <img
+                    v-if="foodComposant.image"
+                    :src="getImageUrl(foodComposant.image)"
+                    alt="Food Composant image"
+                    class="h-16 w-16 object-cover rounded-full mb-2 cursor-pointer"
+                    @click="openImagePopup(foodComposant.image)"
+                  />
+                  <span v-else class="text-gray-400">No image</span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
+                </div>
+
                 <button
                   v-if="$can('creer_composants_menus')"
                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200"
@@ -242,6 +247,21 @@
       </Overlay>
     </div>
     <Toast :show="showToast" :message="toastMessage" />
+
+    <!-- Image Popup -->
+    <Overlay v-if="showImagePopup" @click="closeImagePopup">
+      <div class="fixed inset-0 flex items-center justify-center z-50" @click.stop>
+        <div class="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-xl max-w-3xl max-h-[90vh] overflow-auto">
+          <img :src="selectedImage" alt="Food Composant image" class="max-w-full max-h-[80vh] object-contain" />
+          <button
+            @click="closeImagePopup"
+            class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Overlay>
   </div>
 </template>
 
@@ -276,6 +296,8 @@ export default {
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 10,
+      showImagePopup: false,
+      selectedImage: null,
     }
   },
   computed: {
@@ -308,11 +330,6 @@ export default {
     }
   },
   watch: {
-    // foodComposants(newValue) {
-    //   if (newValue.length > 0) {
-    //     console.log('Food composants loaded:', newValue)
-    //   }
-    // },
     searchQuery() {
       this.currentPage = 1
     }
@@ -402,7 +419,6 @@ export default {
           })
       }
     },
-
     handleUpdateFoodComposant(formData) {
       if (this.$can('modifier_composants_menus')) {
         const updatedData = {
@@ -420,7 +436,6 @@ export default {
           })
       }
     },
-
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
@@ -434,6 +449,14 @@ export default {
     formatDate(date) {
       if (!date) return '-';
       return new Date(date).toLocaleString();
+    },
+    openImagePopup(imagePath) {
+      this.selectedImage = this.getImageUrl(imagePath);
+      this.showImagePopup = true;
+    },
+    closeImagePopup() {
+      this.showImagePopup = false;
+      this.selectedImage = null;
     },
   }
 }
