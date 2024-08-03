@@ -368,32 +368,36 @@ export default {
         this.showToast = false;
       }, 3000);
     },
-    handleCreateFoodComposant(formData) {
+    handleCreateFoodComposant(formData, { resolve, reject }) {
       if (this.$can('creer_composants_menus')) {
         this.createFoodComposant(formData)
           .then(() => {
-            this.closeCreateModal()
             this.loadFoodComposants()
             this.showSuccessToast('Food component created successfully')
+            resolve()
           })
           .catch(error => {
             console.error('Error creating food composant:', error)
+            reject(error)
           })
       }
     },
-    handleUpdateFoodComposant(formData) {
+
+    handleUpdateFoodComposant(formData, { resolve, reject }) {
       if (this.$can('modifier_composants_menus')) {
         this.updateFoodComposant(formData)
           .then(() => {
-            this.closeEditModal()
             this.loadFoodComposants()
             this.showSuccessToast('Food component updated successfully')
+            resolve()
           })
           .catch(error => {
             console.error('Error updating food composant:', error)
+            reject(error)
           })
       }
     },
+
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--

@@ -44,6 +44,7 @@
         <button
           type="submit"
           class="px-6 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-indigo-600 dark:from-teal-400 dark:to-indigo-500 text-white hover:from-teal-600 hover:to-indigo-700 dark:hover:from-teal-500 dark:hover:to-indigo-600 transition duration-300"
+          @click.prevent="submitForm().then(() => $emit('close')).catch(() => {})"
         >
           {{ isEditMode ? 'Modifier' : 'Créer' }}
         </button>
@@ -75,12 +76,13 @@ export default {
         description: this.foodComposant.description
       }
 
-      if (this.isEditMode) {
-        this.$emit('update', formData)
-      } else {
-        this.$emit('create', formData)
-      }
-      this.$emit('close')
+      return new Promise((resolve, reject) => {
+        if (this.isEditMode) {
+          this.$emit('update', formData, { resolve, reject })
+        } else {
+          this.$emit('create', formData, { resolve, reject })
+        }
+      })
     }
   }
 }
