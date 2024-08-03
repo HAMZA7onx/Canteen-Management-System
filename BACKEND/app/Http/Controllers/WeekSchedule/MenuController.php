@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FoodComposant;
 use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -24,9 +25,15 @@ class MenuController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|unique:menu,name',
             'description' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,webp,png,jpg,gif|max:2048',
         ]);
 
         try {
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('menu_images', 'public');
+                $validatedData['image'] = $imagePath;
+            }
+
             $menu = Menu::create($validatedData);
             return response()->json($menu, 201);
         } catch (\Illuminate\Database\QueryException $e) {
@@ -42,9 +49,20 @@ class MenuController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|unique:menu,name,' . $menu->id,
             'description' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,webp,png,jpg,gif|max:2048',
         ]);
 
         try {
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($menu->image) {
+                    Storage::disk('public')->delete($menu->image);
+                }
+
+                $imagePath = $request->file('image')->store('menu_images', 'public');
+                $validatedData['image'] = $imagePath;
+            }
+
             $menu->update($validatedData);
             return response()->json($menu);
         } catch (\Illuminate\Database\QueryException $e) {

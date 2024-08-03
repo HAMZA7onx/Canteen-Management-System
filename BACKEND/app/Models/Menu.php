@@ -7,7 +7,7 @@ class Menu extends Model
 {
     use HasFactory;
     protected $table = 'menu';
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'image'];
 
     public function dailyMeals()
     {
