@@ -43,6 +43,7 @@
         type="text"
         id="phone_number"
         v-model="user.phone_number"
+        required
         class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 peer pl-4 pr-10"
         placeholder=" "
       />
@@ -60,6 +61,7 @@
       <select
         id="gender"
         v-model="user.gender"
+        required
         class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 transition-all duration-300 text-gray-800 dark:text-gray-200 appearance-none"
       >
         <option value="">Sélectionnez le genre</option>
