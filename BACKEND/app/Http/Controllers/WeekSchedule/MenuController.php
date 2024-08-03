@@ -22,6 +22,7 @@ class MenuController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Create request:', ['all' => $request->all(), 'files' => $request->allFiles()]);
         $validatedData = $request->validate([
             'name' => 'required|unique:menu,name',
             'description' => 'nullable',
@@ -46,6 +47,7 @@ class MenuController extends Controller
 
     public function update(Request $request, Menu $menu)
     {
+        \Log::info('Update request:', ['all' => $request->all(), 'files' => $request->allFiles()]);
         $validatedData = $request->validate([
             'name' => 'required|unique:menu,name,' . $menu->id,
             'description' => 'nullable',

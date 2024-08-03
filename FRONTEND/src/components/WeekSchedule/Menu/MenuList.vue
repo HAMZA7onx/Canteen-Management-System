@@ -72,6 +72,7 @@
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
                   <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dernière mise à jour</th>
                   <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Composants Alimentaires</th>
                   <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
@@ -81,6 +82,15 @@
                 <tr v-for="menu in paginatedMenus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <img
+                      v-if="menu.image"
+                      :src="getImageUrl(menu.image)"
+                      alt="Menu image"
+                      class="h-16 w-16 object-cover rounded-full mr-4"
+                    />
+                    <span v-else class="text-gray-400">No image</span>
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                     {{ formatDate(menu.updated_at) }}
                   </td>
@@ -116,6 +126,15 @@
             <!-- Mobile view -->
             <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
               <li v-for="menu in paginatedMenus" :key="menu.id" class="py-4">
+                <img
+                v-if="menu.image"
+                  :src="getImageUrl(menu.image)"
+                  alt="Menu image"
+                  class="h-16 w-16 object-cover rounded-full mr-4"
+                />
+                <div v-else class="h-16 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mr-4 flex items-center justify-center">
+                  <span class="text-gray-400">No image</span>
+                </div>
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</span>
                   <button
@@ -262,6 +281,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { API_URL } from '@/config/config.js';
 import MenuForm from './MenuForm.vue'
 import MenuFoodComposantForm from './MenuFoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
@@ -328,6 +348,9 @@ export default {
       'updateMenu',
       'deleteMenu'
     ]),
+    getImageUrl(imagePath) {
+      return `${API_URL.replace('/api', '')}/storage/${imagePath}`;
+    },
     openCreateModal() {
       this.showCreateModal = true
     },
@@ -354,7 +377,11 @@ export default {
       this.selectedMenu = null
     },
     handleUpdateMenu(menuData) {
-      this.updateMenu(menuData)
+      const updatedMenuData = {
+        id: this.selectedMenu.id,
+        menuData: menuData
+      }
+      this.updateMenu(updatedMenuData)
         .then(() => {
           this.closeEditModal()
           this.loadMenus()
@@ -362,6 +389,13 @@ export default {
         })
         .catch(error => {
           console.error('Error updating menu:', error)
+          if (error.response && error.response.data && error.response.data.errors) {
+            // Display validation errors to the user
+            const errorMessages = Object.values(error.response.data.errors).flat()
+            this.showErrorToast(errorMessages.join('\n'))
+          } else {
+            this.showErrorToast('An error occurred while updating the menu')
+          }
         })
     },
     openDeleteConfirmation(menu) {

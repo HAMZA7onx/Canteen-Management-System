@@ -13,7 +13,6 @@ const actions = {
   fetchMenus({ commit }) {
     return MenuService.getMenus()
       .then(response => {
-        console.log('Menus fetched:', response.data)
         commit('SET_MENUS', response.data)
       })
       .catch(error => {
@@ -22,28 +21,25 @@ const actions = {
       })
   },
 
-  createMenu({ commit }, menu) {
-    return MenuService.createMenu(menu)
+  createMenu({ commit }, menuData) {
+    console.log('Creating menu:', menuData);
+    return MenuService.createMenu(menuData)
       .then(response => {
         commit('ADD_MENU', response.data)
-      })
-      .catch(error => {
-        console.error('Error creating menu:', error)
-        throw error
+        return response.data
       })
   },
 
-  updateMenu({ commit }, menu) {
-    return MenuService.updateMenu(menu.id, menu)
+  updateMenu({ commit }, { id, menuData }) {
+    console.log('Updating menu:', id, menuData);
+    return MenuService.updateMenu(id, menuData)
       .then(response => {
         commit('UPDATE_MENU', response.data)
-      })
-      .catch(error => {
-        console.error('Error updating menu:', error)
-        throw error
+        return response.data
       })
   },
-
+  
+  
   deleteMenu({ commit }, menu) {
     return MenuService.deleteMenu(menu.id)
       .then(() => {
