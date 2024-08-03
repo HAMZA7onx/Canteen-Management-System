@@ -18,29 +18,41 @@ class FoodComposantsController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:food_composants,name',
             'description' => 'nullable',
         ]);
 
-        $foodComposant = FoodComposant::create($validatedData);
-
-        return response()->json($foodComposant, 201);
-    }
-
-    public function show(FoodComposant $foodComposant)
-    {
-        return response()->json($foodComposant);
+        try {
+            $foodComposant = FoodComposant::create($validatedData);
+            return response()->json($foodComposant, 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A food composant with this name already exists.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function update(Request $request, FoodComposant $foodComposant)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:food_composants,name,' . $foodComposant->id,
             'description' => 'nullable',
         ]);
 
-        $foodComposant->update($validatedData);
+        try {
+            $foodComposant->update($validatedData);
+            return response()->json($foodComposant);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A food composant with this name already exists.'], 422);
+            }
+            throw $e;
+        }
+    }
 
+    public function show(FoodComposant $foodComposant)
+    {
         return response()->json($foodComposant);
     }
 

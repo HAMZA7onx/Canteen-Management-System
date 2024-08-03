@@ -48,36 +48,45 @@ class WeekScheduleController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'mode_name' => 'required',
+            'mode_name' => 'required|unique:week_schedule,mode_name',
             'description' => 'nullable',
             'status' => 'required|in:active,inactive',
         ]);
 
         $validatedData['creator'] = auth()->user()->email;
-        $validatedData['editors'] = []; // Initialize the editors array as empty
+        $validatedData['editors'] = [];
 
-        $weekSchedule = DB::transaction(function () use ($validatedData) {
-            if ($validatedData['status'] === 'active') {
-                WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
+        try {
+            $weekSchedule = DB::transaction(function () use ($validatedData) {
+                if ($validatedData['status'] === 'active') {
+                    WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
+                }
+                return WeekSchedule::create($validatedData);
+            });
+
+            return response()->json($weekSchedule, 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A week schedule with this mode name already exists.'], 422);
             }
-            return WeekSchedule::create($validatedData);
-        });
-
-        return response()->json($weekSchedule, 201);
+            throw $e;
+        }
     }
 
     public function update(Request $request, WeekSchedule $weekSchedule)
     {
         $validatedData = $request->validate([
-            'mode_name' => 'min:5',
+            'mode_name' => 'min:5|unique:week_schedule,mode_name,' . $weekSchedule->id,
             'description' => 'nullable',
             'status' => 'in:active,inactive',
         ]);
 
         // Get the existing editors array
         $editors = $weekSchedule->editors;
+
         // Get the authenticated user's email
         $authUserEmail = auth()->user()->email;
+
         // Check if the authenticated user's email already exists in the editors array
         if (!in_array($authUserEmail, $editors)) {
             // If not, add it to the editors array
@@ -87,14 +96,21 @@ class WeekScheduleController extends Controller
         // Update the editors array in the validated data
         $validatedData['editors'] = $editors;
 
-        DB::transaction(function () use ($weekSchedule, $validatedData) {
-            if ($validatedData['status'] === 'active' && $weekSchedule->status !== 'active') {
-                WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
-            }
-            $weekSchedule->update($validatedData);
-        });
+        try {
+            DB::transaction(function () use ($weekSchedule, $validatedData) {
+                if (isset($validatedData['status']) && $validatedData['status'] === 'active' && $weekSchedule->status !== 'active') {
+                    WeekSchedule::where('status', 'active')->update(['status' => 'inactive']);
+                }
+                $weekSchedule->update($validatedData);
+            });
 
-        return response()->json($weekSchedule);
+            return response()->json($weekSchedule);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A week schedule with this mode name already exists.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function destroy(WeekSchedule $weekSchedule)
