@@ -30,21 +30,37 @@ class DailyMealController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:daily_meals,name',
             'description' => 'nullable',
         ]);
-        $dailyMeal = DailyMeal::create($validatedData);
-        return response()->json($dailyMeal, 201);
+
+        try {
+            $dailyMeal = DailyMeal::create($validatedData);
+            return response()->json($dailyMeal, 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A daily meal with this name already exists.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function update(Request $request, DailyMeal $dailyMeal)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:daily_meals,name,' . $dailyMeal->id,
             'description' => 'nullable',
         ]);
-        $dailyMeal->update($validatedData);
-        return response()->json($dailyMeal);
+
+        try {
+            $dailyMeal->update($validatedData);
+            return response()->json($dailyMeal);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A daily meal with this name already exists.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function destroy(DailyMeal $dailyMeal)

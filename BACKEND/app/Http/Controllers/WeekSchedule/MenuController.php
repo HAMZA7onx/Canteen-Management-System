@@ -22,12 +22,37 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:menu,name',
             'description' => 'nullable',
         ]);
 
-        $menu = Menu::create($validatedData);
-        return response()->json($menu, 201);
+        try {
+            $menu = Menu::create($validatedData);
+            return response()->json($menu, 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A menu with this name already exists.'], 422);
+            }
+            throw $e;
+        }
+    }
+
+    public function update(Request $request, Menu $menu)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|unique:menu,name,' . $menu->id,
+            'description' => 'nullable',
+        ]);
+
+        try {
+            $menu->update($validatedData);
+            return response()->json($menu);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json(['error' => 'A menu with this name already exists.'], 422);
+            }
+            throw $e;
+        }
     }
 
     public function show(Menu $menu)
@@ -35,17 +60,6 @@ class MenuController extends Controller
         $menu->load([
             'foodComposants'
         ]);
-        return response()->json($menu);
-    }
-
-    public function update(Request $request, Menu $menu)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'description' => 'nullable',
-        ]);
-
-        $menu->update($validatedData);
         return response()->json($menu);
     }
 
