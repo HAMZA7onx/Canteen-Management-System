@@ -6,8 +6,6 @@ export default {
   },
   methods: {
     $can(permission) {
-      console.log('Checking permission:', permission);
-      console.log('User permissions:', this.userPermissions);
       return this.userPermissions.includes(permission);
     },
   },  

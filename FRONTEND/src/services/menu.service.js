@@ -13,11 +13,18 @@ class MenuService {
   }
 
   createMenu(data) {
-    return request.post(API_URL, data)
+    return request.post(API_URL, data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
   }
-
+  
   updateMenu(id, data) {
-    return request.put(`${API_URL}/${id}`, data)
+    return request.put(`${API_URL}/${id}`, data, {
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
   }
 
   deleteMenu(id) {
