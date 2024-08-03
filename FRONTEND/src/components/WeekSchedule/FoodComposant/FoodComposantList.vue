@@ -374,6 +374,7 @@ export default {
           .then(() => {
             this.loadFoodComposants()
             this.showSuccessToast('Food component created successfully')
+            this.closeCreateModal()
             resolve()
           })
           .catch(error => {
@@ -389,6 +390,7 @@ export default {
           .then(() => {
             this.loadFoodComposants()
             this.showSuccessToast('Food component updated successfully')
+            this.closeEditModal()
             resolve()
           })
           .catch(error => {
