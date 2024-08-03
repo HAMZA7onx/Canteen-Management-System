@@ -22,7 +22,6 @@ const actions = {
   },
 
   createMenu({ commit }, menuData) {
-    console.log('Creating menu:', menuData);
     return MenuService.createMenu(menuData)
       .then(response => {
         commit('ADD_MENU', response.data)
@@ -31,7 +30,6 @@ const actions = {
   },
 
   updateMenu({ commit }, { id, menuData }) {
-    console.log('Updating menu:', id, menuData);
     return MenuService.updateMenu(id, menuData)
       .then(response => {
         commit('UPDATE_MENU', response.data)

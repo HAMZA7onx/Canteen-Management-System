@@ -81,7 +81,9 @@
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <tr v-for="menu in paginatedMenus" :key="menu.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ menu.description !== null ? menu.description : '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {{ menu.description === 'null' || menu.description === null ? '-' : menu.description }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <img
                       v-if="menu.image"
@@ -144,7 +146,9 @@
                     <font-awesome-icon icon="ellipsis-v" />
                   </button>
                 </div>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ menu.description !== null ? menu.description : '-' }}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {{ menu.description === 'null' || menu.description === null ? '-' : menu.description }}
+                </p>
                 <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Dernière mise à jour: {{ formatDate(menu.updated_at) }}</p>
                 <div v-if="menu.showActions" class="mt-4 space-y-2">
                   <button

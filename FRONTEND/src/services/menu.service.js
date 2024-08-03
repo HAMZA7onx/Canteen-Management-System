@@ -13,19 +13,19 @@ class MenuService {
   }
 
   createMenu(data) {
-    console.log('Creating menu service:', data);
     return request.post(API_URL, data, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
   }
   
   updateMenu(id, data) {
-    console.log('Sending update request:', id, data);
     return request.put(`${API_URL}/${id}`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
     })
   }
-  
 
   deleteMenu(id) {
     return request.delete(`${API_URL}/${id}`)
