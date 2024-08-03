@@ -17,7 +17,13 @@ class FoodComposantService {
   }
 
   updateFoodComposant(id, data) {
-    return request.put(`${API_URL}/${id}`, data)
+    console.log('id: ', id, 'data: ', data.formData);
+    return request.put(`${API_URL}/${id}`, data.formData, {
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
   }
 
   deleteFoodComposant(id) {

@@ -57,6 +57,7 @@
               <tr class="text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
                 <th class="py-3 px-6 text-left">Nom</th>
                 <th class="py-3 px-6 text-left">Description</th>
+                <th class="py-3 px-6 text-left">Image</th>
                 <th class="py-3 px-6 text-left">Dernière mise à jour</th>
                 <th class="py-3 px-6 text-center">Actions</th>
               </tr>
@@ -72,6 +73,15 @@
                 </td>
                 <td class="py-3 px-6 text-left">
                   {{ foodComposant.description !== null ? foodComposant.description : '-' }}
+                </td>
+                <td class="py-3 px-6 text-left">
+                  <img
+                    v-if="foodComposant.image"
+                    :src="getImageUrl(foodComposant.image)"
+                    alt="Food Composant image"
+                    class="h-16 w-16 object-cover rounded-full"
+                  />
+                  <span v-else class="text-gray-400">No image</span>
                 </td>
                 <td class="py-3 px-6 text-left">
                   {{ formattedDates(foodComposant.updated_at) }}
@@ -102,6 +112,13 @@
             <li v-for="foodComposant in paginatedFoodComposants" :key="foodComposant.id" class="py-4 px-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ foodComposant.name }}</span>
+                <img
+                  v-if="foodComposant.image"
+                  :src="getImageUrl(foodComposant.image)"
+                  alt="Food Composant image"
+                  class="h-16 w-16 object-cover rounded-full mb-2"
+                />
+                <span v-else class="text-gray-400">No image</span>
                 <button
                   v-if="$can('creer_composants_menus')"
                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-200"
@@ -230,6 +247,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { API_URL } from '@/config/config.js';
 import FoodComposantForm from './FoodComposantForm.vue'
 import Modal from '@/components/shared/Modal.vue'
 import Overlay from '@/components/shared/Overlay.vue'
@@ -290,11 +308,11 @@ export default {
     }
   },
   watch: {
-    foodComposants(newValue) {
-      if (newValue.length > 0) {
-        console.log('Food composants loaded:', newValue)
-      }
-    },
+    // foodComposants(newValue) {
+    //   if (newValue.length > 0) {
+    //     console.log('Food composants loaded:', newValue)
+    //   }
+    // },
     searchQuery() {
       this.currentPage = 1
     }
@@ -306,6 +324,9 @@ export default {
       'updateFoodComposant',
       'deleteFoodComposant'
     ]),
+    getImageUrl(imagePath) {
+      return `${API_URL.replace('/api', '')}/storage/${imagePath}`;
+    },
     openCreateModal() {
       if (this.$can('creer_composants_menus')) {
         this.showCreateModal = true
@@ -368,34 +389,34 @@ export default {
         this.showToast = false;
       }, 3000);
     },
-    handleCreateFoodComposant(formData, { resolve, reject }) {
+    handleCreateFoodComposant(formData) {
       if (this.$can('creer_composants_menus')) {
         this.createFoodComposant(formData)
           .then(() => {
             this.loadFoodComposants()
             this.showSuccessToast('Food component created successfully')
             this.closeCreateModal()
-            resolve()
           })
           .catch(error => {
             console.error('Error creating food composant:', error)
-            reject(error)
           })
       }
     },
 
-    handleUpdateFoodComposant(formData, { resolve, reject }) {
+    handleUpdateFoodComposant(formData) {
       if (this.$can('modifier_composants_menus')) {
-        this.updateFoodComposant(formData)
+        const updatedData = {
+          id: this.selectedFoodComposant.id,
+          formData: formData
+        }
+        this.updateFoodComposant(updatedData)
           .then(() => {
             this.loadFoodComposants()
             this.showSuccessToast('Food component updated successfully')
             this.closeEditModal()
-            resolve()
           })
           .catch(error => {
             console.error('Error updating food composant:', error)
-            reject(error)
           })
       }
     },

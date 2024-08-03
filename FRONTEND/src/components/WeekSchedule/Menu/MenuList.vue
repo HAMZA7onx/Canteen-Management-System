@@ -85,13 +85,15 @@
                     {{ menu.description === 'null' || menu.description === null ? '-' : menu.description }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <img
-                      v-if="menu.image"
-                      :src="getImageUrl(menu.image)"
-                      alt="Menu image"
-                      class="h-16 w-16 object-cover rounded-full mr-4"
-                    />
-                    <span v-else class="text-gray-400">No image</span>
+                    <div class="relative group">
+                      <img
+                        v-if="menu.image"
+                        :src="getImageUrl(menu.image)"
+                        alt="Menu image"
+                        class="h-16 w-16 object-cover rounded-full mr-4 transition-all duration-300 ease-in-out transform group-hover:scale-150 group-hover:z-10"
+                      />
+                      <span v-else class="text-gray-400">No image</span>
+                    </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 text-center">
                     {{ formatDate(menu.updated_at) }}
@@ -128,14 +130,16 @@
             <!-- Mobile view -->
             <ul class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
               <li v-for="menu in paginatedMenus" :key="menu.id" class="py-4">
-                <img
-                v-if="menu.image"
-                  :src="getImageUrl(menu.image)"
-                  alt="Menu image"
-                  class="h-16 w-16 object-cover rounded-full mr-4"
-                />
-                <div v-else class="h-16 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mr-4 flex items-center justify-center">
-                  <span class="text-gray-400">No image</span>
+                <div class="relative group">
+                  <img
+                    v-if="menu.image"
+                    :src="getImageUrl(menu.image)"
+                    alt="Menu image"
+                    class="h-16 w-16 object-cover rounded-full mr-4 transition-all duration-300 ease-in-out transform group-hover:scale-150 group-hover:z-10"
+                  />
+                  <div v-else class="h-16 w-16 bg-gray-200 dark:bg-gray-700 rounded-full mr-4 flex items-center justify-center">
+                    <span class="text-gray-400">No image</span>
+                  </div>
                 </div>
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-medium text-gray-900 dark:text-white">{{ menu.name }}</span>
@@ -478,5 +482,28 @@ export default {
 
 html {
   scroll-behavior: smooth;
+}
+
+.group:hover {
+  z-index: 10;
+}
+
+.group:hover img {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .group:hover img {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(2);
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
 }
 </style>
