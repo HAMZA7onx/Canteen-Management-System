@@ -9,9 +9,12 @@
           <button @click="toggleSidebar" class="mr-2 text-white sm:hidden hover:text-indigo-200 transition-colors duration-300">
             <font-awesome-icon icon="bars" class="text-xl" />
           </button>
-          <router-link to="/" class="flex items-center space-x-2">
-            <img src="@/assets/logo.png" class="w-[100px] h-auto invert brightness-0" alt="Logo">
-          </router-link>
+       <router-link to="/" class="flex items-center space-x-2">
+          <div class="w-[100px] h-[40px] flex items-center justify-center overflow-hidden">
+            <img :src="logoUrl" class="object-contain w-full h-full invert brightness-0" alt="Logo">
+          </div>
+        </router-link>
+
         </div>
         <div class="hidden sm:flex items-center space-x-6">
           <DarkModeToggle class="transform hover:scale-110 transition-transform duration-300 text-white dark:text-current" />
@@ -63,11 +66,13 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { mapActions } from 'vuex';
+import { ref, computed } from 'vue';
+import { mapActions, mapGetters } from 'vuex';
 import DarkModeToggle from './DarkModeToggle.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { API_URL } from '@/config/config';
+import defaultLogo from '@/assets/logo.png';
 
 library.add(faBars, faEllipsisV);
 
@@ -78,6 +83,7 @@ export default {
   },
   setup() {
     const mobileMenuOpen = ref(false);
+    const cachedLogoUrl = ref(localStorage.getItem('cachedLogoUrl') || defaultLogo);
 
     const toggleMobileMenu = () => {
       mobileMenuOpen.value = !mobileMenuOpen.value;
@@ -86,24 +92,49 @@ export default {
     return {
       mobileMenuOpen,
       toggleMobileMenu,
+      cachedLogoUrl,
     };
+  },
+  computed: {
+    ...mapGetters('logo', ['currentLogo']),
+    logoUrl() {
+      return this.cachedLogoUrl;
+    }
+  },
+  watch: {
+    currentLogo: {
+      handler(newLogo) {
+        if (newLogo) {
+          const baseUrl = API_URL.replace('/api', '');
+          const fullLogoUrl = `${baseUrl}${newLogo}`;
+          if (fullLogoUrl !== this.cachedLogoUrl) {
+            this.cachedLogoUrl = fullLogoUrl;
+            localStorage.setItem('cachedLogoUrl', fullLogoUrl);
+          }
+        }
+      },
+      immediate: true
+    }
+  },
+  created() {
+    this.fetchLogo();
   },
   methods: {
     ...mapActions('auth', ['logout']),
     ...mapActions('sidebar', ['toggleSidebar']),
+    ...mapActions('logo', ['fetchLogo']),
     async handleLogout() {
       try {
         await this.logout();
         this.mobileMenuOpen = false;
       } catch (error) {
         console.error('Error during logout:', error);
-        // Handle the error as needed
       }
     },
   },
 };
 </script>
- 
+
 <style scoped>
 nav {
   background-size: 200% 200%;
