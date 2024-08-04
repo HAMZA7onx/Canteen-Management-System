@@ -66,7 +66,7 @@ import {
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock, faClipboardCheck
+  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -74,7 +74,7 @@ library.add(
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock, faClipboardCheck
+  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage
 );
 
 import permissionMixin from '@/mixins/permissionMixin';
@@ -134,10 +134,10 @@ export default {
         ]
       },
       {
-        title: 'Appearance',
+        title: 'Apparence',
         expanded: false,
         items: [
-          { label: 'Logo', icon: 'chart-bar', route: '/LogoList' },
+          { label: 'Logo', icon: 'image', route: '/LogoList' },
         ]
       },
     ]);
