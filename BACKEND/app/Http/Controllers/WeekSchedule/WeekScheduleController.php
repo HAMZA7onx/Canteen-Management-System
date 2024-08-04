@@ -1,15 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\WeekSchedule;
-
 use App\Http\Controllers\Controller;
 use App\Models\WeekSchedule;
 use App\Models\DailyMeal;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
-
 class WeekScheduleController extends Controller
 {
     public function index()
@@ -43,8 +39,6 @@ class WeekScheduleController extends Controller
 
         return response()->json($weekSchedule);
     }
-
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
