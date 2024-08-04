@@ -133,6 +133,13 @@ export default {
           { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices', permission: 'voir_POS' },
         ]
       },
+      {
+        title: 'Appearance',
+        expanded: false,
+        items: [
+          { label: 'Logo', icon: 'chart-bar', route: '/LogoList' },
+        ]
+      },
     ]);
 
     const toggleSidebar = () => {

@@ -20,6 +20,7 @@ import PosDeviceList from '@/components/POS/PosDeviceList.vue'
 import AdvancedRecordsDashboard from '@/components/Record/AdvancedRecordsDashboard.vue';
 import AdminReportSubscriptionDashboard from '@/components/Admin/AdminReportSubscriptionDashboard.vue';
 import Unauthorized from '@/views/Unauthorized.vue';
+import LogoList from '@/components/Logo/LogoList.vue';
 
 const routes = [
   { path: '/', name: 'dashboard', component: Home },
@@ -41,6 +42,7 @@ const routes = [
   { path: '/records-audit', component: AdvancedRecordsDashboard },
   { path: '/admins-report-subscriptions', component: AdminReportSubscriptionDashboard },
   { path: '/unauthorized', name: 'unauthorized', component: Unauthorized },
+  { path: '/LogoList', component: LogoList },
 ];
 
 const router = createRouter({

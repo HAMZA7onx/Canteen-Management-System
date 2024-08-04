@@ -13,7 +13,9 @@
 
     <div class="w-full max-w-md px-4">
       <div class="absolute top-3 left-4">
-        <img src="@/assets/logo.png" alt="Logo" class="w-[100px] h-auto invert brightness-0">
+        <div class="w-[100px] h-[40px] flex items-center justify-center overflow-hidden">
+          <img :src="logoUrl" alt="Logo" class="object-contain w-full h-full invert brightness-0">
+        </div>
       </div>
 
       <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-lg px-8 pt-6 pb-8 mb-4 transform hover:scale-105 transition-all duration-300">
@@ -66,8 +68,17 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue';
+import { mapActions, mapGetters } from 'vuex';
+import { API_URL } from '@/config/config';
+import defaultLogo from '@/assets/logo.png';
+
 export default {
   name: 'Login',
+  setup() {
+    const cachedLogoUrl = ref(localStorage.getItem('cachedLogoUrl') || defaultLogo);
+    return { cachedLogoUrl };
+  },
   data() {
     return {
       credentials: {
@@ -79,7 +90,29 @@ export default {
       isLoading: false,
     };
   },
+  computed: {
+    ...mapGetters('logo', ['currentLogo']),
+    logoUrl() {
+      return this.cachedLogoUrl;
+    }
+  },
+  watch: {
+    currentLogo: {
+      handler(newLogo) {
+        if (newLogo) {
+          const baseUrl = API_URL.replace('/api', '');
+          const fullLogoUrl = `${baseUrl}${newLogo}`;
+          if (fullLogoUrl !== this.cachedLogoUrl) {
+            this.cachedLogoUrl = fullLogoUrl;
+            localStorage.setItem('cachedLogoUrl', fullLogoUrl);
+          }
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
+    ...mapActions('logo', ['fetchLogo']),
     async handleLogin() {
       this.warningMessage = '';
       this.isLoading = true;
@@ -117,6 +150,7 @@ export default {
       this.isDarkMode = true;
       document.documentElement.classList.add('dark');
     }
+    this.fetchLogo();
   },
 };
 </script>

@@ -20,12 +20,14 @@ use App\Http\Controllers\User\CategoryDiscountController;
 use App\Http\Controllers\Admin\AdminReportSubscriptionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DailyMealStatsController;
+use App\Http\Controllers\LogoController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
 Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge']);
-
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/upload-logo', [LogoController::class, 'upload']);
+Route::get('/get-logo', [LogoController::class, 'get']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -223,5 +225,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/daily-meal-stats', [DailyMealStatsController::class, 'getDailyStats']);
 });
-
-
