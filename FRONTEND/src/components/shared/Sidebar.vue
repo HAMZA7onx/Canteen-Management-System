@@ -102,16 +102,16 @@ export default {
           { label: 'Les utilisateurs', icon: 'user-shield', route: '/admins', permission: 'SUPER_ADMIN_PERMISSION' },
           { label: 'Les roles', icon: 'user-tag', route: '/roles', permission: 'SUPER_ADMIN_PERMISSION'  },
           { label: 'Les subscriptions des admins', icon: 'user-shield', route: '/admins-report-subscriptions', permission: 'gerer_subscribtions_des_admin'},
-          { label: 'Les Categories des collaborateurs', icon: 'user-friends', route: '/user-categories', permission: 'voir_categorie_de_collaborateur' },
+          { label: 'Les badges des utilisateurs', icon: 'id-badge', route: '/admins-badges', permission: 'voir_badges_administrateurs' },
         ]
       },
       {
-        title: 'Utilisateurs',
+        title: 'Collaborateurs',
         expanded: false,
         items: [
+          { label: 'Les Categories des collaborateurs', icon: 'user-friends', route: '/user-categories', permission: 'voir_categorie_de_collaborateur' },
           { label: 'Les collaborateurs', icon: 'users', route: '/users', permission: 'voir_collaborateurs' },
           { label: 'Les badges des collaborateurs', icon: 'id-badge', route: '/badges', permission: 'voir_badges_collaborateurs' },
-          { label: 'Les badges des utilisateurs', icon: 'id-badge', route: '/admins-badges', permission: 'voir_badges_administrateurs' },
         ]
       },
       {
