@@ -22,7 +22,7 @@ import AdminReportSubscriptionDashboard from '@/components/Admin/AdminReportSubs
 import Unauthorized from '@/views/Unauthorized.vue';
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', name: 'dashboard', component: Home },
   { path: '/admins', component: AdminListView },
   { path: '/login', component: Login },
   { path: '/users', component: UserList },
