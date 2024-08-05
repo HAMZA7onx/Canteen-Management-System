@@ -116,7 +116,6 @@ export default {
     async handleLogin() {
       this.warningMessage = '';
       this.isLoading = true;
-
       try {
         await this.$store.dispatch('auth/login', this.credentials);
         this.$router.push({ name: 'dashboard' });
