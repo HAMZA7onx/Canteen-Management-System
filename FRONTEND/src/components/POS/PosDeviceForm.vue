@@ -55,6 +55,24 @@
             Status
           </label>
         </div>
+
+        <div class="relative">
+          <select
+            id="printer"
+            v-model="formData.printer"
+            required
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <label
+            for="printer"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400"
+          >
+            Printer Status
+          </label>
+        </div>
       </div>
 
       <button
@@ -62,7 +80,7 @@
         :disabled="!isValidIP"
         class="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 dark:from-cyan-400 dark:to-blue-500 text-white hover:from-cyan-600 hover:to-blue-700 dark:hover:from-cyan-500 dark:hover:to-blue-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ device.id ? 'Créer' : 'Modifier' }} l'appareil
+        {{ device.id ? 'Modifier' : 'Créer' }} l'appareil
       </button>
     </form>
 </template>
@@ -84,11 +102,13 @@ export default {
       formData: {
         name: this.device.name || '',
         ip_address: this.device.ip_address || '',
-        status: this.device.status || 'unauthorized'
+        status: this.device.status || 'unauthorized',
+        printer: this.device.printer || 'inactive'
       },
       isValidIP: true
     }
   },
+
   methods: {
     validateIPAddress(ip) {
       const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;

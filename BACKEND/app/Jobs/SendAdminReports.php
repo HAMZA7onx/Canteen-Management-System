@@ -27,25 +27,37 @@ class SendAdminReports implements ShouldQueue
 
     public function handle(RecordsDashboardController $recordsController)
     {
-        Log::info("SendAdminReports job started for frequency: {$this->frequency}");
+        try {
+            Log::info("SendAdminReports job started for frequency: {$this->frequency}");
 
-        $subscriptions = AdminReportSubscription::where('frequency', $this->frequency)
-            ->where('is_active', true)
-            ->get();
+            $subscriptions = AdminReportSubscription::where('frequency', $this->frequency)
+                ->where('is_active', true)
+                ->get();
 
-        Log::info("Found " . $subscriptions->count() . " active subscriptions for {$this->frequency} reports");
+            Log::info("Found " . $subscriptions->count() . " active subscriptions for {$this->frequency} reports");
 
-        foreach ($subscriptions as $subscription) {
-            $dateRange = $this->getDateRange();
-            $records = $this->getRecords($recordsController, $dateRange);
+            foreach ($subscriptions as $subscription) {
+                try {
+                    $dateRange = $this->getDateRange();
+                    Log::info("Date range: " . json_encode($dateRange));
 
-            Log::info("Sending {$this->frequency} report to: {$subscription->admin->email}");
+                    $records = $this->getRecords($recordsController, $dateRange);
+                    Log::info("Records fetched successfully");
 
-            Mail::to($subscription->admin->email)
-                ->send(new DetailedAdminReportMail($records, $this->frequency, $dateRange));
+                    Log::info("Sending {$this->frequency} report to: {$subscription->admin->email}");
+                    Mail::to($subscription->admin->email)
+                        ->send(new DetailedAdminReportMail($records, $this->frequency, $dateRange));
+                    Log::info("Email sent successfully");
+                } catch (\Exception $e) {
+                    Log::error("Error processing subscription: " . $e->getMessage());
+                }
+            }
+
+            Log::info("SendAdminReports job completed for frequency: {$this->frequency}");
+        } catch (\Exception $e) {
+            Log::error("SendAdminReports job failed: " . $e->getMessage());
+            throw $e;
         }
-
-        Log::info("SendAdminReports job completed for frequency: {$this->frequency}");
     }
 
     private function getDateRange()
