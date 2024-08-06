@@ -22,6 +22,9 @@
     </div>
 
     <div v-else>
+      <button @click="printTicket" class="mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        Imprimer
+      </button>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 bg-indigo-600 text-white">
           <h3><span class="text-3xl font-semibold mb-2">{{ meal.name }}:</span></h3>
@@ -34,7 +37,7 @@
             <StatCard title="Revenu Total" :value="formatCurrency(calculateTotalRevenue(meal))" icon="cash" />
             <StatCard title="Total Remisé" :value="formatCurrency(calculateTotalDiscounted(meal))" icon="tag" />
           </div>
-          
+         
           <ExpandableSection title="Détails des Collaborateurs">
             <div class="mb-4">
               <input v-model="searchQuery" placeholder="Rechercher par nom ou numéro de matricule" class="w-full p-2 border rounded">
@@ -73,7 +76,7 @@
               </button>
             </div>
           </ExpandableSection>
-          
+         
           <ExpandableSection title="Répartition Financière">
             <div class="flex justify-center">
               <PieChart :data="getChartData(meal)" />
@@ -179,12 +182,63 @@ export default {
       ];
     };
 
+    const printTicket = async () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Printing ticket in development mode:');
+        dailyMeals.value.forEach(meal => {
+          console.log(`Meal: ${meal.name}`);
+          console.log(`Time: ${formatTime(meal.start_time)} - ${formatTime(meal.end_time)}`);
+          console.log(`Attendees: ${meal.attendee_count}`);
+          console.log(`Total Revenue: ${formatCurrency(calculateTotalRevenue(meal))}`);
+          console.log(`Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}`);
+          console.log('-'.repeat(32));
+        });
+        console.log('Thank you for your business!');
+        console.log(new Date().toLocaleString());
+      } else {
+        try {
+          const printer = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x0000 }] });
+          await printer.open();
+          let ticketData = "\x1B\x40"; // Initialize printer
+          ticketData += "\x1B\x61\x01"; // Center align
+          ticketData += "\x1B\x21\x30"; // Double height and width
+          ticketData += "Daily Meal Statistics\n\n";
+          ticketData += "\x1B\x21\x00"; // Normal text
+
+          dailyMeals.value.forEach(meal => {
+            ticketData += "\x1B\x45\x01"; // Bold on
+            ticketData += `${meal.name}\n`;
+            ticketData += "\x1B\x45\x00"; // Bold off
+            ticketData += `Time: ${formatTime(meal.start_time)} - ${formatTime(meal.end_time)}\n`;
+            ticketData += `Attendees: ${meal.attendee_count}\n`;
+            ticketData += `Total Revenue: ${formatCurrency(calculateTotalRevenue(meal))}\n`;
+            ticketData += `Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}\n`;
+            ticketData += "\x1B\x61\x00"; // Left align
+            ticketData += "-".repeat(32) + "\n"; // Separator line
+            ticketData += "\x1B\x61\x01"; // Center align
+          });
+
+          ticketData += "\n\x1B\x61\x00"; // Left align
+          ticketData += "Thank you for your business!\n";
+          ticketData += "\x1B\x61\x01"; // Center align
+          ticketData += new Date().toLocaleString() + "\n";
+          ticketData += "\x1B\x64\x02"; // Feed 2 lines
+          ticketData += "\x1D\x56\x00"; // Cut paper
+
+          await printer.transferOut(1, new TextEncoder().encode(ticketData));
+          await printer.close();
+        } catch (error) {
+          console.error('Printing failed:', error);
+        }
+      }
+    };
 
     watch(dailyMeals, (newValue) => {
       console.log('dailyMeals:', newValue);
     }, { immediate: true });
 
     const hasMealToday = computed(() => dailyMeals.value.length === 0);
+
     return {
       dailyMeals,
       isLoading,
@@ -201,6 +255,7 @@ export default {
       calculateTotalDiscounted,
       calculateTotalRevenue,
       calculateTotalDiscounts,
+      printTicket,
     };
   }
 }
