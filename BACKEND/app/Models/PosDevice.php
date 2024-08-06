@@ -16,6 +16,7 @@ class PosDevice extends Model
     protected $fillable = [
         'name',
         'ip_address',
+        'printer',
         'status',
         'editors',
         'creator'

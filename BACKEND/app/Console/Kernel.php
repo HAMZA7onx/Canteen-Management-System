@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new SendAdminReports('daily'))->dailyAt('16:36');
+        $schedule->job(new SendAdminReports('daily'))->dailyAt('11:27');
         $schedule->job(new SendAdminReports('weekly'))->weekly()->sundays()->at('11:59');
         $schedule->job(new SendAdminReports('monthly'))->monthly()->lastDayOfMonth()->at('11:59');
         $schedule->job(new SendAdminReports('yearly'))->cron('59 23 31 12 *');

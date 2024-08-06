@@ -20,6 +20,7 @@ class PosDeviceController extends Controller
             'name' => 'required|unique:pos_devices,name',
             'ip_address' => 'required|ip|unique:pos_devices,ip_address',
             'status' => 'required|in:allowed,unauthorized',
+            'printer' => 'required|in:active,inactive',
         ]);
 
         try {
@@ -27,9 +28,11 @@ class PosDeviceController extends Controller
                 'name' => $request->name,
                 'ip_address' => $request->ip_address,
                 'status' => $request->status,
+                'printer' => $request->printer,
                 'creator' => Auth::user()->email,
                 'editors' => [],
             ]);
+
             return response()->json($posDevice, 201);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
@@ -47,6 +50,7 @@ class PosDeviceController extends Controller
             'name' => 'unique:pos_devices,name,' . $id,
             'ip_address' => 'ip|unique:pos_devices,ip_address,' . $id,
             'status' => 'in:allowed,unauthorized',
+            'printer' => 'in:active,inactive',
         ]);
 
         try {
@@ -59,6 +63,9 @@ class PosDeviceController extends Controller
             if ($request->has('status')) {
                 $posDevice->status = $request->status;
             }
+            if ($request->has('printer')) {
+                $posDevice->printer = $request->printer;
+            }
 
             // Append the current user's email to editors if not already present
             $editors = $posDevice->editors;
@@ -69,6 +76,7 @@ class PosDeviceController extends Controller
             }
 
             $posDevice->save();
+
             return response()->json($posDevice);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
