@@ -23,7 +23,7 @@
 
     <div v-else>
       <button @click="printTicket" class="mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Imprimer
+        Imprimer statistiques
       </button>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 bg-indigo-600 text-white">
