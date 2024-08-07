@@ -18,7 +18,6 @@ const actions = {
   fetchBadges({ commit }) {
     return BadgeService.getAll()
       .then((response) => {
-        console.log('badges: ', response.data);
         commit('SET_BADGES', response.data);
       })
       .catch((error) => {
