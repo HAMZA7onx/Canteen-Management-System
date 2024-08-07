@@ -205,6 +205,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [PosDeviceController::class, 'show']);
         Route::put('/{id}', [PosDeviceController::class, 'update'])->middleware('check.permission:modifier_POS');
         Route::delete('/{id}', [PosDeviceController::class, 'destroy'])->middleware('check.permission:supprimer_POS');
+        Route::get('/getStatus', [PosDeviceController::class, 'getStatus']);
     });
 
     Route::get('discounts/{day}/{mealId}', [CategoryDiscountController::class, 'getDiscountsForMeal']);
