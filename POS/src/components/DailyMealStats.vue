@@ -193,37 +193,52 @@ export default {
           console.log(`Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}`);
           console.log('-'.repeat(32));
         });
-        console.log('Thank you for your business!');
+        console.log('Merci!');
         console.log(new Date().toLocaleString());
       } else {
         try {
-          const printer = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x0000 }] });
+          const devices = await navigator.usb.getDevices();
+          const printerDevices = devices.filter(device => 
+            device.configurations[0].interfaces.some(intf => 
+              intf.alternates[0].interfaceClass === 0x07
+            )
+          );
+
+          let printer;
+          if (printerDevices.length === 0) {
+            printer = await navigator.usb.requestDevice({ filters: [] });
+          } else if (printerDevices.length === 1) {
+            printer = printerDevices[0];
+          } else {
+            printer = printerDevices[0];
+          }
+
           await printer.open();
-          let ticketData = "\x1B\x40"; // Initialize printer
-          ticketData += "\x1B\x61\x01"; // Center align
-          ticketData += "\x1B\x21\x30"; // Double height and width
+          let ticketData = "\x1B\x40";
+          ticketData += "\x1B\x61\x01";
+          ticketData += "\x1B\x21\x30";
           ticketData += "Daily Meal Statistics\n\n";
-          ticketData += "\x1B\x21\x00"; // Normal text
+          ticketData += "\x1B\x21\x00";
 
           dailyMeals.value.forEach(meal => {
-            ticketData += "\x1B\x45\x01"; // Bold on
+            ticketData += "\x1B\x45\x01";
             ticketData += `${meal.name}\n`;
-            ticketData += "\x1B\x45\x00"; // Bold off
+            ticketData += "\x1B\x45\x00";
             ticketData += `Time: ${formatTime(meal.start_time)} - ${formatTime(meal.end_time)}\n`;
             ticketData += `Attendees: ${meal.attendee_count}\n`;
             ticketData += `Total Revenue: ${formatCurrency(calculateTotalRevenue(meal))}\n`;
             ticketData += `Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}\n`;
-            ticketData += "\x1B\x61\x00"; // Left align
-            ticketData += "-".repeat(32) + "\n"; // Separator line
-            ticketData += "\x1B\x61\x01"; // Center align
+            ticketData += "\x1B\x61\x00";
+            ticketData += "-".repeat(32) + "\n";
+            ticketData += "\x1B\x61\x01";
           });
 
-          ticketData += "\n\x1B\x61\x00"; // Left align
+          ticketData += "\n\x1B\x61\x00";
           ticketData += "Thank you for your business!\n";
-          ticketData += "\x1B\x61\x01"; // Center align
+          ticketData += "\x1B\x61\x01";
           ticketData += new Date().toLocaleString() + "\n";
-          ticketData += "\x1B\x64\x02"; // Feed 2 lines
-          ticketData += "\x1D\x56\x00"; // Cut paper
+          ticketData += "\x1B\x64\x02";
+          ticketData += "\x1D\x56\x00";
 
           await printer.transferOut(1, new TextEncoder().encode(ticketData));
           await printer.close();
