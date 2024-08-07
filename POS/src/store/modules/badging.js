@@ -40,7 +40,6 @@ const actions = {
   async fetchCurrentMeal({ commit }) {
     try {
       const meal = await BadgingService.getCurrentMeal();
-      console.log('MEAL: ', meal)
       commit('SET_CURRENT_MEAL', meal);
     } catch (error) {
       commit('SET_CURRENT_MEAL', null);
@@ -49,7 +48,6 @@ const actions = {
   },
 
   async fetchDiscounts({ commit }, { day, mealId }) {
-    console.log('mealId: ', mealId);
     try {
       const discounts = await BadgingService.getDiscountsForMeal(day, mealId);
       commit('SET_DISCOUNTS', discounts);

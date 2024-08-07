@@ -110,7 +110,53 @@ export default {
         discount.toLowerCase().includes(searchTerm.value.toLowerCase())
       );
     });
-  
+
+    const printBadgeTicket = async (personName, mealName, mealTime, mealPrice) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Printing badge ticket in development mode:');
+        console.log(`Name: ${personName}`);
+        console.log(`Meal: ${mealName}`);
+        console.log(`Time: ${mealTime}`);
+        console.log(`Price: ${mealPrice} DH`);
+      } else {
+        try {
+          const devices = await navigator.usb.getDevices();
+          const printerDevices = devices.filter(device =>
+            device.configurations[0].interfaces.some(intf =>
+              intf.alternates[0].interfaceClass === 0x07
+            )
+          );
+
+          let printer;
+          if (printerDevices.length === 0) {
+            printer = await navigator.usb.requestDevice({ filters: [] });
+          } else if (printerDevices.length === 1) {
+            printer = printerDevices[0];
+          } else {
+            printer = printerDevices[0];
+          }
+
+          await printer.open();
+          let ticketData = "\x1B\x40"; // Initialize printer
+          ticketData += "\x1B\x61\x01"; // Center align
+          ticketData += "\x1B\x21\x30"; // Double height and width
+          ticketData += "Badge Ticket\n\n";
+          ticketData += "\x1B\x21\x00"; // Normal text
+          ticketData += `Name: ${personName}\n`;
+          ticketData += `Meal: ${mealName}\n`;
+          ticketData += `Time: ${mealTime}\n`;
+          ticketData += `Price: ${mealPrice} DH\n`;
+          ticketData += "\x1B\x64\x02"; // Feed 2 lines
+          ticketData += "\x1D\x56\x00"; // Cut paper
+
+          await printer.transferOut(1, new TextEncoder().encode(ticketData));
+          await printer.close();
+        } catch (error) {
+          console.error('Printing badge ticket failed:', error);
+        }
+      }
+    };
+
     const processBadge = async () => {
       if (badgeId) {
         try {
@@ -120,6 +166,16 @@ export default {
           
           // Increment the badge count locally
           store.commit('badging/INCREMENT_CURRENT_MEAL_BADGE_COUNT');
+
+          // Print badge ticket
+          if (currentMeal.value) {
+            await printBadgeTicket(
+              lastScannedPerson.value,
+              currentMeal.value.name,
+              `${currentMeal.value.start_time} - ${currentMeal.value.end_time}`,
+              currentMeal.value.price
+            );
+          }
         } catch (error) {
           if (error.response && error.response.data) {
             setMessage(error.response.data.error, 'error');
@@ -156,11 +212,11 @@ export default {
                           type === 'warning' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                           'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       showWelcomeMessage.value = true;
-    
+   
       if (messageTimer) {
         clearTimeout(messageTimer);
       }
-    
+   
       messageTimer = setTimeout(() => {
         message.value = '';
         messageClass.value = '';
@@ -201,7 +257,7 @@ export default {
       fetchCurrentMealBadgeCount();
       const mealIntervalId = setInterval(fetchCurrentMeal, 60000);
       const badgeCountIntervalId = setInterval(fetchCurrentMealBadgeCount, 60000);
-      
+     
       onUnmounted(() => {
         document.removeEventListener('keypress', handleKeyPress);
         clearInterval(mealIntervalId);
@@ -219,7 +275,7 @@ export default {
       currentMeal,
       lastScannedPerson,
       currentMealBadgeCount,
-      foodBackground, 
+      foodBackground,
       showWelcomeMessage,
       isDiscountModalOpen,
       discounts,
@@ -231,6 +287,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 @keyframes pulse {

@@ -20,7 +20,6 @@ const actions = {
     async loginWithBadge({ commit }, { rfid }) {
         try {
             const response = await AuthService.loginWithBadge(rfid);
-            console.log('auth.js: ',response)
             commit('setAuthData', response.data.data);
             return Promise.resolve(response.data);
         } catch (error) {

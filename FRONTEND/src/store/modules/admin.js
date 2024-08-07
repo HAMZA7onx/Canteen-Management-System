@@ -1,6 +1,5 @@
 import AdminService from '@/services/admin.service';
  
-console.log('admin module');
 
 const state = {
   admins: [],
@@ -63,7 +62,6 @@ const actions = {
   deleteAdmin({ commit }, adminId) {
     return AdminService.deleteAdmin(adminId)
       .then(() => {
-        console.log('admin to delete ID: ', adminId);
         commit('DELETE_ADMIN', adminId);
       })
       .catch((error) => {
