@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed">
     <div class="flex-grow flex items-center justify-center p-4 ">
+     
       <div class="w-full max-w-6xl flex gap-8">
         <!-- Carte d'information du repas -->
         <div v-if="currentMeal" class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
@@ -78,6 +79,15 @@
           Fermer
         </button>
       </div>
+    </div>
+
+    <div class="">
+        <span v-if="canPrintTickets" class="text-sm bg-green-600 mt-2 p-2">
+          Impression des tickets activée
+        </span>
+        <span v-else class="text-sm bg-red-600 mt-2 pr-2 pt-2">
+          Impression des tickets désactivée
+        </span>
     </div>
   </div>
 </template>
@@ -157,6 +167,13 @@ export default {
       }
     };
 
+    const posDevice = computed(() => store.getters['posDevice/posDevice']);
+    const canPrintTickets = computed(() => {
+      console.log('posDevice: ', posDevice.value)
+      return posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_tickets === 'active';
+    });
+
+
     const processBadge = async () => {
       if (badgeId) {
         try {
@@ -167,8 +184,8 @@ export default {
           // Increment the badge count locally
           store.commit('badging/INCREMENT_CURRENT_MEAL_BADGE_COUNT');
 
-          // Print badge ticket
-          if (currentMeal.value) {
+          // Print badge ticket only if canPrintTickets is true
+          if (canPrintTickets.value && currentMeal.value) {
             await printBadgeTicket(
               lastScannedPerson.value,
               currentMeal.value.name,
@@ -266,6 +283,8 @@ export default {
           clearTimeout(messageTimer);
         }
       });
+
+      store.dispatch('posDevice/fetchPosDevice');
     });
 
     return {
@@ -283,6 +302,7 @@ export default {
       closeDiscountModal,
       searchTerm,
       filteredDiscounts,
+      canPrintTickets,
     };
   }
 };
