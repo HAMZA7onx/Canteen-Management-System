@@ -14,6 +14,14 @@ class PosDeviceController extends Controller
         return response()->json($posDevices);
     }
 
+    public function getStatus(Request $request)
+    {
+        $ip_address = $request->ip();
+        $posDevice = PosDevice::where('ip_address', $ip_address)->get();
+
+        return response()->json($posDevice);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
