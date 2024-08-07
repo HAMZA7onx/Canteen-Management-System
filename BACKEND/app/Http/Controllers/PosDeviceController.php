@@ -20,7 +20,8 @@ class PosDeviceController extends Controller
             'name' => 'required|unique:pos_devices,name',
             'ip_address' => 'required|ip|unique:pos_devices,ip_address',
             'status' => 'required|in:allowed,unauthorized',
-            'printer' => 'required|in:active,inactive',
+            'print_statistics' => 'required|in:active,inactive',
+            'print_tickets' => 'required|in:active,inactive',
         ]);
 
         try {
@@ -28,7 +29,8 @@ class PosDeviceController extends Controller
                 'name' => $request->name,
                 'ip_address' => $request->ip_address,
                 'status' => $request->status,
-                'printer' => $request->printer,
+                'print_statistics' => $request->print_statistics,
+                'print_tickets' => $request->print_tickets,
                 'creator' => Auth::user()->email,
                 'editors' => [],
             ]);
@@ -50,7 +52,8 @@ class PosDeviceController extends Controller
             'name' => 'unique:pos_devices,name,' . $id,
             'ip_address' => 'ip|unique:pos_devices,ip_address,' . $id,
             'status' => 'in:allowed,unauthorized',
-            'printer' => 'in:active,inactive',
+            'print_statistics' => 'in:active,inactive',
+            'print_tickets' => 'in:active,inactive',
         ]);
 
         try {
@@ -63,8 +66,11 @@ class PosDeviceController extends Controller
             if ($request->has('status')) {
                 $posDevice->status = $request->status;
             }
-            if ($request->has('printer')) {
-                $posDevice->printer = $request->printer;
+            if ($request->has('print_statistics')) {
+                $posDevice->print_statistics = $request->print_statistics;
+            }
+            if ($request->has('print_tickets')) {
+                $posDevice->print_tickets = $request->print_tickets;
             }
 
             // Append the current user's email to editors if not already present
@@ -85,7 +91,6 @@ class PosDeviceController extends Controller
             throw $e;
         }
     }
-
     public function show($id)
     {
         $posDevice = PosDevice::findOrFail($id);

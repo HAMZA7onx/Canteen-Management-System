@@ -58,8 +58,8 @@
 
         <div class="relative">
           <select
-            id="printer"
-            v-model="formData.printer"
+            id="print_statistics"
+            v-model="formData.print_statistics"
             required
             class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300"
           >
@@ -67,10 +67,28 @@
             <option value="inactive">Inactive</option>
           </select>
           <label
-            for="printer"
+            for="print_statistics"
             class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400"
           >
-            Printer Status
+          print_statistics Status
+          </label>
+        </div>
+
+        <div class="relative">
+          <select
+            id="print_tickets"
+            v-model="formData.print_tickets"
+            required
+            class="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300"
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <label
+            for="print_tickets"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400"
+          >
+          print_tickets Status
           </label>
         </div>
       </div>
@@ -103,7 +121,8 @@ export default {
         name: this.device.name || '',
         ip_address: this.device.ip_address || '',
         status: this.device.status || 'unauthorized',
-        printer: this.device.printer || 'inactive'
+        print_statistics: this.device.print_statistics || 'inactive',
+        print_tickets: this.device.print_tickets || 'inactive'
       },
       isValidIP: true
     }

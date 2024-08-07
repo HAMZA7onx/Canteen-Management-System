@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('ip_address');
-            $table->enum('printer', ['active', 'inactive'])->default('inactive');
+            $table->enum('print_statistics', ['active', 'inactive'])->default('inactive');
+            $table->enum('print_tickets', ['active', 'inactive'])->default('inactive');
             $table->enum('status', ['allowed', 'unauthorized'])->default('unauthorized');
             $table->string('creator');
             $table->json('editors');
