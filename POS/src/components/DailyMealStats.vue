@@ -120,6 +120,7 @@ export default {
 
     const posDevice = computed(() => store.getters['posDevice/posDevice']);
     const canPrintStatistics = computed(() => {
+      console.log('posDevice: ', posDevice.value)
       return posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_statistics === 'active';
     });
 

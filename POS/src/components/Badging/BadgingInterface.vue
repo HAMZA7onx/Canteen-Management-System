@@ -79,6 +79,19 @@
         </button>
       </div>
     </div>
+
+    <div class="">
+      <span v-if="isPosDeviceLoading" class="text-sm text-white bg-gray-400 mt-2 p-2 rounded-md animate-pulse">
+        Chargement de l'état d'impression...
+      </span>
+      <span v-else-if="canPrintTickets" class="text-sm text-white bg-green-600 mt-2 p-2 rounded-md">
+        Impression des tickets activée
+      </span>
+      <span v-else class="text-sm text-white bg-red-600 mt-2 p-2 rounded-md">
+        Impression des tickets désactivée
+      </span>
+    </div>
+
   </div>
 </template>
 
@@ -104,6 +117,7 @@ export default {
     let badgeId = '';
     let lastKeyTime = Date.now();
     let messageTimer = null;
+    const isPosDeviceLoading = ref(true);
 
     const filteredDiscounts = computed(() => {
       return discounts.value.filter(discount =>
@@ -157,6 +171,12 @@ export default {
       }
     };
 
+    const posDevice = computed(() => store.getters['posDevice/posDevice']);
+    const canPrintTickets = computed(() => {
+      console.log('posDevice: ', posDevice.value)
+      return !isPosDeviceLoading.value && posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_tickets === 'active';
+    });
+
     const processBadge = async () => {
       if (badgeId) {
         try {
@@ -167,8 +187,8 @@ export default {
           // Increment the badge count locally
           store.commit('badging/INCREMENT_CURRENT_MEAL_BADGE_COUNT');
 
-          // Print badge ticket
-          if (currentMeal.value) {
+          // Print badge ticket only if canPrintTickets is true
+          if (canPrintTickets.value && currentMeal.value) {
             await printBadgeTicket(
               lastScannedPerson.value,
               currentMeal.value.name,
@@ -266,6 +286,10 @@ export default {
           clearTimeout(messageTimer);
         }
       });
+
+      store.dispatch('posDevice/fetchPosDevice').then(() => {
+        isPosDeviceLoading.value = false;
+      });
     });
 
     return {
@@ -283,11 +307,12 @@ export default {
       closeDiscountModal,
       searchTerm,
       filteredDiscounts,
+      canPrintTickets,
+      isPosDeviceLoading,
     };
   }
 };
 </script>
-
 
 <style scoped>
 @keyframes pulse {
@@ -327,3 +352,4 @@ export default {
   50% { opacity: .5; }
 }
 </style>
+
