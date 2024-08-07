@@ -22,7 +22,10 @@
     </div>
 
     <div v-else>
-      <button @click="printTicket" class="mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+      <button
+       v-if="canPrintStatistics"
+       @click="printTicket" 
+       class="mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
         Imprimer statistiques
       </button>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
@@ -116,6 +119,9 @@ export default {
     });
 
     const posDevice = computed(() => store.getters['posDevice/posDevice']);
+    const canPrintStatistics = computed(() => {
+      return posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_statistics === 'active';
+    });
 
     const dailyMeals = computed(() => store.getters['mealStats/getDailyMeals']);
     const isLoading = computed(() => store.getters['mealStats/getIsLoading']);
@@ -275,6 +281,7 @@ export default {
       calculateTotalRevenue,
       calculateTotalDiscounts,
       printTicket,
+      canPrintStatistics,
     };
   }
 }
