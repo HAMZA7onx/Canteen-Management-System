@@ -112,7 +112,10 @@ export default {
 
     onMounted(() => {
       store.dispatch('mealStats/fetchDailyMealStats');
+      store.dispatch('posDevice/fetchPosDevice');
     });
+
+    const posDevice = computed(() => store.getters['posDevice/posDevice']);
 
     const dailyMeals = computed(() => store.getters['mealStats/getDailyMeals']);
     const isLoading = computed(() => store.getters['mealStats/getIsLoading']);
@@ -259,6 +262,7 @@ export default {
       isLoading,
       error,
       hasMealToday,
+      posDevice,
       formatCurrency,
       formatTime,
       getChartData,

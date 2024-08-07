@@ -17,7 +17,18 @@ class PosDeviceController extends Controller
     public function getStatus(Request $request)
     {
         $ip_address = $request->ip();
+
+        \Log::info("getStatus method called", [
+            'ip_address' => $ip_address,
+            'user_agent' => $request->userAgent()
+        ]);
+
         $posDevice = PosDevice::where('ip_address', $ip_address)->get();
+
+        \Log::info("POS device status retrieved", [
+            'ip_address' => $ip_address,
+            'device_count' => $posDevice->count()
+        ]);
 
         return response()->json($posDevice);
     }

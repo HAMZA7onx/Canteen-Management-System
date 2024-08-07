@@ -4,6 +4,7 @@ import VuexPersistence from 'vuex-persist';
 import auth from './modules/auth';
 import badging from './modules/badging';
 import mealStats from './modules/mealStats';
+import posDevice from './modules/posDevice';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -14,7 +15,8 @@ const store = createStore({
   modules: {
     auth,
     badging,
-    mealStats
+    mealStats,
+    posDevice
   },
   plugins: [vuexLocal.plugin]
 });
