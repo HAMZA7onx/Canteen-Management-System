@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col bg-cover bg-center bg-fixed">
     <div class="flex-grow flex items-center justify-center p-4 ">
-     
       <div class="w-full max-w-6xl flex gap-8">
         <!-- Carte d'information du repas -->
         <div v-if="currentMeal" class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
@@ -82,13 +81,17 @@
     </div>
 
     <div class="">
-        <span v-if="canPrintTickets" class="text-sm bg-green-600 mt-2 p-2">
-          Impression des tickets activée
-        </span>
-        <span v-else class="text-sm bg-red-600 mt-2 pr-2 pt-2">
-          Impression des tickets désactivée
-        </span>
+      <span v-if="isPosDeviceLoading" class="text-sm text-white bg-gray-400 mt-2 p-2 rounded-md animate-pulse">
+        Chargement de l'état d'impression...
+      </span>
+      <span v-else-if="canPrintTickets" class="text-sm text-white bg-green-600 mt-2 p-2 rounded-md">
+        Impression des tickets activée
+      </span>
+      <span v-else class="text-sm text-white bg-red-600 mt-2 p-2 rounded-md">
+        Impression des tickets désactivée
+      </span>
     </div>
+
   </div>
 </template>
 
@@ -114,6 +117,7 @@ export default {
     let badgeId = '';
     let lastKeyTime = Date.now();
     let messageTimer = null;
+    const isPosDeviceLoading = ref(true);
 
     const filteredDiscounts = computed(() => {
       return discounts.value.filter(discount =>
@@ -170,9 +174,8 @@ export default {
     const posDevice = computed(() => store.getters['posDevice/posDevice']);
     const canPrintTickets = computed(() => {
       console.log('posDevice: ', posDevice.value)
-      return posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_tickets === 'active';
+      return !isPosDeviceLoading.value && posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_tickets === 'active';
     });
-
 
     const processBadge = async () => {
       if (badgeId) {
@@ -284,7 +287,9 @@ export default {
         }
       });
 
-      store.dispatch('posDevice/fetchPosDevice');
+      store.dispatch('posDevice/fetchPosDevice').then(() => {
+        isPosDeviceLoading.value = false;
+      });
     });
 
     return {
@@ -303,11 +308,11 @@ export default {
       searchTerm,
       filteredDiscounts,
       canPrintTickets,
+      isPosDeviceLoading,
     };
   }
 };
 </script>
-
 
 <style scoped>
 @keyframes pulse {
@@ -347,3 +352,4 @@ export default {
   50% { opacity: .5; }
 }
 </style>
+
