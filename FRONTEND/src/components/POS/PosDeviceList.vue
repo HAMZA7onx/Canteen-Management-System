@@ -48,7 +48,8 @@
               <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
               <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
               <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-              <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Imprimante</th>
+              <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Imprimer statistiques</th>
+              <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Imprimer tickets</th>
               <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               <th scope="col" class="sm:hidden px-4 py-3"></th>
             </tr>
@@ -64,8 +65,13 @@
                   </span>
                 </td>
                 <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  <span :class="{'text-green-600 dark:text-green-400': device.printer === 'active', 'text-red-600 dark:text-red-400': device.printer === 'inactive'}">
-                    {{ device.printer === 'active' ? 'Active' : 'Inactive' }}
+                  <span :class="{'text-green-600 dark:text-green-400': device.print_statistics === 'active', 'text-red-600 dark:text-red-400': device.print_statistics === 'inactive'}">
+                    {{ device.print_statistics === 'active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                  <span :class="{'text-green-600 dark:text-green-400': device.print_tickets === 'active', 'text-red-600 dark:text-red-400': device.print_tickets === 'inactive'}">
+                    {{ device.print_tickets === 'active' ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
                 <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
@@ -221,8 +227,12 @@
                     <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.status === 'allowed' ? 'Autorisé' : 'Non autorisé' }}</p>
                   </div>
                   <div>
-                    <p class="text-gray-500 dark:text-gray-400"><strong>Printer Status:</strong></p>
-                    <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.printer === 'active' ? 'Active' : 'Inactive' }}</p>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>print_statistics Status:</strong></p>
+                    <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.print_statistics === 'active' ? 'Active' : 'Inactive' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 dark:text-gray-400"><strong>print_tickets Status:</strong></p>
+                    <p class="text-gray-900 dark:text-gray-100">{{ selectedDevice.print_tickets === 'active' ? 'Active' : 'Inactive' }}</p>
                   </div>
                   <div>
                     <p class="text-gray-500 dark:text-gray-400"><strong>Créateur :</strong></p>

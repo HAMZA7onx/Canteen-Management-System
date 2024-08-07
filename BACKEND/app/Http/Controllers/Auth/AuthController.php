@@ -88,6 +88,7 @@ class AuthController extends Controller
     public function loginWithBadge(Request $request)
     {
         $clientIp = $request->ip();
+        \Log::info("Client IP: " . $clientIp);
         $allowedDevice = PosDevice::where('ip_address', $clientIp)
             ->where('status', 'allowed')
             ->first();
