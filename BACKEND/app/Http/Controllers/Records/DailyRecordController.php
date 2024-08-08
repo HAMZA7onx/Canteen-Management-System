@@ -132,6 +132,29 @@ class DailyRecordController extends Controller
         }
     }
 
+//    public function getCurrentMeal()
+//    {
+//        $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
+//        $currentTime = Carbon::now('Europe/Paris')->format('H:i:s');
+//        $activeSchedule = WeekSchedule::where('status', 'active')->first();
+//        if (!$activeSchedule) {
+//            return response()->json(['message' => 'No active schedule found'], 404);
+//        }
+//
+//        $pivotTable = $currentDay . '_daily_meal';
+//        $currentMeal = DB::table($pivotTable)
+//            ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
+//            ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
+//            ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
+//            ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
+//            ->first();
+//        if ($currentMeal) {
+//            return response()->json($currentMeal);
+//        } else {
+//            return response()->json(['message' => 'No meal assigned at the current time'], 404);
+//        }
+//    }
+
     public function getCurrentMeal()
     {
         $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
@@ -145,7 +168,7 @@ class DailyRecordController extends Controller
         $currentMeal = DB::table($pivotTable)
             ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
-            ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
+            ->whereRaw("? BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
             ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
             ->first();
         if ($currentMeal) {
