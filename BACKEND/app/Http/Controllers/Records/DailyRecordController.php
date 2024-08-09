@@ -92,9 +92,13 @@ class DailyRecordController extends Controller
         $currentMeal = DB::table($pivotTable)
             ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
-            ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTimeString])
+            ->where(function($query) use ($currentTimeString, $pivotTable) {
+                $query->whereTime($pivotTable . '.start_time', '<=', $currentTimeString)
+                    ->whereTime($pivotTable . '.end_time', '>=', $currentTimeString);
+            })
             ->select($pivotTable . '.id as pivot_id', 'daily_meals.id as meal_id', $pivotTable . '.*', 'daily_meals.*')
             ->first();
+
 
         if (!$currentMeal) {
             \Log::info("No active meal found for day: $day, time: $currentTimeString in active schedule");
@@ -131,29 +135,6 @@ class DailyRecordController extends Controller
             return response()->json(['error' => "Failed to create record for {$badgeOwnerName}", 'message' => $e->getMessage(), 'badgeOwner' => $badgeOwnerName], 500);
         }
     }
-
-//    public function getCurrentMeal()
-//    {
-//        $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
-//        $currentTime = Carbon::now('Europe/Paris')->format('H:i:s');
-//        $activeSchedule = WeekSchedule::where('status', 'active')->first();
-//        if (!$activeSchedule) {
-//            return response()->json(['message' => 'No active schedule found'], 404);
-//        }
-//
-//        $pivotTable = $currentDay . '_daily_meal';
-//        $currentMeal = DB::table($pivotTable)
-//            ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
-//            ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
-//            ->whereRaw("?::time BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
-//            ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
-//            ->first();
-//        if ($currentMeal) {
-//            return response()->json($currentMeal);
-//        } else {
-//            return response()->json(['message' => 'No meal assigned at the current time'], 404);
-//        }
-//    }
 
     public function getCurrentMeal()
     {
@@ -193,7 +174,7 @@ class DailyRecordController extends Controller
 
         $currentMeal = DB::table($pivotTable)
             ->where('week_schedule_id', $activeSchedule->id)
-            ->whereRaw("?::time BETWEEN start_time AND end_time", [$currentTime])
+            ->whereRaw("TIME(?) BETWEEN start_time AND end_time", [$currentTime])
             ->first();
 
         if (!$currentMeal) {
