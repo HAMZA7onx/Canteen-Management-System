@@ -97,9 +97,9 @@
         />
         <div class="mt-2 flex space-x-2">
           <button
-            v-for="mealType in ['Petit-déjeuner', 'Déjeuner', 'Dîner']"
+            v-for="mealType in availableMealTypes"
             :key="mealType"
-            @click="mealName = mealType"
+            @click="selectMealType(mealType)"
             class="px-2 py-1 text-xs font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
           >
             {{ mealType }}
@@ -177,9 +177,8 @@
   </div>
 </template>
 
-
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner, faPlus, faUnlink } from '@fortawesome/free-solid-svg-icons'
@@ -216,6 +215,9 @@ export default {
     const loadingDiscounts = ref({})
     const detachingMenu = ref({})
     const assigningMenu = ref(false)
+    const allMealTypes = ['Petit-déjeuner', 'Déjeuner', 'Dîner']
+    const availableMealTypes = ref([...allMealTypes])
+    const selectedMealType = ref(null)
 
     const menus = computed(() => store.getters['menu/menus'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
@@ -263,7 +265,22 @@ export default {
       return category ? category.name : ''
     }
 
-    const assignMenu = () => {
+    const assignMenu = async () => {
+      // Check if meal name already exists
+      if (assignedMenus.value.some(menu => menu.meal_name === mealName.value)) {
+        errorMessage.value = 'Le nom de repas déjà existe'
+        return
+      }
+
+      // Check if any discount is greater than the price
+      const priceValue = parseFloat(price.value)
+      for (const categoryId in discounts.value) {
+        if (parseFloat(discounts.value[categoryId]) > priceValue) {
+          errorMessage.value = 'La réduction doit être inférieure au prix'
+          return
+        }
+      }
+
       assigningMenu.value = true
       const menuData = {
         menu_id: selectedMenuId.value,
@@ -274,23 +291,26 @@ export default {
         discounts: discounts.value,
       }
 
-      store.dispatch('weekSchedule/assignMenu', {
-        weekScheduleId: props.weekScheduleId,
-        day: props.day,
-        menuData,
-      })
-      .then(() => {
+      try {
+        await store.dispatch('weekSchedule/assignMenu', {
+          weekScheduleId: props.weekScheduleId,
+          day: props.day,
+          menuData,
+        })
+
+        // Wait for the assigned menus to be updated
+        await store.dispatch('weekSchedule/fetchWeekSchedules')
+
         selectedMenuId.value = null
         mealName.value = ''
         startTime.value = ''
         endTime.value = ''
         price.value = ''
         resetDiscounts()
-
         errorMessage.value = ''
-        store.dispatch('weekSchedule/fetchWeekSchedules')
-      })
-      .catch((error) => {
+        selectedMealType.value = null
+        availableMealTypes.value = [...allMealTypes]
+      } catch (error) {
         console.error('Full error object:', error);
         console.error('Error response:', error.response);
         console.error('Error response data:', error.response?.data);
@@ -314,10 +334,9 @@ export default {
         } else {
           errorMessage.value = 'An error occurred while assigning the menu. Please check the console for more details.';
         }
-      })
-      .finally(() => {
+      } finally {
         assigningMenu.value = false
-      })
+      }
     }
 
     const detachMenu = (menuId) => {
@@ -365,6 +384,19 @@ export default {
       }
     }
 
+    const selectMealType = (type) => {
+      mealName.value = type
+      selectedMealType.value = type
+      availableMealTypes.value = allMealTypes.filter(t => t !== type)
+    }
+
+    watch(mealName, (newValue) => {
+      if (newValue !== selectedMealType.value) {
+        selectedMealType.value = null
+        availableMealTypes.value = [...allMealTypes]
+      }
+    })
+
     return {
       selectedMenuId,
       mealName,
@@ -381,6 +413,7 @@ export default {
       loadingDiscounts,
       detachingMenu,
       assigningMenu,
+      availableMealTypes,
       getMenuName,
       getMenuDescription,
       getCategoryName,
@@ -388,6 +421,7 @@ export default {
       detachMenu,
       handleMenuSelect,
       toggleDiscounts,
+      selectMealType,
       FontAwesomeIcon,
       faSpinner,
       faPlus,
