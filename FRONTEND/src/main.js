@@ -6,9 +6,9 @@ import store from './store';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs);
+library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner);
 
 if (localStorage.getItem('darkMode') === 'true' ||
     (!('darkMode' in localStorage) && 

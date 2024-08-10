@@ -21,8 +21,13 @@
           >
             <div class="flex items-center justify-between">
               <div class="flex-1 min-w-0 pr-4">
-                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  {{ getMenuName(menuData.menu_id) }}
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate flex items-center space-x-2">
+                  <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 px-2 py-1 rounded-full">
+                    {{ menuData.meal_name }}
+                  </span>
+                  <span class="text-gray-600 dark:text-gray-300">
+                    {{ getMenuName(menuData.menu_id) }}
+                  </span>
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {{ getMenuDescription(menuData.menu_id) }}
@@ -31,26 +36,31 @@
                   {{ menuData.start_time }} - {{ menuData.end_time }}
                   <span class="font-semibold text-green-600 dark:text-green-400">({{ menuData.price }} DH)</span>
                 </p>
-                <div v-if="Object.keys(menuData.discounts).length > 0">
-                  {{ console.log('Rendering discounts for menu:', menuData.menu_id, menuData) }}
+                <div v-if="visibleDiscounts[menuData.menu_id] && Object.keys(menuData.discounts).length > 0">
                   <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
                   <ul class="list-disc list-inside">
                     <li v-for="(discount, categoryId) in menuData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
                       {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
                     </li>
                   </ul>
+                  <button @click="toggleDiscounts(menuData.menu_id)" class="text-sm text-blue-500 hover:text-blue-700 flex items-center">
+                    <font-awesome-icon v-if="loadingDiscounts[menuData.menu_id]" icon="spinner" spin class="mr-2" />
+                    Hide discounts
+                  </button>
                 </div>
-                <button v-else @click="fetchDiscounts(menuData.menu_id)" class="text-sm text-blue-500 hover:text-blue-700">
-                  {{ console.log('Rendering Load discounts button for menu:', menuData.menu_id) }}
-                  Load discounts
+                <button v-else @click="toggleDiscounts(menuData.menu_id)" class="text-sm text-blue-500 hover:text-blue-700 flex items-center">
+                  <font-awesome-icon v-if="loadingDiscounts[menuData.menu_id]" icon="spinner" spin class="mr-2" />
+                  {{ Object.keys(menuData.discounts).length > 0 ? 'Show discounts' : 'Load discounts' }}
                 </button>
               </div>
               <div>
                 <button
                   class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
                   @click="detachMenu(menuData.menu_id)"
+                  :disabled="detachingMenu[menuData.menu_id]"
                 >
-                  <font-awesome-icon icon="unlink" class="mr-2" />
+                  <font-awesome-icon v-if="detachingMenu[menuData.menu_id]" icon="spinner" spin class="mr-2" />
+                  <font-awesome-icon v-else icon="unlink" class="mr-2" />
                   Detach
                 </button>
               </div>
@@ -85,6 +95,16 @@
           required
           class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
         />
+        <div class="mt-2 flex space-x-2">
+          <button
+            v-for="mealType in ['Petit-déjeuner', 'Déjeuner', 'Dîner']"
+            :key="mealType"
+            @click="mealName = mealType"
+            class="px-2 py-1 text-xs font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+          >
+            {{ mealType }}
+          </button>
+        </div>
       </div>
 
       <div>
@@ -147,19 +167,31 @@
         type="button"
         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
         @click="assignMenu"
+        :disabled="assigningMenu"
       >
-        <font-awesome-icon icon="plus" class="mr-2" />
+        <font-awesome-icon v-if="assigningMenu" icon="spinner" spin class="mr-2" />
+        <font-awesome-icon v-else icon="plus" class="mr-2" />
         Assign
       </button>
     </div>
   </div>
 </template>
 
+
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSpinner, faPlus, faUnlink } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// Add the icons to the library
+library.add(faSpinner, faPlus, faUnlink)
 
 export default {
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     weekScheduleId: {
       type: Number,
@@ -180,6 +212,10 @@ export default {
     const price = ref('')
     const errorMessage = ref('')
     const discounts = ref({})
+    const visibleDiscounts = ref({})
+    const loadingDiscounts = ref({})
+    const detachingMenu = ref({})
+    const assigningMenu = ref(false)
 
     const menus = computed(() => store.getters['menu/menus'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
@@ -228,6 +264,7 @@ export default {
     }
 
     const assignMenu = () => {
+      assigningMenu.value = true
       const menuData = {
         menu_id: selectedMenuId.value,
         meal_name: mealName.value,
@@ -278,9 +315,13 @@ export default {
           errorMessage.value = 'An error occurred while assigning the menu. Please check the console for more details.';
         }
       })
+      .finally(() => {
+        assigningMenu.value = false
+      })
     }
 
     const detachMenu = (menuId) => {
+      detachingMenu.value[menuId] = true
       store.dispatch('weekSchedule/detachMenu', {
         weekScheduleId: props.weekScheduleId,
         day: props.day,
@@ -293,24 +334,35 @@ export default {
         console.error('Error detaching menu:', error)
         errorMessage.value = 'An error occurred while detaching the menu.'
       })
+      .finally(() => {
+        detachingMenu.value[menuId] = false
+      })
     }
 
     const handleMenuSelect = (event) => {
       selectedMenuId.value = event.target.value
     }
 
-    const fetchDiscounts = (menuId) => {
-      console.log('Fetching discounts for menu:', menuId)
-      store.dispatch('weekSchedule/fetchDiscountsForMenu', {
-        weekScheduleId: props.weekScheduleId,
-        day: props.day,
-        menuId
-      }).then(() => {
-        console.log('Discounts fetched successfully.')
-      }).catch(error => {
-        console.error('Error fetching discounts:', error)
-        errorMessage.value = 'An error occurred while fetching discounts.'
-      })
+    const toggleDiscounts = (menuId) => {
+      console.log('Toggling discounts for menu:', menuId)
+      if (visibleDiscounts.value[menuId]) {
+        visibleDiscounts.value[menuId] = false
+      } else {
+        loadingDiscounts.value[menuId] = true
+        store.dispatch('weekSchedule/fetchDiscountsForMenu', {
+          weekScheduleId: props.weekScheduleId,
+          day: props.day,
+          menuId
+        }).then(() => {
+          console.log('Discounts fetched successfully.')
+          visibleDiscounts.value[menuId] = true
+        }).catch(error => {
+          console.error('Error fetching discounts:', error)
+          errorMessage.value = 'An error occurred while fetching discounts.'
+        }).finally(() => {
+          loadingDiscounts.value[menuId] = false
+        })
+      }
     }
 
     return {
@@ -325,13 +377,21 @@ export default {
       userCategories,
       assignedMenus,
       availableMenus,
+      visibleDiscounts,
+      loadingDiscounts,
+      detachingMenu,
+      assigningMenu,
       getMenuName,
       getMenuDescription,
       getCategoryName,
       assignMenu,
       detachMenu,
       handleMenuSelect,
-      fetchDiscounts
+      toggleDiscounts,
+      FontAwesomeIcon,
+      faSpinner,
+      faPlus,
+      faUnlink
     }
   }
 }
