@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('saturday_daily_meal', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('daily_meal_id')->constrained('daily_meals')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('menu_id')->constrained('menu')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('week_schedule_id')->constrained('week_schedule')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('meal_name');
             $table->time('start_time');
             $table->time('end_time');
             $table->unsignedFloat('price');

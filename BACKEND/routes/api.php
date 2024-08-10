@@ -128,23 +128,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{weekSchedule}', [WeekScheduleController::class, 'show']);
         Route::put('/{weekSchedule}', [WeekScheduleController::class, 'update'])->middleware('check.permission:modifier_profils_repas');
         Route::delete('/{weekSchedule}', [WeekScheduleController::class, 'destroy'])->middleware('check.permission:supprimer_profils_repas');
-        Route::post('/{weekSchedule}/daily-meals/{day}', [WeekScheduleController::class, 'attachDailyMeal'])->middleware('check.permission:assigner_repas');
-        Route::delete('/{weekSchedule}/daily-meals/{dailyMeal}/{day}', [WeekScheduleController::class, 'detachDailyMeal'])->middleware('check.permission:desassigner_repas');
-        Route::get('/{weekSchedule}/daily-meals/{day}/{dailyMeal}/discounts', [WeekScheduleController::class, 'getDailyMealDiscounts']);
-    });
 
-    Route::prefix('daily-meals')->middleware('check.permission:voir_repas')->group(function () {
-        Route::get('/', [DailyMealController::class, 'index']);
-        Route::post('/', [DailyMealController::class, 'store'])->middleware('check.permission:creer_repas');
-        Route::get('/{dailyMeal}', [DailyMealController::class, 'show']);
-        Route::put('/{dailyMeal}', [DailyMealController::class, 'update'])->middleware('check.permission:modifier_repas');
-        Route::delete('/{dailyMeal}', [DailyMealController::class, 'destroy'])->middleware('check.permission:supprimer_repas');
-
-        // Attach a menu to a daily meal
-        Route::post('/{dailyMeal}/menus', [DailyMealController::class, 'attachMenus'])->middleware('check.permission:assigner_categories_menus');
-
-        // Detach a menu from a daily meal
-        Route::delete('/{dailyMeal}/menus/{menu}', [DailyMealController::class, 'detachMenu'])->middleware('check.permission:desassigner_categories_menus');
+        // Updated routes for menu operations
+        Route::post('/{weekSchedule}/menus/{day}', [WeekScheduleController::class, 'attachMenu'])
+            ->middleware('check.permission:assigner_repas');
+        Route::delete('/{weekSchedule}/menus/{menu}/{day}', [WeekScheduleController::class, 'detachMenu'])
+            ->middleware('check.permission:desassigner_repas');
+        Route::get('/{weekSchedule}/menus/{day}/{menu}/discounts', [WeekScheduleController::class, 'getMenuDiscounts']);
     });
 
     Route::prefix('menus')->middleware('check.permission:voir_categories_menus')->group(function () {

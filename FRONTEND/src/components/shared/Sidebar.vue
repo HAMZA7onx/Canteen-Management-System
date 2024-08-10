@@ -120,7 +120,7 @@ export default {
         items: [
           { label: 'Les composants du menus', icon: 'utensils', route: '/food-composants', permission: 'voir_composants_menus' },
           { label: 'Les menus', icon: 'clipboard-list', route: '/menus', permission: 'voir_categories_menus' },
-          { label: 'Gestion des repas', icon: 'clock', route: '/daily', permission: 'voir_repas' },
+          // { label: 'Gestion des repas', icon: 'clock', route: '/daily', permission: 'voir_repas' },
           { label: 'Le profiles repas', icon: 'calendar-alt', route: '/week-schedules', permission: 'voir_profils_repas' },
         ]
       },

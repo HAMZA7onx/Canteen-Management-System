@@ -158,20 +158,23 @@ export default {
         type: 'line',
         data: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          datasets: weekScheduleData.map((schedule, index) => ({
-            label: schedule.mode_name,
-            data: [
-              schedule.monday_daily_meals.length,
-              schedule.tuesday_daily_meals.length,
-              schedule.wednesday_daily_meals.length,
-              schedule.thursday_daily_meals.length,
-              schedule.friday_daily_meals.length,
-              schedule.saturday_daily_meals.length,
-              schedule.sunday_daily_meals.length
-            ],
-            borderColor: `hsl(${index * 60}, 70%, 50%)`,
-            fill: false
-          }))
+          datasets: weekScheduleData.map((schedule, index) => {
+            console.log(schedule);
+            return {
+              label: schedule.mode_name,
+              data: [
+                schedule.monday_menus?.length || 0,
+                schedule.tuesday_menus?.length || 0,
+                schedule.wednesday_menus?.length || 0,
+                schedule.thursday_menus?.length || 0,
+                schedule.friday_menus?.length || 0,
+                schedule.saturday_menus?.length || 0,
+                schedule.sunday_menus?.length || 0
+              ],
+              borderColor: `hsl(${index * 60}, 70%, 50%)`,
+              fill: false
+            };
+          })
         },
         options: {
           responsive: true,

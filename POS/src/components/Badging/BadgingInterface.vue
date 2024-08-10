@@ -4,7 +4,7 @@
       <div class="w-full max-w-6xl flex gap-8">
         <!-- Carte d'information du repas -->
         <div v-if="currentMeal" class="bg-white bg-opacity-90 p-6 rounded-3xl shadow-2xl w-1/3 transform hover:scale-105 transition-all duration-300">
-          <h3 class="text-3xl font-bold mb-4 text-gray-800">Repas Actuel</h3>
+          <h3 class="text-3xl font-bold mb-4 text-gray-800">{{ currentMeal.meal_name }}</h3>
           <p class="text-2xl font-semibold text-indigo-600">{{ currentMeal.name }}</p>
           <p class="text-xl text-gray-600">{{ currentMeal.start_time }} - {{ currentMeal.end_time }}</p>
           <p class="text-xl font-bold text-green-600 mt-2">{{ currentMeal.price }} DH</p>

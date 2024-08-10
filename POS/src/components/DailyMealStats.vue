@@ -30,7 +30,7 @@
       </button>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 bg-indigo-600 text-white">
-          <h3><span class="text-3xl font-semibold mb-2">{{ meal.name }}:</span></h3>
+          <h3><span class="text-3xl font-semibold mb-2">{{ meal.meal_name }}:</span></h3>
           <p class="text-lg">({{ formatTime(meal.start_time) }} - {{ formatTime(meal.end_time) }}) {{ meal.price }} DH</p>
         </div>
        

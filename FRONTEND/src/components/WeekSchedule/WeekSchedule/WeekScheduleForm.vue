@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
     <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-      Assigned Daily Meals for {{ day }}
+      Assigned Menus for {{ day }}
     </h2>
 
     <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -9,46 +9,46 @@
     </div>
 
     <div class="mb-6">
-      <div v-if="assignedDailyMeals.length === 0">
-        <p class="text-sm text-gray-500 dark:text-gray-400">No daily meals assigned.</p>
+      <div v-if="assignedMenus.length === 0">
+        <p class="text-sm text-gray-500 dark:text-gray-400">No menus assigned.</p>
       </div>
       <div v-else>
         <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
           <li
-            v-for="dailyMealData in assignedDailyMeals"
-            :key="dailyMealData.daily_meal_id"
+            v-for="menuData in assignedMenus"
+            :key="menuData.menu_id"
             class="py-4"
           >
             <div class="flex items-center justify-between">
               <div class="flex-1 min-w-0 pr-4">
                 <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  {{ getDailyMealName(dailyMealData.daily_meal_id) }}
+                  {{ getMenuName(menuData.menu_id) }}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
-                  {{ getDailyMealDescription(dailyMealData.daily_meal_id) }}
+                  {{ getMenuDescription(menuData.menu_id) }}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ dailyMealData.start_time }} - {{ dailyMealData.end_time }}
-                  <span class="font-semibold text-green-600 dark:text-green-400">({{ dailyMealData.price }} DH)</span>
+                  {{ menuData.start_time }} - {{ menuData.end_time }}
+                  <span class="font-semibold text-green-600 dark:text-green-400">({{ menuData.price }} DH)</span>
                 </p>
-                <div v-if="Object.keys(dailyMealData.discounts).length > 0">
-                {{ console.log('Rendering discounts for meal:', dailyMealData.daily_meal_id, dailyMealData) }}
-                <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
-                <ul class="list-disc list-inside">
-                  <li v-for="(discount, categoryId) in dailyMealData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
-                  </li>
-                </ul>
-              </div>
-              <button v-else @click="fetchDiscounts(dailyMealData.daily_meal_id)" class="text-sm text-blue-500 hover:text-blue-700">
-                {{ console.log('Rendering Load discounts button for meal:', dailyMealData.daily_meal_id) }}
-                Load discounts
-              </button>
+                <div v-if="Object.keys(menuData.discounts).length > 0">
+                  {{ console.log('Rendering discounts for menu:', menuData.menu_id, menuData) }}
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Discounts:</p>
+                  <ul class="list-disc list-inside">
+                    <li v-for="(discount, categoryId) in menuData.discounts" :key="categoryId" class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ getCategoryName(categoryId) }}: {{ discount.discount }} DH
+                    </li>
+                  </ul>
+                </div>
+                <button v-else @click="fetchDiscounts(menuData.menu_id)" class="text-sm text-blue-500 hover:text-blue-700">
+                  {{ console.log('Rendering Load discounts button for menu:', menuData.menu_id) }}
+                  Load discounts
+                </button>
               </div>
               <div>
                 <button
                   class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
-                  @click="detachDailyMeal(dailyMealData.daily_meal_id)"
+                  @click="detachMenu(menuData.menu_id)"
                 >
                   <font-awesome-icon icon="unlink" class="mr-2" />
                   Detach
@@ -62,18 +62,29 @@
 
     <div class="space-y-4">
       <div>
-        <label for="dailyMealSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Daily Meals</label>
+        <label for="menuSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Menu</label>
         <select
-          id="dailyMealSelect"
-          @change="handleDailyMealSelect"
-          :value="selectedDailyMealId"
+          id="menuSelect"
+          @change="handleMenuSelect"
+          :value="selectedMenuId"
           class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
         >
-          <option value="" disabled>Select a daily meal</option>
-          <option v-for="dailyMeal in availableDailyMeals" :key="dailyMeal.id" :value="dailyMeal.id">
-            {{ dailyMeal.name }}
+          <option value="" disabled>Select a menu</option>
+          <option v-for="menu in availableMenus" :key="menu.id" :value="menu.id">
+            {{ menu.name }}
           </option>
         </select>
+      </div>
+
+      <div>
+        <label for="mealName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Meal Name</label>
+        <input
+          id="mealName"
+          v-model="mealName"
+          type="text"
+          required
+          class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+        />
       </div>
 
       <div>
@@ -135,7 +146,7 @@
       <button
         type="button"
         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
-        @click="assignDailyMeals"
+        @click="assignMenu"
       >
         <font-awesome-icon icon="plus" class="mr-2" />
         Assign
@@ -162,30 +173,31 @@ export default {
   setup(props) {
     const store = useStore()
 
-    const selectedDailyMealId = ref(null)
+    const selectedMenuId = ref(null)
+    const mealName = ref('')
     const startTime = ref('')
     const endTime = ref('')
     const price = ref('')
     const errorMessage = ref('')
     const discounts = ref({})
 
-    const dailyMeals = computed(() => store.getters['dailyMeal/dailyMeals'])
+    const menus = computed(() => store.getters['menu/menus'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
-    const assignedDailyMeals = computed(() => {
-      const meals = store.getters['weekSchedule/getAssignedDailyMealsForDay'](props.weekScheduleId, props.day) || []
-      console.log('Assigned Daily Meals:', meals)
+    const assignedMenus = computed(() => {
+      const meals = store.getters['weekSchedule/getAssignedMenusForDay'](props.weekScheduleId, props.day) || []
+      console.log('Assigned Menus:', meals)
       return meals
     })
 
-    const availableDailyMeals = computed(() => {
-      const assignedDailyMealIds = assignedDailyMeals.value.map((dailyMealData) => dailyMealData.daily_meal_id)
-      return dailyMeals.value.filter(
-        (dailyMeal) => !assignedDailyMealIds.includes(dailyMeal.id) && dailyMeal.id !== selectedDailyMealId.value
+    const availableMenus = computed(() => {
+      const assignedMenuIds = assignedMenus.value.map((menuData) => menuData.menu_id)
+      return menus.value.filter(
+        (menu) => !assignedMenuIds.includes(menu.id) && menu.id !== selectedMenuId.value
       )
     })
 
     onMounted(() => {
-      store.dispatch('dailyMeal/fetchDailyMeals')
+      store.dispatch('menu/fetchMenus')
       store.dispatch('userCategory/fetchUserCategories')
       .then(() => {
         userCategories.value.forEach(category => {
@@ -200,14 +212,14 @@ export default {
       })
     }
 
-    const getDailyMealName = (dailyMealId) => {
-      const dailyMeal = dailyMeals.value.find((meal) => meal.id === dailyMealId)
-      return dailyMeal ? dailyMeal.name : ''
+    const getMenuName = (menuId) => {
+      const menu = menus.value.find((m) => m.id === menuId)
+      return menu ? menu.name : ''
     }
 
-    const getDailyMealDescription = (dailyMealId) => {
-      const dailyMeal = dailyMeals.value.find((meal) => meal.id === dailyMealId)
-      return dailyMeal ? dailyMeal.description : ''
+    const getMenuDescription = (menuId) => {
+      const menu = menus.value.find((m) => m.id === menuId)
+      return menu ? menu.description : ''
     }
 
     const getCategoryName = (categoryId) => {
@@ -215,28 +227,28 @@ export default {
       return category ? category.name : ''
     }
 
-    const assignDailyMeals = () => {
-      const dailyMealData = {
-        daily_meal_id: selectedDailyMealId.value,
+    const assignMenu = () => {
+      const menuData = {
+        menu_id: selectedMenuId.value,
+        meal_name: mealName.value,
         start_time: startTime.value,
         end_time: endTime.value,
         price: price.value,
         discounts: discounts.value,
       }
 
-      store.dispatch('weekSchedule/assignDailyMeals', {
+      store.dispatch('weekSchedule/assignMenu', {
         weekScheduleId: props.weekScheduleId,
         day: props.day,
-        dailyMealData,
+        menuData,
       })
       .then(() => {
-        selectedDailyMealId.value = null
+        selectedMenuId.value = null
+        mealName.value = ''
         startTime.value = ''
         endTime.value = ''
         price.value = ''
-        userCategories.value.forEach(category => {
-          discounts.value[category.id] = 0
-        })
+        resetDiscounts()
 
         errorMessage.value = ''
         store.dispatch('weekSchedule/fetchWeekSchedules')
@@ -251,7 +263,7 @@ export default {
             errorMessage.value = error.response.data;
           } else if (error.response.data.error) {
             if (error.response.data.error.includes('overlaps')) {
-              errorMessage.value = `The specified duration overlaps with an existing daily meal for ${props.day}`;
+              errorMessage.value = `The specified duration overlaps with an existing menu for ${props.day}`;
             } else if (error.response.data.error.includes('after:start_time') || error.response.data.error.includes('end_time')) {
               errorMessage.value = 'Start time of the meal must be before end time';
             } else {
@@ -263,36 +275,36 @@ export default {
             errorMessage.value = 'An unexpected error occurred. Please check the console for more details.';
           }
         } else {
-          errorMessage.value = 'An error occurred while assigning the daily meal. Please check the console for more details.';
+          errorMessage.value = 'An error occurred while assigning the menu. Please check the console for more details.';
         }
       })
     }
 
-    const detachDailyMeal = (dailyMealId) => {
-      store.dispatch('weekSchedule/detachDailyMeal', {
+    const detachMenu = (menuId) => {
+      store.dispatch('weekSchedule/detachMenu', {
         weekScheduleId: props.weekScheduleId,
         day: props.day,
-        dailyMealId,
+        menuId,
       })
       .then(() => {
         store.dispatch('weekSchedule/fetchWeekSchedules')
       })
       .catch((error) => {
-        console.error('Error detaching daily meal:', error)
-        errorMessage.value = 'An error occurred while detaching the daily meal.'
+        console.error('Error detaching menu:', error)
+        errorMessage.value = 'An error occurred while detaching the menu.'
       })
     }
 
-    const handleDailyMealSelect = (event) => {
-      selectedDailyMealId.value = event.target.value
+    const handleMenuSelect = (event) => {
+      selectedMenuId.value = event.target.value
     }
 
-    const fetchDiscounts = (dailyMealId) => {
-      console.log('Fetching discounts for daily meal:', dailyMealId)
-      store.dispatch('weekSchedule/fetchDiscountsForDailyMeal', {
+    const fetchDiscounts = (menuId) => {
+      console.log('Fetching discounts for menu:', menuId)
+      store.dispatch('weekSchedule/fetchDiscountsForMenu', {
         weekScheduleId: props.weekScheduleId,
         day: props.day,
-        dailyMealId
+        menuId
       }).then(() => {
         console.log('Discounts fetched successfully.')
       }).catch(error => {
@@ -302,22 +314,23 @@ export default {
     }
 
     return {
-      selectedDailyMealId,
+      selectedMenuId,
+      mealName,
       startTime,
       endTime,
       price,
       errorMessage,
       discounts,
-      dailyMeals,
+      menus,
       userCategories,
-      assignedDailyMeals,
-      availableDailyMeals,
-      getDailyMealName,
-      getDailyMealDescription,
+      assignedMenus,
+      availableMenus,
+      getMenuName,
+      getMenuDescription,
       getCategoryName,
-      assignDailyMeals,
-      detachDailyMeal,
-      handleDailyMealSelect,
+      assignMenu,
+      detachMenu,
+      handleMenuSelect,
       fetchDiscounts
     }
   }
