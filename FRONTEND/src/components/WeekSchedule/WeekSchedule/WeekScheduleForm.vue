@@ -177,9 +177,8 @@
   </div>
 </template>
 
-
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner, faPlus, faUnlink } from '@fortawesome/free-solid-svg-icons'
@@ -216,6 +215,7 @@ export default {
     const loadingDiscounts = ref({})
     const detachingMenu = ref({})
     const assigningMenu = ref(false)
+    const mealTypes = ref(['Petit-déjeuner', 'Déjeuner', 'Dîner'])
 
     const menus = computed(() => store.getters['menu/menus'])
     const userCategories = computed(() => store.getters['userCategory/userCategories'])
@@ -264,6 +264,21 @@ export default {
     }
 
     const assignMenu = () => {
+      // Check if meal name already exists
+      if (assignedMenus.value.some(menu => menu.meal_name === mealName.value)) {
+        errorMessage.value = 'Le nom de repas déjà existe'
+        return
+      }
+
+      // Check if any discount is greater than the price
+      const priceValue = parseFloat(price.value)
+      for (const categoryId in discounts.value) {
+        if (parseFloat(discounts.value[categoryId]) > priceValue) {
+          errorMessage.value = 'La réduction doit être inférieure au prix'
+          return
+        }
+      }
+
       assigningMenu.value = true
       const menuData = {
         menu_id: selectedMenuId.value,
@@ -365,6 +380,15 @@ export default {
       }
     }
 
+    // Watch for changes in mealName
+    watch(mealName, (newValue) => {
+      if (newValue && mealTypes.value.includes(newValue)) {
+        mealTypes.value = mealTypes.value.filter(type => type !== newValue)
+      } else if (newValue === '') {
+        mealTypes.value = ['Petit-déjeuner', 'Déjeuner', 'Dîner']
+      }
+    })
+
     return {
       selectedMenuId,
       mealName,
@@ -381,6 +405,7 @@ export default {
       loadingDiscounts,
       detachingMenu,
       assigningMenu,
+      mealTypes,
       getMenuName,
       getMenuDescription,
       getCategoryName,
