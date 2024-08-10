@@ -2,19 +2,20 @@ import WeekScheduleService from '@/services/weekSchedule.service'
 
 const state = {
   weekSchedules: [],
-} 
+}
 
 const getters = {
   weekSchedules: (state) => state.weekSchedules,
-  getAssignedDailyMealsForDay: (state) => (weekScheduleId, day) => {
+  getAssignedMenusForDay: (state) => (weekScheduleId, day) => {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
-    const assignedDailyMealsData = weekSchedule ? weekSchedule[`${day}_daily_meals`] || [] : []
-    return assignedDailyMealsData.map((dailyMealData) => ({
-      daily_meal_id: dailyMealData.id,
-      start_time: dailyMealData.pivot?.start_time,
-      end_time: dailyMealData.pivot?.end_time,
-      price: dailyMealData.pivot?.price,
-      discounts: dailyMealData.discounts || {}
+    const assignedMenusData = weekSchedule ? weekSchedule[`${day}_menus`] || [] : []
+    return assignedMenusData.map((menuData) => ({
+      menu_id: menuData.id,
+      meal_name: menuData.pivot?.meal_name,
+      start_time: menuData.pivot?.start_time,
+      end_time: menuData.pivot?.end_time,
+      price: menuData.pivot?.price,
+      discounts: menuData.discounts || {}
     }))
   },  
   activeWeekSchedule: (state) => state.weekSchedules.find(ws => ws.status === 'active'),
@@ -84,41 +85,41 @@ const actions = {
       })
   },
 
-  assignDailyMeals({ commit }, { weekScheduleId, day, dailyMealData }) {
-    console.log('assignDailyMeals', weekScheduleId, day, dailyMealData)
-    return WeekScheduleService.assignDailyMeals(weekScheduleId, day, dailyMealData)
+  assignMenu({ commit }, { weekScheduleId, day, menuData }) {
+    console.log('assignMenu', weekScheduleId, day, menuData)
+    return WeekScheduleService.assignMenu(weekScheduleId, day, menuData)
       .then((response) => {
-        commit('ASSIGN_DAILY_MEAL', { weekScheduleId, day, dailyMealData: response.data })
+        commit('ASSIGN_MENU', { weekScheduleId, day, menuData: response.data })
       })
       .catch((error) => {
-        console.error('Error assigning daily meal:', error)
-        throw error
-      })
-  },
-  
-  detachDailyMeal({ commit }, { weekScheduleId, day, dailyMealId }) {
-    return WeekScheduleService.detachDailyMeal(weekScheduleId, day, dailyMealId)
-      .then(() => {
-        commit('DETACH_DAILY_MEAL', { weekScheduleId, day, dailyMealId })
-      })
-      .catch((error) => {
-        console.error('Error detaching daily meal:', error)
+        console.error('Error assigning menu:', error)
         throw error
       })
   },
 
-  fetchDiscountsForDailyMeal({ commit }, { weekScheduleId, day, dailyMealId }) {
+  detachMenu({ commit }, { weekScheduleId, day, menuId }) {
+    return WeekScheduleService.detachMenu(weekScheduleId, day, menuId)
+      .then(() => {
+        commit('DETACH_MENU', { weekScheduleId, day, menuId })
+      })
+      .catch((error) => {
+        console.error('Error detaching menu:', error)
+        throw error
+      })
+  },
+
+  fetchDiscountsForMenu({ commit }, { weekScheduleId, day, menuId }) {
     return new Promise((resolve, reject) => {
-      WeekScheduleService.getDailyMealDiscounts(weekScheduleId, day, dailyMealId)
+      WeekScheduleService.getMenuDiscounts(weekScheduleId, day, menuId)
         .then(response => {
           console.log('DISCOUNTS DATA: ', response)
           const discounts = response.data
           console.log('Discounts received from API:', discounts)
-          commit('SET_DISCOUNTS_FOR_DAILY_MEAL', { weekScheduleId, day, dailyMealId, discounts })
+          commit('SET_DISCOUNTS_FOR_MENU', { weekScheduleId, day, menuId, discounts })
           resolve(discounts)
         })
         .catch(error => {
-          console.error('Error in fetchDiscountsForDailyMeal:', error)
+          console.error('Error in fetchDiscountsForMenu:', error)
           reject(error)
         })
     })
@@ -146,46 +147,49 @@ const mutations = {
     state.weekSchedules = state.weekSchedules.filter((weekSchedule) => weekSchedule.id !== id)
   },
 
-  ASSIGN_DAILY_MEAL(state, { weekScheduleId, day, dailyMealData }) {
+ 
+  ASSIGN_MENU(state, { weekScheduleId, day, menuData }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
     if (weekSchedule) {
-      const existingDailyMeals = weekSchedule[`${day}DailyMeals`] || []
-      weekSchedule[`${day}DailyMeals`] = [...existingDailyMeals, dailyMealData]
+      const existingMenus = weekSchedule[`${day}_menus`] || []
+      weekSchedule[`${day}_menus`] = [...existingMenus, menuData]
     }
   },
-
-  DETACH_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId }) {
+  
+  DETACH_MENU(state, { weekScheduleId, day, menuId }) {
     const weekSchedule = state.weekSchedules.find((ws) => ws.id === weekScheduleId)
     if (weekSchedule) {
-      const dailyMealsArray = weekSchedule[`${day}DailyMeals`]
-      if (dailyMealsArray) {
-        weekSchedule[`${day}DailyMeals`] = dailyMealsArray.filter(
-          (dailyMeal) => dailyMeal.daily_meal_id !== dailyMealId
+      const menusArray = weekSchedule[`${day}_menus`]
+      if (menusArray) {
+        weekSchedule[`${day}_menus`] = menusArray.filter(
+          (menu) => menu.menu_id !== menuId
         )
       }
     }
   },
+  
 
-  SET_DISCOUNTS_FOR_DAILY_MEAL(state, { weekScheduleId, day, dailyMealId, discounts }) {
+  SET_DISCOUNTS_FOR_MENU(state, { weekScheduleId, day, menuId, discounts }) {
     const weekSchedule = state.weekSchedules.find(ws => ws.id === weekScheduleId)
     if (weekSchedule) {
-      const dailyMeals = weekSchedule[`${day}_daily_meals`]
-      if (dailyMeals) {
-        const dailyMeal = dailyMeals.find(dm => dm.id === dailyMealId)
-        if (dailyMeal) {
-          dailyMeal.discounts = discounts
+      const menus = weekSchedule[`${day}_menus`]  // Changed from `${day}Menus`
+      if (menus) {
+        const menu = menus.find(m => m.id === menuId)
+        if (menu) {
+          menu.discounts = discounts
           // Trigger reactivity
           state.weekSchedules = [...state.weekSchedules]
         } else {
-          console.warn(`Daily meal with id ${dailyMealId} not found for ${day}`)
+          console.warn(`Menu with id ${menuId} not found for ${day}`)
         }
       } else {
-        console.warn(`No daily meals found for ${day}`)
+        console.warn(`No menus found for ${day}`)
       }
     } else {
       console.warn(`Week schedule with id ${weekScheduleId} not found`)
     }
   }
+  
 }
 
 export default {

@@ -9,11 +9,6 @@ class Menu extends Model
     protected $table = 'menu';
     protected $fillable = ['name', 'description', 'image'];
 
-    public function dailyMeals()
-    {
-        return $this->belongsToMany(DailyMeal::class, 'daily_meal_menu');
-    }
-
     public function foodComposants()
     {
         return $this->belongsToMany(FoodComposant::class, 'menu_composant', 'menu_id', 'food_composant_id');

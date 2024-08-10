@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use DateTime;
 use DateTimeZone;
 
-
 class DailyRecordController extends Controller
 {
     private $models = [
@@ -34,14 +33,14 @@ class DailyRecordController extends Controller
     public function index($day)
     {
         $model = $this->getModel($day);
-        $records = $model::with(['badge', $day . 'DailyMeal'])->get();
+        $records = $model::with(['badge', $day . 'Menu'])->get();
         return response()->json($records);
     }
 
     public function show($day, $id)
     {
         $model = $this->getModel($day);
-        $record = $model::with(['badge', $day . 'DailyMeal'])->findOrFail($id);
+        $record = $model::with(['badge', $day . 'Menu'])->findOrFail($id);
         return response()->json($record);
     }
 
@@ -59,6 +58,7 @@ class DailyRecordController extends Controller
         DB::enableQueryLog();
         $pivotTable = $day . '_daily_meal';
         $recordTable = $day . '_records';
+
         $validatedData = $request->validate([
             'rfid' => 'required|exists:badges,rfid',
         ]);
@@ -90,15 +90,14 @@ class DailyRecordController extends Controller
         \Log::info("Active week schedule: " . json_encode($activeSchedule));
 
         $currentMeal = DB::table($pivotTable)
-            ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
+            ->join('menu', 'menu.id', '=', $pivotTable . '.menu_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
             ->where(function($query) use ($currentTimeString, $pivotTable) {
                 $query->whereTime($pivotTable . '.start_time', '<=', $currentTimeString)
                     ->whereTime($pivotTable . '.end_time', '>=', $currentTimeString);
             })
-            ->select($pivotTable . '.id as pivot_id', 'daily_meals.id as meal_id', $pivotTable . '.*', 'daily_meals.*')
+            ->select($pivotTable . '.id as pivot_id', 'menu.id as menu_id', $pivotTable . '.*', 'menu.*')
             ->first();
-
 
         if (!$currentMeal) {
             \Log::info("No active meal found for day: $day, time: $currentTimeString in active schedule");
@@ -125,6 +124,7 @@ class DailyRecordController extends Controller
                 'created_at' => $currentTime,
                 'updated_at' => $currentTime,
             ]);
+
             DB::commit();
             \Log::info("Record created successfully for day: $day, badge: {$badge->id}, meal: {$currentMeal->pivot_id} in active schedule");
             return response()->json(['message' => "Record created successfully for {$badgeOwnerName}", 'badgeOwner' => $badgeOwnerName], 201);
@@ -141,17 +141,19 @@ class DailyRecordController extends Controller
         $currentDay = strtolower(Carbon::now('Europe/Paris')->format('l'));
         $currentTime = Carbon::now('Europe/Paris')->format('H:i:s');
         $activeSchedule = WeekSchedule::where('status', 'active')->first();
+
         if (!$activeSchedule) {
             return response()->json(['message' => 'No active schedule found'], 404);
         }
 
         $pivotTable = $currentDay . '_daily_meal';
         $currentMeal = DB::table($pivotTable)
-            ->join('daily_meals', 'daily_meals.id', '=', $pivotTable . '.daily_meal_id')
+            ->join('menu', 'menu.id', '=', $pivotTable . '.menu_id')
             ->where($pivotTable . '.week_schedule_id', $activeSchedule->id)
             ->whereRaw("? BETWEEN {$pivotTable}.start_time AND {$pivotTable}.end_time", [$currentTime])
-            ->select('daily_meals.name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
+            ->select('menu.name', $pivotTable . '.meal_name', $pivotTable . '.start_time', $pivotTable . '.end_time', $pivotTable . '.price', $pivotTable . '.id')
             ->first();
+
         if ($currentMeal) {
             return response()->json($currentMeal);
         } else {
@@ -187,5 +189,4 @@ class DailyRecordController extends Controller
 
         return response()->json(['count' => $count]);
     }
-
 }

@@ -12,7 +12,7 @@ class MondayDailyMeal extends Pivot
     public $incrementing = true;
 
     protected $fillable = [
-        'daily_meal_id',
+        'menu_id',
         'week_schedule_id',
         'start_time',
         'end_time',

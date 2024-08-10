@@ -9,7 +9,7 @@ use App\Models\WeekSchedule;
 
 class HomeController extends Controller
 {
-    function get_users()
+    public function get_users()
     {
         $users = User::with('category')->orderBy('updated_at', 'desc')->get();
         return response()->json($users);
@@ -32,14 +32,25 @@ class HomeController extends Controller
     public function get_week_schedules()
     {
         $weekSchedules = WeekSchedule::with([
-            'mondayDailyMeals.menus.foodComposants',
-            'tuesdayDailyMeals.menus.foodComposants',
-            'wednesdayDailyMeals.menus.foodComposants',
-            'thursdayDailyMeals.menus.foodComposants',
-            'fridayDailyMeals.menus.foodComposants',
-            'saturdayDailyMeals.menus.foodComposants',
-            'sundayDailyMeals.menus.foodComposants',
+            'mondayMenus.foodComposants',
+            'tuesdayMenus.foodComposants',
+            'wednesdayMenus.foodComposants',
+            'thursdayMenus.foodComposants',
+            'fridayMenus.foodComposants',
+            'saturdayMenus.foodComposants',
+            'sundayMenus.foodComposants',
         ])->get();
+
+        // Add meal_name to each menu in the week schedule
+        $weekSchedules->each(function ($weekSchedule) {
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            foreach ($days as $day) {
+                $relationName = $day . 'Menus';
+                $weekSchedule->$relationName->each(function ($menu) use ($day) {
+                    $menu->meal_name = $menu->pivot->meal_name;
+                });
+            }
+        });
 
         return response()->json($weekSchedules);
     }

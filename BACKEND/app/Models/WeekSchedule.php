@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Models\PivotDays\FridayDailyMeal;
@@ -16,50 +17,52 @@ class WeekSchedule extends Model
     use HasFactory;
 
     protected $table = 'week_schedule';
+
     protected $casts = [
         'editors' => 'json',
     ];
+
     protected $fillable = ['mode_name', 'description', 'creator', 'editors', 'status'];
 
-    public function mondayDailyMeals()
+    public function mondayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, MondayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, MondayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function tuesdayDailyMeals()
+    public function tuesdayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, TuesdayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, TuesdayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function wednesdayDailyMeals()
+    public function wednesdayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, WednesdayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, WednesdayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function thursdayDailyMeals()
+    public function thursdayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, ThursdayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, ThursdayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function fridayDailyMeals()
+    public function fridayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, FridayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, FridayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function saturdayDailyMeals()
+    public function saturdayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, SaturdayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, SaturdayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 
-    public function sundayDailyMeals()
+    public function sundayMenus()
     {
-        return $this->belongsToMany(DailyMeal::class, SundayDailyMeal::class)
-            ->withPivot('start_time', 'end_time', 'price');
+        return $this->belongsToMany(Menu::class, SundayDailyMeal::class)
+            ->withPivot('meal_name', 'start_time', 'end_time', 'price');
     }
 }
