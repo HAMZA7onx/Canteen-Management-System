@@ -9,7 +9,6 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Role\PermissionController;
 use App\Http\Controllers\Badge\BadgeController;
 use App\Http\Controllers\WeekSchedule\WeekScheduleController;
-use App\Http\Controllers\WeekSchedule\DailyMealController;
 use App\Http\Controllers\WeekSchedule\MenuController;
 use App\Http\Controllers\WeekSchedule\FoodComposantsController;
 use App\Http\Controllers\Records\DailyRecordController;
@@ -21,6 +20,7 @@ use App\Http\Controllers\Admin\AdminReportSubscriptionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DailyMealStatsController;
 use App\Http\Controllers\LogoController;
+use App\Http\Controllers\PrinterController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge']);
@@ -215,4 +215,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/daily-meal-stats', [DailyMealStatsController::class, 'getDailyStats']);
+
+    Route::prefix('printers')->group(function () {
+        Route::get('/', [PrinterController::class, 'index']);
+        Route::post('/', [PrinterController::class, 'store']);
+        Route::get('/{id}', [PrinterController::class, 'show']);
+        Route::put('/{id}', [PrinterController::class, 'update']);
+        Route::delete('/{id}', [PrinterController::class, 'destroy']);
+    });
 });
