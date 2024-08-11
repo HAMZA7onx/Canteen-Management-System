@@ -10,7 +10,7 @@ class PrinterController extends Controller
 {
     public function index()
     {
-        $printers = Printer::all();
+        $printers = Printer::orderBy('updated_at', 'desc')->get();
         return response()->json([
             'status' => 'success',
             'data' => $printers
