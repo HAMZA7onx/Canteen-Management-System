@@ -1,0 +1,89 @@
+<!-- src/components/Printer/PrinterForm.vue -->
+<template>
+    <form @submit.prevent="submitForm" class="bg-white dark:bg-gray-800 rounded-2xl p-6 space-y-6">
+      <div class="space-y-4">
+        <div class="relative">
+          <input
+            id="name"
+            v-model="formData.name"
+            type="text"
+            required
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300 placeholder-transparent"
+            placeholder="Printer Name"
+          />
+          <label
+            for="name"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-500 dark:peer-focus:text-cyan-400"
+          >
+            Nom de l'imprimante
+          </label>
+        </div>
+  
+        <div class="relative">
+          <input
+            id="ip_address"
+            v-model="formData.ip_address"
+            @input="validateInput"
+            type="text"
+            required
+            :class="{'border-red-500': !isValidIP}"
+            class="peer w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-2 border-transparent focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none transition duration-300 placeholder-transparent"
+            placeholder="IP Address"
+          />
+          <label
+            for="ip_address"
+            class="absolute left-4 -top-2.5 text-sm text-gray-600 dark:text-gray-400 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-500 dark:peer-focus:text-cyan-400"
+          >
+            Adresse IP
+          </label>
+          <p v-if="!isValidIP" class="mt-1 text-sm text-red-600 dark:text-red-400">Please enter a valid IP address</p>
+        </div>
+      </div>
+  
+      <button
+        type="submit"
+        :disabled="!isValidIP"
+        class="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 dark:from-cyan-400 dark:to-blue-500 text-white hover:from-cyan-600 hover:to-blue-700 dark:hover:from-cyan-500 dark:hover:to-blue-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {{ printer.id ? 'Modifier' : 'Créer' }} l'imprimante
+      </button>
+    </form>
+  </template>
+  
+  <script>
+  export default {
+    name: 'PrinterForm',
+    props: {
+      printer: {
+        type: Object,
+        default: () => ({
+          ip_address: '',
+        })
+      }
+    },
+    data() {
+      return {
+        formData: {
+          name: this.printer.name || '',
+          ip_address: this.printer.ip_address || '',
+        },
+        isValidIP: true
+      }
+    },
+    methods: {
+      validateIPAddress(ip) {
+        const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipRegex.test(ip);
+      },
+      validateInput() {
+        this.isValidIP = this.validateIPAddress(this.formData.ip_address);
+      },
+      submitForm() {
+        if (this.isValidIP) {
+          this.$emit('update:printer', this.formData);
+        }
+      }
+    }
+  }
+  </script>
+  

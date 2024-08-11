@@ -20,6 +20,7 @@ import advancedRecord from './modules/advancedRecord';
 import adminReportSubscription from './modules/adminReportSubscription';
 import permission from './modules/permission';
 import home from './modules/home';
+import printer from './modules/printer';
 import logo from './modules/logo';
 
 const vuexLocal = new VuexPersistence({
@@ -48,6 +49,7 @@ const store = createStore({
     adminReportSubscription,
     permission,
     home,
+    printer,
     logo,
   },
   plugins: [vuexLocal.plugin]
