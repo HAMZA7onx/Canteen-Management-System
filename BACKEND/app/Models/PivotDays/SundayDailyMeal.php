@@ -13,6 +13,7 @@ class SundayDailyMeal extends Model
 
     protected $fillable = [
         'menu_id',
+        'meal_name',
         'week_schedule_id',
         'start_time',
         'end_time',
