@@ -3,10 +3,14 @@ import PrinterService from '@/services/printer.service';
 
 const state = {
   printers: [],
+  assignablePosDevices: [],
+  printerPosDevices: [],
 };
 
 const getters = {
   printers: (state) => state.printers,
+  assignablePosDevices: (state) => state.assignablePosDevices,
+  printerPosDevices: (state) => state.printerPosDevices,
 };
 
 const actions = {
@@ -51,6 +55,35 @@ const actions = {
         throw error;
       });
   },
+  async getAssignablePosDevices({ commit }, printerId) {
+    try {
+      const response = await PrinterService.getAssignablePosDevices(printerId);
+      commit('SET_ASSIGNABLE_POS_DEVICES', response.data.available_devices);
+      commit('SET_PRINTER_POS_DEVICES', response.data.printer_devices);
+    } catch (error) {
+      console.error('Error fetching assignable POS devices:', error);
+      throw error;
+    }
+  },
+  async assignPosDevices({ dispatch }, { printerId, deviceIds }) {
+    try {
+      const response = await PrinterService.assignPosDevices(printerId, deviceIds);
+      await dispatch('getAssignablePosDevices', printerId);
+      return response.data;
+    } catch (error) {
+      console.error('Error assigning POS devices:', error);
+      throw error;
+    }
+  },
+  async unassignPosDevice({ dispatch }, { printerId, deviceId }) {
+    try {
+      await PrinterService.unassignPosDevice(printerId, deviceId);
+      await dispatch('getAssignablePosDevices', printerId);
+    } catch (error) {
+      console.error('Error unassigning POS device:', error);
+      throw error;
+    }
+  },
 };
 
 const mutations = {
@@ -68,6 +101,12 @@ const mutations = {
   },
   DELETE_PRINTER(state, printerId) {
     state.printers = state.printers.filter(printer => printer.id !== printerId);
+  },
+  SET_ASSIGNABLE_POS_DEVICES(state, devices) {
+    state.assignablePosDevices = devices;
+  },
+  SET_PRINTER_POS_DEVICES(state, devices) {
+    state.printerPosDevices = devices;
   },
 };
 

@@ -222,5 +222,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [PrinterController::class, 'show']);
         Route::put('/{id}', [PrinterController::class, 'update']);
         Route::delete('/{id}', [PrinterController::class, 'destroy']);
+        Route::get('/{id}/assignable-pos-devices', [PrinterController::class, 'getAssignablePosDevices']);
+        Route::post('/{id}/assign-pos-devices', [PrinterController::class, 'assignPosDevices']);
+        Route::post('/{id}/unassign-pos-device', [PrinterController::class, 'unassignPosDevice']);
     });
 });

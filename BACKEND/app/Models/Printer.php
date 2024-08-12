@@ -19,4 +19,9 @@ class Printer extends Model
     protected $casts = [
         'editors' => 'array',
     ];
+
+    public function posDevices()
+    {
+        return $this->hasMany(PosDevice::class);
+    }
 }

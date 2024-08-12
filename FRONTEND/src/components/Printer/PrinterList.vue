@@ -1,78 +1,84 @@
 <!-- src/components/Printer/PrinterList.vue -->
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-teal-100 to-blue-200 dark:from-gray-900 dark:to-blue-900 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div class="max-w-7xl mx-auto">
-        <!-- Section descriptive -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 transform hover:scale-105 transition-all duration-300">
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-3 sm:mb-4">Centre de Gestion des Imprimantes</h1>
-          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
-            Bienvenue dans le centre de gestion des imprimantes. Ici, vous pouvez gérer toutes vos imprimantes, de l'ajout de nouvelles imprimantes à la modification des existantes.
-          </p>
+  <div class="min-h-screen bg-gradient-to-br from-teal-100 to-blue-200 dark:from-gray-900 dark:to-blue-900 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      <!-- Section descriptive -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 transform hover:scale-105 transition-all duration-300">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-600 mb-3 sm:mb-4">Centre de Gestion des Imprimantes</h1>
+        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">
+          Bienvenue dans le centre de gestion des imprimantes. Ici, vous pouvez gérer toutes vos imprimantes, de l'ajout de nouvelles imprimantes à la modification des existantes.
+        </p>
+      </div>
+
+      <!-- Actions pour les imprimantes -->
+      <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-center">
+        <div class="w-full sm:w-auto mb-4 sm:mb-0">
+          <button
+            class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
+            @click="openAddPrinterModal"
+          >
+            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
+              <span class="mr-2">+</span> Ajouter une Imprimante
+            </span>
+          </button>
         </div>
-  
-        <!-- Actions pour les imprimantes -->
-        <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-center">
-          <div class="w-full sm:w-auto mb-4 sm:mb-0">
-            <button
-              class="relative inline-flex items-center justify-center p-0.5 mb-4 sm:mb-0 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 w-full sm:w-auto"
-              @click="openAddPrinterModal"
-            >
-              <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
-                <span class="mr-2">+</span> Ajouter une Imprimante
-              </span>
-            </button>
-          </div>
-          <div class="text-sm sm:text-base text-gray-600 dark:text-gray-300">
-            Total des Imprimantes : <span class="font-bold text-blue-600 dark:text-blue-400">{{ printers.length }}</span>
-          </div>
+        <div class="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          Total des Imprimantes : <span class="font-bold text-blue-600 dark:text-blue-400">{{ printers.length }}</span>
         </div>
-  
-        <!-- Liste des Imprimantes -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
-          <loading-wheel v-if="isLoading" />
-          <div v-else>
-            <div v-if="error" class="p-4 text-red-600 dark:text-red-400 text-sm sm:text-base">
-              {{ error }}
-              <button @click="loadPrinters" class="ml-2 underline">Réessayer</button>
-            </div>
-            <div v-else class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                    <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
-                    <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Créateur</th>
-                    <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                    <th scope="col" class="sm:hidden px-4 py-3"></th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  <template v-for="printer in printers" :key="printer.id">
-                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
-                      <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.name }}</td>
-                      <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.ip_address }}</td>
-                      <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ printer.creator }}</td>
-                      <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
-                        <button
-                          class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-3 transition-colors duration-300"
-                          @click="openDetailsPopup(printer)"
-                        >
-                          <font-awesome-icon icon="info-circle" />
-                        </button>
-                        <button
-                          class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
-                          @click="openEditPrinterModal(printer)"
-                        >
-                          <font-awesome-icon icon="edit" />
-                        </button>
-                        <button
-                          class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
-                          @click="deletePrinter(printer)"
-                        >
-                          <font-awesome-icon icon="trash" />
-                        </button>
-                      </td>
-                      <td class="sm:hidden px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+      </div>
+
+      <!-- Liste des Imprimantes -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-colors duration-300">
+        <loading-wheel v-if="isLoading" />
+        <div v-else>
+          <div v-if="error" class="p-4 text-red-600 dark:text-red-400 text-sm sm:text-base">
+            {{ error }}
+            <button @click="loadPrinters" class="ml-2 underline">Réessayer</button>
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
+                  <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
+                  <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Créateur</th>
+                  <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th scope="col" class="sm:hidden px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <template v-for="printer in printers" :key="printer.id">
+                  <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.name }}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.ip_address }}</td>
+                    <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ printer.creator }}</td>
+                    <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
+                      <button
+                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3 transition-colors duration-300"
+                        @click="openAssignPosDevicesModal(printer)"
+                      >
+                        <font-awesome-icon icon="link" />
+                      </button>
+                      <button
+                        class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-3 transition-colors duration-300"
+                        @click="openDetailsPopup(printer)"
+                      >
+                        <font-awesome-icon icon="info-circle" />
+                      </button>
+                      <button
+                        class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-200 mr-3 transition-colors duration-300"
+                        @click="openEditPrinterModal(printer)"
+                      >
+                        <font-awesome-icon icon="edit" />
+                      </button>
+                      <button
+                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 transition-colors duration-300"
+                        @click="deletePrinter(printer)"
+                      >
+                        <font-awesome-icon icon="trash" />
+                      </button>
+                    </td>
+                    <td class="sm:hidden px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button @click="togglePrinterActions(printer)" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                         <font-awesome-icon icon="ellipsis-v" />
                       </button>
@@ -81,6 +87,13 @@
                   <div v-if="printer.showActions" class="sm:hidden bg-gray-50 dark:bg-gray-700">
                     <td colspan="4" class="px-4 py-4">
                       <div class="flex flex-col justify-around">
+                        <button
+                          @click="openAssignPosDevicesModal(printer)"
+                          class="flex items-center text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 transition-colors duration-300"
+                        >
+                          <font-awesome-icon icon="link" class="mr-2" />
+                          Assigner POS
+                        </button>
                         <button
                           @click="openDetailsPopup(printer)"
                           class="flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 transition-colors duration-300"
@@ -239,6 +252,14 @@
           </div>
         </div>
       </div>
+
+      <!-- AssignPosDevicesModal -->
+      <AssignPosDevicesModal
+        v-if="showAssignPosDevicesModal"
+        :printerId="selectedPrinter?.id"
+        @close="closeAssignPosDevicesModal"
+        @show-toast="showSuccessToast"
+      />
     </div>
     <Toast :show="showToast" :message="toastMessage" />
   </div>
@@ -251,6 +272,7 @@ import Modal from '@/components/shared/Modal.vue';
 import Overlay from '@/components/shared/Overlay.vue';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
 import Toast from '@/components/shared/Toast.vue';
+import AssignPosDevicesModal from '@/components/Printer/AssignPosDevicesModal.vue';
 import permissionMixin from '@/mixins/permissionMixin';
 
 export default {
@@ -262,6 +284,7 @@ export default {
     Overlay,
     LoadingWheel,
     Toast,
+    AssignPosDevicesModal,
   },
   data() {
     return {
@@ -269,6 +292,7 @@ export default {
       showEditPrinterModal: false,
       showDeleteConfirmation: false,
       showDetailsPopup: false,
+      showAssignPosDevicesModal: false,
       selectedPrinter: null,
       printerToDelete: null,
       isLoading: true,
@@ -326,7 +350,6 @@ export default {
           console.error('Error creating printer:', error);
         });
     },
-    
     updatePrinter(updatedPrinter) {
       const printerToUpdate = {
         ...updatedPrinter,
@@ -381,6 +404,14 @@ export default {
       setTimeout(() => {
         this.showToast = false;
       }, 3000);
+    },
+    openAssignPosDevicesModal(printer) {
+      this.selectedPrinter = printer;
+      this.showAssignPosDevicesModal = true;
+    },
+    closeAssignPosDevicesModal() {
+      this.showAssignPosDevicesModal = false;
+      this.selectedPrinter = null;
     },
   },
 };

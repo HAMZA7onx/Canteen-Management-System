@@ -37,7 +37,7 @@ class PosDeviceController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:pos_devices,name',
-            'ip_address' => 'required|ip|unique:pos_devices,ip_address',
+            'ip_address' => 'required|ip',
             'status' => 'required|in:allowed,unauthorized',
             'print_statistics' => 'required|in:active,inactive',
             'print_tickets' => 'required|in:active,inactive',
@@ -57,7 +57,7 @@ class PosDeviceController extends Controller
             return response()->json($posDevice, 201);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return response()->json(['error' => 'A POS device with this name or IP address already exists.'], 422);
+                return response()->json(['error' => 'A POS device with this name already exists.'], 422);
             }
             throw $e;
         }
@@ -69,7 +69,7 @@ class PosDeviceController extends Controller
 
         $request->validate([
             'name' => 'unique:pos_devices,name,' . $id,
-            'ip_address' => 'ip|unique:pos_devices,ip_address,' . $id,
+            'ip_address' => 'ip',
             'status' => 'in:allowed,unauthorized',
             'print_statistics' => 'in:active,inactive',
             'print_tickets' => 'in:active,inactive',
@@ -105,7 +105,7 @@ class PosDeviceController extends Controller
             return response()->json($posDevice);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->errorInfo[1] == 1062) {
-                return response()->json(['error' => 'A POS device with this name or IP address already exists.'], 422);
+                return response()->json(['error' => 'A POS device with this name already exists.'], 422);
             }
             throw $e;
         }
