@@ -39,6 +39,7 @@
             </thead>
             <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
               <tr
+                v-if="weekSchedules.length"
                 v-for="weekSchedule in weekSchedules"
                 :key="weekSchedule.id"
                 class="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition duration-300"
@@ -87,12 +88,29 @@
                   </button>
                 </td>
               </tr>
+              <tr v-else>
+              <td colspan="10" class="py-8 px-6 text-center">
+                <div class="flex flex-col items-center justify-center">
+                  <font-awesome-icon icon="calendar-times" class="text-5xl text-gray-400 dark:text-gray-600 mb-4" />
+                  <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">Aucun horaire trouvé</h3>
+                  <p class="text-gray-500 dark:text-gray-500 mb-4">Il semble qu'aucun horaire n'ait été créé pour le moment.</p>
+                  <button
+                    v-if="$can('creer_profils_repas')"
+                    @click="openCreateModal"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+                  >
+                    <font-awesome-icon icon="plus-circle" class="mr-2" />
+                    Créer un nouvel horaire
+                  </button>
+                </div>
+              </td>
+            </tr>
             </tbody>
           </table>
 
           <!-- Mobile view -->
           <div class="sm:hidden">
-            <div v-for="weekSchedule in weekSchedules" :key="weekSchedule.id" class="mb-4 border-b border-gray-200 dark:border-gray-700">
+            <div v-if="weekSchedules.length" v-for="weekSchedule in weekSchedules" :key="weekSchedule.id" class="mb-4 border-b border-gray-200 dark:border-gray-700">
               <div class="flex justify-between items-center p-4">
                 <span class="font-medium dark:text-gray-100">{{ weekSchedule.mode_name }}</span>
                 <span
@@ -139,6 +157,21 @@
                     {{ day }}
                   </button>
                 </div>
+              </div>
+            </div>
+            <div v-else class="py-8 px-4 text-center">
+              <div class="flex flex-col items-center justify-center">
+                <font-awesome-icon icon="calendar-times" class="text-5xl text-gray-400 dark:text-gray-600 mb-4" />
+                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">Aucun horaire trouvé</h3>
+                <p class="text-gray-500 dark:text-gray-500 mb-4">Il semble qu'aucun horaire n'ait été créé pour le moment.</p>
+                <button
+                  v-if="$can('creer_profils_repas')"
+                  @click="openCreateModal"
+                  class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+                >
+                  <font-awesome-icon icon="plus-circle" class="mr-2" />
+                  Créer un nouvel horaire
+                </button>
               </div>
             </div>
           </div>
