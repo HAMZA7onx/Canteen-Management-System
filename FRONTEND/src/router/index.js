@@ -22,6 +22,7 @@ import AdminReportSubscriptionDashboard from '@/components/Admin/AdminReportSubs
 import Unauthorized from '@/views/Unauthorized.vue';
 import LogoList from '@/components/Logo/LogoList.vue';
 import PrinterList from '@/components/Printer/PrinterList.vue';
+import CollaboratorStatistics from '@/components/CollaboratorStatistics/CollaboratorStatistics.vue';
 
 const routes = [
   { path: '/', name: 'dashboard', component: Home },
@@ -45,6 +46,7 @@ const routes = [
   { path: '/unauthorized', name: 'unauthorized', component: Unauthorized },
   { path: '/LogoList', component: LogoList },
   { path: '/printer-list', component: PrinterList },
+  { path: '/collaborator-statistics', component: CollaboratorStatistics },
 ];
 
 const router = createRouter({
