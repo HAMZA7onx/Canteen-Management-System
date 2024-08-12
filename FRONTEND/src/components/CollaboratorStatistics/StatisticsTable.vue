@@ -15,7 +15,7 @@
             <td v-for="header in headers" :key="header.key" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               <template v-if="header.key === 'actions'">
                 <button @click="$emit('view-details', user)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">
-                  View Details
+                  Voir Détails
                 </button>
               </template>
               <template v-else-if="header.format">

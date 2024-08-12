@@ -41,7 +41,6 @@
                   <p class="font-semibold text-gray-900 dark:text-gray-100">{{ formatDate(meal.date) }} - {{ meal.name }}</p>
                   <p class="text-sm text-gray-600 dark:text-gray-400">Prix: {{ formatCurrency(meal.price) }}</p>
                   <p class="text-sm text-gray-600 dark:text-gray-400">Réduction: {{ formatCurrency(meal.discount) }}</p>
-                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Prix Final: {{ formatCurrency(meal.price_with_discount) }}</p>
                 </div>
               </div>
             </div>
