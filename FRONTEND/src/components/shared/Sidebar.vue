@@ -66,7 +66,8 @@ import {
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage
+  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage,
+  faCashRegister, faPrint
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -74,7 +75,8 @@ library.add(
   faUserShield, faUserTag, faUsers, faUserFriends, faIdBadge,
   faUtensils, faClipboardList, faCalendarAlt, faChartBar,
   faChevronDown, faChevronUp, faChevronLeft, faChevronRight,
-  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage
+  faCog, faLock, faUserCog, faClock, faClipboardCheck, faImage,
+  faCashRegister, faPrint
 );
 
 import permissionMixin from '@/mixins/permissionMixin';
@@ -130,8 +132,8 @@ export default {
         items: [
           { label: 'Enregistrements', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
           { label: 'Audit des Enregistrements ', icon: 'clipboard-check', route: '/records-audit', permission: 'voir_enregistrements_repas' },
-          { label: 'Gestion des pOS', icon: 'cog', route: '/pos-devices', permission: 'voir_POS' },
-          { label: 'Gestion des imprimantes', icon: 'cog', route: '/printer-list' },
+          { label: 'Gestion des pOS', icon: 'cash-register', route: '/pos-devices', permission: 'voir_POS' },
+          { label: 'Gestion des imprimantes', icon: 'print', route: '/printer-list' },
         ]
       },
       {

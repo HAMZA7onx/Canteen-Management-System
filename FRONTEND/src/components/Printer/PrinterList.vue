@@ -41,7 +41,7 @@
                 <tr>
                   <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                   <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse IP</th>
-                  <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Créateur</th>
+                  <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">	Dernière Mise à Jour</th>
                   <th scope="col" class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   <th scope="col" class="sm:hidden px-4 py-3"></th>
                 </tr>
@@ -51,7 +51,9 @@
                   <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150">
                     <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.name }}</td>
                     <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">{{ printer.ip_address }}</td>
-                    <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ printer.creator }}</td>
+                    <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                      {{ formatCreatedAt(printer.created_at) }}
+                    </td>
                     <td class="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                       <button
                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 mr-3 transition-colors duration-300"
@@ -412,6 +414,17 @@ export default {
     closeAssignPosDevicesModal() {
       this.showAssignPosDevicesModal = false;
       this.selectedPrinter = null;
+    },
+    formatCreatedAt(date) {
+      if (!date) return '';
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      };
+      return new Date(date).toLocaleDateString('fr-FR', options);
     },
   },
 };
