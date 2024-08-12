@@ -85,6 +85,7 @@ export default {
     const error = computed(() => store.getters['collaboratorStatistics/error']);
 
     const fetchStatistics = () => {
+      console.log('Fetching statistics:', startDate.value, endDate.value);
       store.dispatch('collaboratorStatistics/fetchStatistics', {
         startDate: startDate.value,
         endDate: endDate.value,

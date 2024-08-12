@@ -16,6 +16,7 @@ const getters = {
 
 const actions = {
   async fetchStatistics({ commit }, { startDate, endDate }) {
+    console.log('etchStatistics called with startDate:', startDate, 'and endDate:', endDate);
     commit('SET_LOADING', true);
     commit('SET_ERROR', null);
     try {
