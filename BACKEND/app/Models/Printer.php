@@ -19,9 +19,4 @@ class Printer extends Model
     protected $casts = [
         'editors' => 'array',
     ];
-
-    public function posDevices()
-    {
-        return $this->belongsToMany(PosDevice::class, 'pos_printer_links');
-    }
 }

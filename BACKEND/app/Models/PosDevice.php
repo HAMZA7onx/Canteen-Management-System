@@ -22,9 +22,4 @@ class PosDevice extends Model
         'editors',
         'creator'
     ];
-
-    public function printers()
-    {
-        return $this->belongsToMany(Printer::class, 'pos_printer_links');
-    }
 }

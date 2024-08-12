@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pos_devices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('printer_id')->nullable()->constrained('printers', 'id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name')->unique();
             $table->string('ip_address');
             $table->enum('print_statistics', ['active', 'inactive'])->default('inactive');
