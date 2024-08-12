@@ -9,9 +9,6 @@ class PosDevice extends Model
 {
     use HasFactory;
     protected $table = 'pos_devices';
-    protected $casts = [
-        'editors' => 'json',
-    ];
 
     protected $fillable = [
         'name',
@@ -22,4 +19,13 @@ class PosDevice extends Model
         'editors',
         'creator'
     ];
+
+    protected $casts = [
+        'editors' => 'json',
+    ];
+
+    public function printer()
+    {
+        return $this->belongsTo(Printer::class);
+    }
 }

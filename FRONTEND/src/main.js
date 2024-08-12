@@ -3,12 +3,13 @@ import App from './App.vue';
 import './style.css';
 import router from './router';
 import store from './store';
+import 'vue-multiselect/dist/vue-multiselect.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner} from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner, faLink, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner);
+library.add(faTrash, faEdit, faClock, faInfoCircle, faKey, faPlusCircle, faPlus, faUnlink, faUser, faUsers, faCalendar, faUtensils, faIdCard, faCogs, faSpinner, faLink, faEllipsisV);
 
 if (localStorage.getItem('darkMode') === 'true' ||
     (!('darkMode' in localStorage) && 
