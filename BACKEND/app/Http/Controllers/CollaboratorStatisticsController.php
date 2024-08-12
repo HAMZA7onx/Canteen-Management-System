@@ -41,14 +41,12 @@ class CollaboratorStatisticsController extends Controller
     private function getUserStatistics($user, $startDate, $endDate)
     {
         $statistics = [];
-
         $badge = Badge::where('user_id', $user->id)->first();
         if (!$badge) {
             return [];
         }
 
         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
         foreach ($days as $day) {
             $records = DB::table("{$day}_records")
                 ->join("{$day}_daily_meal", "{$day}_daily_meal.id", "=", "{$day}_records.{$day}_daily_meal_id")
@@ -59,7 +57,6 @@ class CollaboratorStatisticsController extends Controller
 
             foreach ($records as $record) {
                 $month = Carbon::parse($record->created_at)->format('Y-m');
-
                 if (!isset($statistics[$month])) {
                     $statistics[$month] = [];
                 }
@@ -81,7 +78,8 @@ class CollaboratorStatisticsController extends Controller
                     ->where('category_id', $user->category_id)
                     ->value('discount');
 
-                $priceWithDiscount = $record->price * (1 - ($discount / 100));
+                // Apply discount as a fixed amount
+                $priceWithDiscount = max(0, $record->price - $discount);
 
                 $statistics[$month][$user->id]['total_without_discount'] += $record->price;
                 $statistics[$month][$user->id]['total_with_discount'] += $priceWithDiscount;
@@ -97,4 +95,5 @@ class CollaboratorStatisticsController extends Controller
 
         return $statistics;
     }
+
 }
