@@ -58,35 +58,45 @@
       </div>
 
       <!-- User Details Modal -->
-      <modal v-if="selectedUser" @close="closeUserDetails">
-        <template #header>
-          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.name }} - Meal Details</h3>
-        </template>
-        <template #body>
-          <div class="space-y-4">
-            <div v-for="meal in selectedUser.meals" :key="meal.date" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-              <p class="font-semibold text-gray-900 dark:text-gray-100">{{ formatDate(meal.date) }} - {{ meal.name }}</p>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Price: {{ formatCurrency(meal.price) }}</p>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Discount: {{ meal.discount }}%</p>
-              <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Final Price: {{ formatCurrency(meal.price_with_discount) }}</p>
+      <div v-if="selectedUser" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+          <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">{{ selectedUser.name }} - Meal Details</h3>
+            <div class="mt-2 px-7 py-3">
+              <div class="space-y-4">
+                <div v-for="meal in selectedUser.meals" :key="meal.date" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md text-left">
+                  <p class="font-semibold text-gray-900 dark:text-gray-100">{{ formatDate(meal.date) }} - {{ meal.name }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Price: {{ formatCurrency(meal.price) }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Discount: {{ meal.discount }}%</p>
+                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Final Price: {{ formatCurrency(meal.price_with_discount) }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="items-center px-4 py-3">
+              <button
+                id="ok-btn"
+                @click="closeUserDetails"
+                class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                Close
+              </button>
             </div>
           </div>
-        </template>
-      </modal>
+        </div>
+      </div>
     </div>
   </div>
 </template>
+
 <script>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import LoadingWheel from '@/components/shared/LoadingWheel.vue';
-import Modal from '@/components/shared/Modal.vue';
 
 export default {
   name: 'CollaboratorStatistics',
   components: {
     LoadingWheel,
-    Modal,
   },
   setup() {
     const store = useStore();
