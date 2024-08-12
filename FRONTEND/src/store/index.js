@@ -22,6 +22,7 @@ import permission from './modules/permission';
 import home from './modules/home';
 import printer from './modules/printer';
 import logo from './modules/logo';
+import collaboratorStatistics from './modules/collaboratorStatistics';
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
@@ -51,6 +52,7 @@ const store = createStore({
     home,
     printer,
     logo,
+    collaboratorStatistics
   },
   plugins: [vuexLocal.plugin]
 });

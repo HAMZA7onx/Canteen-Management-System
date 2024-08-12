@@ -132,6 +132,7 @@ export default {
         items: [
           { label: 'Enregistrements', icon: 'chart-bar', route: '/records', permission: 'voir_enregistrements_repas' },
           { label: 'Audit des Enregistrements ', icon: 'clipboard-check', route: '/records-audit', permission: 'voir_enregistrements_repas' },
+          { label: 'collabs stst ', icon: 'clipboard-check', route: '/collaborator-statistics',  },
           { label: 'Gestion des pOS', icon: 'cash-register', route: '/pos-devices', permission: 'voir_POS' },
           { label: 'Gestion des imprimantes', icon: 'print', route: '/printer-list' },
         ]

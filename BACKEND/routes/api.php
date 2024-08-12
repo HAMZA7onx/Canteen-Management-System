@@ -21,6 +21,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DailyMealStatsController;
 use App\Http\Controllers\LogoController;
 use App\Http\Controllers\PrinterController;
+use App\Http\Controllers\CollaboratorStatisticsController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login-with-badge', [AuthController::class, 'loginWithBadge']);
@@ -226,4 +227,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/assign-pos-devices', [PrinterController::class, 'assignPosDevices']);
         Route::post('/{id}/unassign-pos-device', [PrinterController::class, 'unassignPosDevice']);
     });
+
+    Route::get('/collaborator-statistics', [CollaboratorStatisticsController::class, 'getStatistics']);
 });
