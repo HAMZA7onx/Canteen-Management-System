@@ -13,7 +13,10 @@ class CheckPermission
         $user = Auth::guard('sanctum')->user();
 
         if (!$user || !$user->hasPermissionTo($permission)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json([
+                'error' => 'Unauthorized',
+                'required_permission' => $permission,
+            ], 403);
         }
 
         return $next($request);

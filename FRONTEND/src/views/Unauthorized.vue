@@ -11,6 +11,16 @@
           You do not have permission to access this resource.
         </p>
       </div>
+      
+      <div v-if="requiredPermission" class="mt-4 text-center">
+        <p class="text-md text-gray-700 dark:text-gray-300">
+          Required permission:
+        </p>
+        <p class="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
+          {{ requiredPermission }}
+        </p>
+      </div>
+
       <div class="mt-8">
         <router-link
           to="/"
@@ -27,8 +37,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'Unauthorized',
+  computed: {
+    ...mapGetters('unauthorized', ['requiredPermission']),
+  },
 };
 </script>
 

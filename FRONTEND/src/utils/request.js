@@ -18,6 +18,8 @@ request.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 403) {
+      const requiredPermission = error.response.data.required_permission;
+      store.commit('unauthorized/setRequiredPermission', requiredPermission);
       router.push({ name: 'unauthorized' });
     }
     return Promise.reject(error);
