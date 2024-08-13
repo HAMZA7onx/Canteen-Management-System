@@ -22,12 +22,6 @@
     </div>
 
     <div v-else>
-      <button
-       v-if="canPrintStatistics"
-       @click="printTicket" 
-       class="mb-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Imprimer statistiques
-      </button>
       <div v-for="meal in dailyMeals" :key="meal.id" class="meal-card mb-12 bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 bg-indigo-600 text-white">
           <h3><span class="text-3xl font-semibold mb-2">{{ meal.meal_name }}:</span></h3>
@@ -115,13 +109,6 @@ export default {
 
     onMounted(() => {
       store.dispatch('mealStats/fetchDailyMealStats');
-      store.dispatch('posDevice/fetchPosDevice');
-    });
-
-    const posDevice = computed(() => store.getters['posDevice/posDevice']);
-    const canPrintStatistics = computed(() => {
-      console.log('posDevice: ', posDevice.value)
-      return posDevice.value && posDevice.value.length > 0 && posDevice.value[0].print_statistics === 'active';
     });
 
     const dailyMeals = computed(() => store.getters['mealStats/getDailyMeals']);
@@ -192,72 +179,6 @@ export default {
       ];
     };
 
-    const printTicket = async () => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Printing ticket in development mode:');
-        dailyMeals.value.forEach(meal => {
-          console.log(`Meal: ${meal.name}`);
-          console.log(`Time: ${formatTime(meal.start_time)} - ${formatTime(meal.end_time)}`);
-          console.log(`Attendees: ${meal.attendee_count}`);
-          console.log(`Total Revenue: ${formatCurrency(calculateTotalRevenue(meal))}`);
-          console.log(`Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}`);
-          console.log('-'.repeat(32));
-        });
-        console.log('Merci!');
-        console.log(new Date().toLocaleString());
-      } else {
-        try {
-          const devices = await navigator.usb.getDevices();
-          const printerDevices = devices.filter(device => 
-            device.configurations[0].interfaces.some(intf => 
-              intf.alternates[0].interfaceClass === 0x07
-            )
-          );
-
-          let printer;
-          if (printerDevices.length === 0) {
-            printer = await navigator.usb.requestDevice({ filters: [] });
-          } else if (printerDevices.length === 1) {
-            printer = printerDevices[0];
-          } else {
-            printer = printerDevices[0];
-          }
-
-          await printer.open();
-          let ticketData = "\x1B\x40";
-          ticketData += "\x1B\x61\x01";
-          ticketData += "\x1B\x21\x30";
-          ticketData += "Daily Meal Statistics\n\n";
-          ticketData += "\x1B\x21\x00";
-
-          dailyMeals.value.forEach(meal => {
-            ticketData += "\x1B\x45\x01";
-            ticketData += `${meal.name}\n`;
-            ticketData += "\x1B\x45\x00";
-            ticketData += `Time: ${formatTime(meal.start_time)} - ${formatTime(meal.end_time)}\n`;
-            ticketData += `Attendees: ${meal.attendee_count}\n`;
-            ticketData += `Total Revenue: ${formatCurrency(calculateTotalRevenue(meal))}\n`;
-            ticketData += `Total Discounted: ${formatCurrency(calculateTotalDiscounted(meal))}\n`;
-            ticketData += "\x1B\x61\x00";
-            ticketData += "-".repeat(32) + "\n";
-            ticketData += "\x1B\x61\x01";
-          });
-
-          ticketData += "\n\x1B\x61\x00";
-          ticketData += "Thank you for your business!\n";
-          ticketData += "\x1B\x61\x01";
-          ticketData += new Date().toLocaleString() + "\n";
-          ticketData += "\x1B\x64\x02";
-          ticketData += "\x1D\x56\x00";
-
-          await printer.transferOut(1, new TextEncoder().encode(ticketData));
-          await printer.close();
-        } catch (error) {
-          console.error('Printing failed:', error);
-        }
-      }
-    };
-
     watch(dailyMeals, (newValue) => {
       console.log('dailyMeals:', newValue);
     }, { immediate: true });
@@ -269,7 +190,6 @@ export default {
       isLoading,
       error,
       hasMealToday,
-      posDevice,
       formatCurrency,
       formatTime,
       getChartData,
@@ -281,8 +201,6 @@ export default {
       calculateTotalDiscounted,
       calculateTotalRevenue,
       calculateTotalDiscounts,
-      printTicket,
-      canPrintStatistics,
     };
   }
 }
