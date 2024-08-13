@@ -106,7 +106,7 @@
                           </div>
                         </div>
                         <div class="text-sm text-gray-600 dark:text-gray-300">{{ meal.badge_count }} personnes</div>
-                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span class="text-[10px]">Total avec Remise:</span> {{ formatPrice(meal.total_with_discount) }}</div>
+                        <!-- <div class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span class="text-[10px]">Total avec Remise:</span> {{ formatPrice(meal.total_with_discount) }}</div> -->
                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200"><span class="text-[10px]">Total sans Remise:</span> {{ formatPrice(meal.total_without_discount) }}</div>
                       </div>
                     </div>
@@ -146,28 +146,7 @@
       </div>
     </div>
 
-    <!-- Monthly Totals -->
-    <div v-if="monthlyTotals.length" class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6">
-      <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Monthly Totals</h2>
-      
-      <!-- Search and Pagination for Monthly Totals -->
-      <div class="mb-4 flex flex-wrap items-center justify-between">
-        <input v-model="monthlyTotalsSearch" @input="filterMonthlyTotals" type="text" placeholder="Search by email" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2 sm:mb-0">
-        <div class="flex items-center">
-          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-l-md">Prev</button>
-          <span class="px-3 py-1 bg-gray-100 dark:bg-gray-600">{{ currentPage }} / {{ totalPages }}</span>
-          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-r-md">Next</button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="total in paginatedMonthlyTotals" :key="total.email" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg transform hover:scale-105 transition-all duration-200">
-          <h3 class="font-medium text-lg text-indigo-600 dark:text-indigo-400 truncate" :title="total.email">{{ total.email }}</h3>
-          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Total avec Remise : {{ formatPrice(total.total_with_discount) }}</p>
-          <p class="text-sm text-gray-600 dark:text-gray-300">Total sans Remise: {{ formatPrice(total.total_without_discount) }}</p>
-        </div>
-      </div>
-    </div>
+ 
 
     <!-- Download PDF Button -->
     <div class="mt-8 flex justify-end">
